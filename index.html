@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mα区块链矿池系统 - BSC主网</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.ethers.io/lib/ethers-5.7.umd.min.js"></script>
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --accent: #4cc9f0;
+            --success: #2ecc71;
+            --warning: #f9a826;
+            --text: #f0f4ff;
+            --dark: #1c2431;
+            --darker: #0e121a;
+            --card-bg: rgba(255, 255, 255, 0.08);
+            --card-border: rgba(84, 109, 229, 0.3);
+            --inactive-bg: rgba(30, 30, 50, 0.5);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--darker), var(--dark));
+            color: var(--text);
+            min-height: 100vh;
+            padding: 0;
+            font-size: 14px;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding-bottom: 80px; /* 为底部导航留出空间 */
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 25px 20px 15px;
+            border-radius: 0 0 25px 25px;
+            margin-bottom: 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 6px 20px rgba(59, 12, 163, 0.4);
+        }
+        
+        .header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 1rem;
+            margin-top: 5px;
+        }
+        
+        .account-status-card {
+            background: rgba(67, 97, 238, 0.2);
+            border-radius: 18px;
+            padding: 20px;
+            margin: 0 15px 20px;
+            text-align: center;
+        }
+        
+        .status-title {
+            color: #fff;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .account-address {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            font-family: monospace;
+            font-size: 1.2rem;
+            color: #9ab3ff;
+        }
+        
+        .balance-display {
+            background: linear-gradient(135deg, rgba(58, 12, 163, 0.4), rgba(67, 97, 238, 0.4));
+            padding: 18px;
+            border-radius: 15px;
+            margin-top: 15px;
+        }
+        
+        .balance-label {
+            font-size: 1.1rem;
+            color: #b0b8d8;
+            margin-bottom: 8px;
+        }
+        
+        .balance-amount {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #fff;
+        }
+        
+        /* 顶部选项卡样式 - 参考截图1 */
+        .tabs-container {
+            display: flex;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            padding: 0 15px 15px;
+            margin-bottom: 5px;
+        }
+        
+        .tabs-container::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .tab {
+            padding: 12px 18px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            color: #f0f4ff;
+            text-align: center;
+            transition: all 0.3s;
+            flex-shrink: 0;
+            background: var(--inactive-bg);
+            border: 1px solid rgba(0, 0, 0, 0.3);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5);
+            min-width: 100px;
+            font-size: 0.95rem;
+        }
+        
+        .tab.active {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            box-shadow: 0 0 15px rgba(67, 97, 238, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 20px;
+            margin: 0 15px 15px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--card-border);
+        }
+        
+        .card-title {
+            color: #fff;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(84, 109, 229, 0.5);
+        }
+        
+        .card-title i {
+            font-size: 1.4rem;
+            color: var(--primary);
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        
+        .info-item {
+            background: linear-gradient(135deg, rgba(67, 97, 238, 0.15), rgba(58, 12, 163, 0.15));
+            padding: 15px 10px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(84, 109, 229, 0.2);
+        }
+        
+        .info-item p {
+            font-size: 0.9rem;
+            color: #b0b8d8;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .info-item h3 {
+            font-size: 1.1rem;
+            color: #fff;
+            font-weight: 700;
+        }
+        
+        .btn {
+            display: block;
+            width: 100%;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 14px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-top: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 20px rgba(67, 97, 238, 0.4);
+            letter-spacing: 0.5px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(67, 97, 238, 0.6);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(to right, var(--warning), #f48c06);
+        }
+        
+        .btn-success {
+            background: linear-gradient(to right, var(--success), #27ae60);
+        }
+        
+        .form-group {
+            margin-bottom: 18px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #b0b8d8;
+            font-size: 0.98rem;
+        }
+        
+        input[type="number"] {
+            width: 100%;
+            padding: 15px;
+            background: rgba(67, 97, 238, 0.15);
+            border: 2px solid rgba(84, 109, 229, 0.5);
+            border-radius: 12px;
+            font-size: 1.05rem;
+            text-align: center;
+            color: white;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        input[type="number"]:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.3);
+        }
+        
+        .price-info {
+            text-align: center;
+            padding: 12px;
+            font-size: 1.05rem;
+            color: #b0b8d8;
+            font-weight: 500;
+            background: rgba(67, 97, 238, 0.05);
+            border-radius: 10px;
+            margin: 12px 0;
+        }
+        
+        .price-info span {
+            font-weight: 700;
+            color: #fff;
+        }
+        
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            backdrop-filter: blur(5px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        
+        .loading.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .loading-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            text-align: center;
+        }
+        
+        .spinner {
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-top: 5px solid var(--primary);
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .contract-info {
+            text-align: center;
+            font-size: 0.85rem;
+            color: #b0b8d8;
+            padding: 15px 0;
+            margin-top: 10px;
+            opacity: 0.8;
+        }
+        
+        /* 底部导航样式 - 参考截图2 */
+        .bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(30, 33, 57, 0.95);
+            backdrop-filter: blur(10px);
+            display: flex;
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.4);
+            height: 80px;
+            z-index: 100;
+            padding: 0 10px;
+            border-top: 1px solid rgba(84, 109, 229, 0.3);
+        }
+        
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 0;
+            color: #b0b8d8;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-item.active {
+            color: var(--accent);
+        }
+        
+        .nav-item i {
+            display: block;
+            font-size: 24px;
+            margin-bottom: 5px;
+            transition: all 0.3s;
+        }
+        
+        .nav-item.active i {
+            transform: scale(1.15);
+            color: var(--accent);
+            filter: drop-shadow(0 0 6px rgba(76, 201, 240, 0.8));
+        }
+        
+        .rewards-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        
+        .reward-item {
+            background: linear-gradient(135deg, rgba(67, 97, 238, 0.15), rgba(58, 12, 163, 0.15));
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .reward-item .label {
+            font-size: 0.95rem;
+            color: #b0b8d8;
+            margin-bottom: 8px;
+        }
+        
+        .reward-item .value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #fff;
+        }
+        
+        @media (max-width: 360px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tab {
+                padding: 8px 10px;
+                font-size: 0.85rem;
+                min-width: 85px;
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .nav-item {
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-cube"></i> Mα区块链矿池系统</h1>
+            <p>基于BSC智能合约的挖矿平台</p>
+            <p>区块高度: <span id="currentBlock">26854321</span></p>
+        </div>
+        
+        <div class="account-status-card">
+            <div class="status-title">
+                <i class="fas fa-link"></i> 账户状态
+            </div>
+            <div class="account-address" id="walletAddress">未连接钱包</div>
+            <div class="balance-display">
+                <div class="balance-label">Mα余额</div>
+                <div class="balance-amount" id="tokenBalance">0</div>
+            </div>
+            <button id="connectWallet" class="btn">
+                <i class="fas fa-wallet"></i> 连接钱包
+            </button>
+        </div>
+        
+        <!-- 顶部选项卡导航 -->
+        <div class="tabs-container">
+            <div class="tabs">
+                <div class="tab active" data-tab="token-tab">代币信息</div>
+                <div class="tab" data-tab="rewards-tab">奖励信息</div>
+                <div class="tab" data-tab="mining-tab">矿机操作</div>
+                <div class="tab" data-tab="pool-tab">矿池概览</div>
+            </div>
+        </div>
+        
+        <!-- 代币信息选项卡 -->
+        <div id="token-tab" class="tab-content active">
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-coins"></i> 代币信息
+                </div>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <p>代币名称</p>
+                        <h3 id="tokenName">Mα</h3>
+                    </div>
+                    <div class="info-item">
+                        <p>代币总量</p>
+                        <h3 id="totalSupply">3,000,000</h3>
+                    </div>
+                    <div class="info-item">
+                        <p>您的代币余额</p>
+                        <h3 id="userTokenBalance">0</h3>
+                    </div>
+                    <div class="info-item">
+                        <p>授权额度</p>
+                        <h3 id="approvedBalance">0</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 奖励信息选项卡 -->
+        <div id="rewards-tab" class="tab-content">
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-gift"></i> 奖励信息
+                </div>
+                
+                <div class="rewards-grid">
+                    <div class="reward-item">
+                        <p class="label">当前区块奖励率</p>
+                        <p class="value" id="currentReward">0 Mα</p>
+                    </div>
+                    <div class="reward-item">
+                        <p class="label">您的矿机数量</p>
+                        <p class="value" id="userMachines">0台</p>
+                    </div>
+                    <div class="reward-item">
+                        <p class="label">未领取奖励</p>
+                        <p class="value" id="pendingRewards">0 Mα</p>
+                    </div>
+                    <div class="reward-item">
+                        <p class="label">总产出奖励</p>
+                        <p class="value" id="totalRewards">0 Mα</p>
+                    </div>
+                </div>
+                
+                <button id="claimRewards" class="btn btn-success">
+                    <i class="fas fa-gift"></i> 领取全部奖励
+                </button>
+            </div>
+        </div>
+        
+        <!-- 矿机操作选项卡 -->
+        <div id="mining-tab" class="tab-content">
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-server"></i> 矿机操作
+                </div>
+                
+                <div class="info-item">
+                    <p>您的矿机数量</p>
+                    <h3 id="userRigs">0台</h3>
+                </div>
+                
+                <button id="buyInitialMachine" class="btn btn-warning">
+                    <i class="fas fa-shopping-cart"></i> 购买初始矿机 (0.01 BNB)
+                </button>
+                
+                <div class="form-group">
+                    <label for="additionalMachines">购买额外矿机数量:</label>
+                    <input type="number" id="additionalMachines" min="1" value="1" placeholder="输入数量">
+                </div>
+                
+                <button id="buyAdditionalMachine" class="btn">
+                    <i class="fas fa-plus-circle"></i> 购买额外矿机
+                </button>
+                
+                <div class="price-info">
+                    <p>每台矿机价格: <span id="machinePrice">100 Mα</span></p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 矿池概览选项卡 -->
+        <div id="pool-tab" class="tab-content">
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-sitemap"></i> 矿池概览
+                </div>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <p>总矿机数量</p>
+                        <h3 id="totalMachines">0台</h3>
+                    </div>
+                    <div class="info-item">
+                        <p>矿池余额</p>
+                        <h3 id="poolBalance">0 Mα</h3>
+                    </div>
+                    <div class="info-item">
+                        <p>当前区块高度</p>
+                        <h3 id="currentBlockNum">0</h3>
+                    </div>
+                    <div class="info-item">
+                        <p>区块奖励率</p>
+                        <h3 id="poolRewardRate">0 Mα</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="contract-info">
+            <p>奖励代币: Mα</p>
+        </div>
+        
+        <!-- 底部图标导航栏 -->
+        <div class="bottom-bar">
+            <div class="nav-item active" data-tab="token-tab">
+                <i class="fas fa-database"></i>
+                <span>代币</span>
+            </div>
+            <div class="nav-item" data-tab="rewards-tab">
+                <i class="fas fa-gift"></i>
+                <span>奖励</span>
+            </div>
+            <div class="nav-item" data-tab="mining-tab">
+                <i class="fas fa-server"></i>
+                <span>矿机</span>
+            </div>
+            <div class="nav-item" data-tab="pool-tab">
+                <i class="fas fa-network-wired"></i>
+                <span>矿池</span>
+            </div>
+        </div>
+        
+        <div class="loading" id="loading">
+            <div class="loading-content">
+                <div class="spinner"></div>
+                <h3 id="loadingMessage">获取区块链数据中...</h3>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== 应用状态 =====
+        const AppState = {
+            // 初始化应用
+            async init() {
+                // ...（省略初始化代码）
+                this.setupEventListeners();
+            },
+            
+            // 设置事件监听
+            setupEventListeners() {
+                // 连接钱包按钮
+                document.getElementById('connectWallet').addEventListener('click', () => this.connectWallet());
+                
+                // 事件委托用于顶部选项卡
+                document.querySelector('.tabs-container').addEventListener('click', (e) => {
+                    const tab = e.target.closest('.tab');
+                    if (!tab) return;
+                    const tabId = tab.getAttribute('data-tab');
+                    this.switchTab(tabId);
+                });
+                
+                // 事件委托用于底部导航
+                document.querySelector('.bottom-bar').addEventListener('click', (e) => {
+                    const navItem = e.target.closest('.nav-item');
+                    if (!navItem) return;
+                    const tabId = navItem.getAttribute('data-tab');
+                    this.switchTab(tabId);
+                });
+                
+                // 操作按钮
+                document.getElementById('buyInitialMachine').addEventListener('click', () => this.buyInitialMachine());
+                document.getElementById('buyAdditionalMachine').addEventListener('click', () => this.buyAdditionalMachine());
+                document.getElementById('claimRewards').addEventListener('click', () => this.claimRewards());
+            },
+            
+            // 连接钱包
+            async connectWallet() {
+                // ...（连接钱包代码）
+                this.updateUI();
+            },
+            
+            // 更新UI
+            updateUI() {
+                // ...（更新UI代码）
+            },
+            
+            // 切换标签页（修复后的切换逻辑）
+            switchTab(tabId) {
+                console.log('切换至标签页: ', tabId);
+                
+                // 隐藏所有内容面板
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                
+                // 移除所有顶部选项卡活动状态
+                document.querySelectorAll('.tab').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                
+                // 移除所有底部导航活动状态
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                // 添加当前内容面板活动状态
+                const targetContent = document.getElementById(tabId);
+                if (targetContent) {
+                    targetContent.classList.add('active');
+                }
+                
+                // 添加顶部选项卡活动状态
+                const targetTopTab = document.querySelector(`.tab[data-tab="${tabId}"]`);
+                if (targetTopTab) {
+                    targetTopTab.classList.add('active');
+                }
+                
+                // 添加底部导航活动状态
+                const targetNavItem = document.querySelector(`.nav-item[data-tab="${tabId}"]`);
+                if (targetNavItem) {
+                    targetNavItem.classList.add('active');
+                }
+            },
+            
+            // ...（其他函数保持不变）
+            
+            // 显示加载状态
+            showLoading(message) {
+                const loader = document.getElementById('loading');
+                const messageEl = document.getElementById('loadingMessage');
+                
+                messageEl.textContent = message;
+                loader.classList.add('active');
+            },
+            
+            // 隐藏加载状态
+            hideLoading() {
+                document.getElementById('loading').classList.remove('active');
+            }
+        };
+        
+        // 初始化应用
+        window.addEventListener('load', () => {
+            AppState.init();
+            
+            // 初始切换至默认标签页
+            AppState.switchTab('token-tab');
+        });
+    </script>
+</body>
+</html>
+
