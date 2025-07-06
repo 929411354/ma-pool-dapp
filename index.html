@@ -1,1090 +1,664 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mα区块链矿池系统 - BSC主网</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>矿机合约交互工具</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.ethers.io/lib/ethers-5.7.umd.min.js"></script>
+    <script src="https://cdn.ethers.io/lib/ethers-5.6.umd.min.js" type="application/javascript"></script>
     <style>
-        :root {
-            --primary: #4361ee;
-            --secondary: #3a0ca3;
-            --accent: #4cc9f0;
-            --success: #2ecc71;
-            --warning: #f9a826;
-            --text: #f0f4ff;
-            --dark: #1c2431;
-            --darker: #0e121a;
-            --card-bg: rgba(255, 255, 255, 0.08);
-            --card-border: rgba(84, 109, 229, 0.3);
-            --inactive-bg: rgba(30, 30, 50, 0.5);
-        }
-        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-            -webkit-tap-highlight-color: transparent;
+        }
+        
+        :root {
+            --primary-color: #3a7bd5;
+            --dark-color: #1a2a6c;
+            --light-bg: #f8f9fd;
+            --border-color: #e3e8f0;
+            --success-color: #4CAF50;
+            --warning: #FFD700;
+            --error-color: #f44336;
         }
         
         body {
-            background: linear-gradient(135deg, var(--darker), var(--dark));
-            color: var(--text);
+            background-color: #f5f7fa;
             min-height: 100vh;
-            padding: 0;
-            font-size: 14px;
-            overflow-x: hidden;
-        }
-        
-        .container {
-            max-width: 100%;
-            margin: 0 auto;
-            padding-bottom: 80px; /* 为底部导航留出空间 */
-        }
-        
-        .header {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            padding: 25px 20px 15px;
-            border-radius: 0 0 25px 25px;
-            margin-bottom: 20px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 6px 20px rgba(59, 12, 163, 0.4);
-        }
-        
-        .header h1 {
-            font-size: 1.8rem;
-            margin-bottom: 10px;
-            font-weight: 700;
-        }
-        
-        .header p {
-            opacity: 0.9;
-            font-size: 1rem;
-            margin-top: 5px;
-        }
-        
-        .account-status-card {
-            background: rgba(67, 97, 238, 0.2);
-            border-radius: 18px;
-            padding: 20px;
-            margin: 0 15px 20px;
-            text-align: center;
-        }
-        
-        .status-title {
-            color: #fff;
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        
-        .account-address {
-            background: rgba(255, 255, 255, 0.1);
             padding: 15px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            font-family: monospace;
-            font-size: 1.2rem;
-            color: #9ab3ff;
-        }
-        
-        .balance-display {
-            background: linear-gradient(135deg, rgba(58, 12, 163, 0.4), rgba(67, 97, 238, 0.4));
-            padding: 18px;
-            border-radius: 15px;
-            margin-top: 15px;
-        }
-        
-        .balance-label {
-            font-size: 1.1rem;
-            color: #b0b8d8;
-            margin-bottom: 8px;
-        }
-        
-        .balance-amount {
-            font-size: 1.8rem;
-            font-weight: 800;
-            color: #fff;
-        }
-        
-        /* 顶部选项卡样式 - 参考截图1 */
-        .tabs-container {
             display: flex;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
-            padding: 0 15px 15px;
-            margin-bottom: 5px;
-        }
-        
-        .tabs-container::-webkit-scrollbar {
-            display: none;
-        }
-        
-        .tabs {
-            display: flex;
-            gap: 10px;
-            width: 100%;
             justify-content: center;
+            align-items: center;
+            color: #333;
+            line-height: 1.5;
         }
         
-        .tab {
-            padding: 12px 18px;
-            border-radius: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            color: #f0f4ff;
-            text-align: center;
-            transition: all 0.3s;
-            flex-shrink: 0;
-            background: var(--inactive-bg);
-            border: 1px solid rgba(0, 0, 0, 0.3);
-            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5);
-            min-width: 100px;
-            font-size: 0.95rem;
-        }
-        
-        .tab.active {
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            color: white;
-            box-shadow: 0 0 15px rgba(67, 97, 238, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px);
-        }
-        
-        .tab-content {
-            display: none;
-            animation: fadeIn 0.4s ease;
-        }
-        
-        .tab-content.active {
-            display: block;
+        .app-container {
+            width: 100%;
+            max-width: 500px;
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            animation: fadeIn 0.8s ease forwards;
         }
         
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
         
-        .card {
-            background: var(--card-bg);
-            border-radius: 20px;
-            padding: 20px;
-            margin: 0 15px 15px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--card-border);
+        /* 顶部钱包连接区域 */
+        .wallet-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 20px;
+            background: linear-gradient(90deg, var(--dark-color) 0%, var(--primary-color) 100%);
+            color: white;
         }
         
-        .card-title {
-            color: #fff;
-            font-size: 1.2rem;
-            margin-bottom: 20px;
-            font-weight: 700;
+        .wallet-info {
             display: flex;
             align-items: center;
             gap: 12px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid rgba(84, 109, 229, 0.5);
         }
         
-        .card-title i {
-            font-size: 1.4rem;
-            color: var(--primary);
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: var(--error-color);
         }
         
-        .info-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 15px;
+        .status-indicator.connected {
+            background-color: var(--success-color);
         }
         
-        .info-item {
-            background: linear-gradient(135deg, rgba(67, 97, 238, 0.15), rgba(58, 12, 163, 0.15));
-            padding: 15px 10px;
-            border-radius: 12px;
-            text-align: center;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(84, 109, 229, 0.2);
-        }
-        
-        .info-item p {
-            font-size: 0.9rem;
-            color: #b0b8d8;
-            margin-bottom: 8px;
+        .wallet-address {
+            font-size: 16px;
             font-weight: 500;
-        }
-        
-        .info-item h3 {
-            font-size: 1.1rem;
-            color: #fff;
-            font-weight: 700;
-        }
-        
-        .btn {
-            display: block;
-            width: 100%;
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            color: white;
-            border: none;
-            padding: 16px;
-            border-radius: 14px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-top: 20px;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 5px 20px rgba(67, 97, 238, 0.4);
+            font-family: monospace;
             letter-spacing: 0.5px;
         }
         
-        .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(67, 97, 238, 0.6);
-        }
-        
-        .btn-warning {
-            background: linear-gradient(to right, var(--warning), #f48c06);
-        }
-        
-        .btn-success {
-            background: linear-gradient(to right, var(--success), #27ae60);
-        }
-        
-        .form-group {
-            margin-bottom: 18px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #b0b8d8;
-            font-size: 0.98rem;
-        }
-        
-        input[type="number"] {
-            width: 100%;
-            padding: 15px;
-            background: rgba(67, 97, 238, 0.15);
-            border: 2px solid rgba(84, 109, 229, 0.5);
-            border-radius: 12px;
-            font-size: 1.05rem;
-            text-align: center;
+        .wallet-btn {
+            padding: 10px 18px;
+            border-radius: 30px;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            border: none;
+            background-color: rgba(255, 255, 255, 0.15);
             color: white;
-            font-weight: 500;
-            transition: all 0.3s;
         }
         
-        input[type="number"]:focus {
-            border-color: var(--primary);
-            outline: none;
-            box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.3);
+        .wallet-btn:hover {
+            background-color: rgba(255, 255, 255, 0.25);
         }
         
-        .price-info {
+        /* 功能区域 - 三合一设计 */
+        .function-area {
+            padding: 20px;
+            background: white;
+        }
+        
+        .function-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .card {
+            border-radius: 14px;
+            background: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            padding: 18px 15px;
             text-align: center;
-            padding: 12px;
-            font-size: 1.05rem;
-            color: #b0b8d8;
-            font-weight: 500;
-            background: rgba(67, 97, 238, 0.05);
-            border-radius: 10px;
-            margin: 12px 0;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid #e0e7ff;
         }
         
-        .price-info span {
-            font-weight: 700;
-            color: #fff;
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(58, 123, 213, 0.15);
+        }
+        
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, #00a0d2 100%);
+            border-radius: 50%;
+            margin: 0 auto 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+        
+        .card-title {
+            font-weight: 600;
+            font-size: 16px;
+            color: var(--dark-color);
+            margin-bottom: 8px;
+        }
+        
+        .card-desc {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.4;
+        }
+        
+        .card-content {
+            display: none;
+            margin-top: 15px;
+            background-color: var(--light-bg);
+            padding: 15px;
+            border-radius: 12px;
+        }
+        
+        .card.active {
+            box-shadow: 0 5px 15px rgba(58, 123, 213, 0.2);
+            border-color: var(--primary-color);
+        }
+        
+        .card.active .card-content {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        .input-label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 14px;
+            color: #4a5568;
+            font-weight: 500;
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 15px;
+        }
+        
+        .cost-info {
+            background-color: #e6f7ff;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 15px;
+            color: #1890ff;
+            font-weight: 500;
+        }
+        
+        .execute-btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(90deg, var(--primary-color) 0%, #00a0d2 100%);
+            color: white;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .execute-btn:hover {
+            box-shadow: 0 4px 12px rgba(58, 123, 213, 0.3);
+        }
+        
+        .execute-btn.disabled {
+            background: #cccccc;
+            cursor: not-all;
+            box-shadow: none;
+        }
+        
+        /* 交易状态区域 */
+        .status-container {
+            background-color: white;
+            border-radius: 12px;
+            padding: 18px 20px;
+            margin: 0 20px 25px;
+            border: 1px solid #e0e7ff;
+        }
+        
+        .status-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+            color: var(--dark-color);
+            font-weight: 600;
+            font-size: 18px;
+        }
+        
+        .status-icon {
+            color: var(--primary-color);
+            font-size: 20px;
+        }
+        
+        .status-content {
+            min-height: 80px;
+            background-color: #f8fbff;
+            border-radius: 8px;
+            padding: 18px 15px;
+            font-size: 15px;
+            white-space: pre-wrap;
+            line-height: 1.6;
+            border: 1px solid #e0f0ff;
+            color: var(--primary-color);
+            max-height: 180px;
+            overflow-y: auto;
+        }
+        
+        /* 重要提示 */
+        .alert-warning {
+            background: #fff9e6;
+            padding: 14px 20px;
+            font-size: 14px;
+            color: #5d4037;
+            border-radius: 0 0 16px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .alert-icon {
+            font-size: 20px;
+            color: var(--warning);
         }
         
         .loading {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            backdrop-filter: blur(5px);
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s;
-        }
-        
-        .loading.active {
-            opacity: 1;
-            pointer-events: all;
-        }
-        
-        .loading-content {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
-            text-align: center;
-        }
-        
-        .spinner {
-            border: 5px solid rgba(255, 255, 255, 0.3);
-            border-top: 5px solid var(--primary);
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
             border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
         }
         
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            to { transform: rotate(360deg); }
         }
         
-        .contract-info {
-            text-align: center;
-            font-size: 0.85rem;
-            color: #b0b8d8;
-            padding: 15px 0;
-            margin-top: 10px;
-            opacity: 0.8;
-        }
-        
-        /* 底部导航样式 - 参考截图2 */
-        .bottom-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(30, 33, 57, 0.95);
-            backdrop-filter: blur(10px);
-            display: flex;
-            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.4);
-            height: 80px;
-            z-index: 100;
-            padding: 0 10px;
-            border-top: 1px solid rgba(84, 109, 229, 0.3);
-        }
-        
-        .nav-item {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 8px 0;
-            color: #b0b8d8;
-            font-size: 0.85rem;
-            transition: all 0.3s ease;
-        }
-        
-        .nav-item.active {
-            color: var(--accent);
-        }
-        
-        .nav-item i {
-            display: block;
-            font-size: 24px;
-            margin-bottom: 5px;
-            transition: all 0.3s;
-        }
-        
-        .nav-item.active i {
-            transform: scale(1.15);
-            color: var(--accent);
-            filter: drop-shadow(0 0 6px rgba(76, 201, 240, 0.8));
-        }
-        
-        .rewards-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-        
-        .reward-item {
-            background: linear-gradient(135deg, rgba(67, 97, 238, 0.15), rgba(58, 12, 163, 0.15));
-            padding: 15px;
-            border-radius: 12px;
-            text-align: center;
-        }
-        
-        .reward-item .label {
-            font-size: 0.95rem;
-            color: #b0b8d8;
-            margin-bottom: 8px;
-        }
-        
-        .reward-item .value {
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: #fff;
-        }
-        
-        @media (max-width: 360px) {
-            .info-grid {
+        /* 响应式设计 */
+        @media (max-width: 500px) {
+            .function-cards {
                 grid-template-columns: 1fr;
             }
             
-            .tab {
-                padding: 8px 10px;
-                font-size: 0.85rem;
-                min-width: 85px;
+            .wallet-header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
             }
             
-            .header h1 {
-                font-size: 1.5rem;
-            }
-            
-            .nav-item {
-                font-size: 0.75rem;
+            .wallet-btn {
+                width: 100%;
+                justify-content: center;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1><i class="fas fa-cube"></i> Mα区块链矿池系统</h1>
-            <p>基于BSC智能合约的挖矿平台</p>
-            <p>区块高度: <span id="currentBlock">0</span></p>
-        </div>
-        
-        <div class="account-status-card">
-            <div class="status-title">
-                <i class="fas fa-link"></i> 账户状态
+    <div class="app-container">
+        <!-- 顶部钱包连接区域 -->
+        <div class="wallet-header">
+            <div class="wallet-info">
+                <div class="status-indicator" id="statusIndicator"></div>
+                <div id="connectionStatus">未连接钱包</div>
             </div>
-            <div class="account-address" id="walletAddress">未连接钱包</div>
-            <div class="balance-display">
-                <div class="balance-label">Mα余额</div>
-                <div class="balance-amount" id="tokenBalance">0</div>
-            </div>
-            <button id="connectWallet" class="btn">
-                <i class="fas fa-wallet"></i> 连接钱包
+            <button class="wallet-btn" id="connectWallet">
+                <i class="fas fa-plug"></i> 连接钱包
             </button>
         </div>
         
-        <!-- 顶部选项卡导航 -->
-        <div class="tabs-container">
-            <div class="tabs">
-                <div class="tab active" data-tab="token-tab">代币信息</div>
-                <div class="tab" data-tab="rewards-tab">奖励信息</div>
-                <div class="tab" data-tab="mining-tab">矿机操作</div>
-                <div class="tab" data-tab="pool-tab">矿池概览</div>
-            </div>
-        </div>
-        
-        <!-- 代币信息选项卡 -->
-        <div id="token-tab" class="tab-content active">
-            <div class="card">
-                <div class="card-title">
-                    <i class="fas fa-coins"></i> 代币信息
-                </div>
-                <div class="info-grid">
-                    <div class="info-item">
-                        <p>代币名称</p>
-                        <h3 id="tokenName">Mα</h3>
+        <!-- 功能区域 - 三合一设计 -->
+        <div class="function-area">
+            <div class="function-cards">
+                <!-- 购买初始矿机 -->
+                <div class="card" id="initialMachineCard">
+                    <div class="card-icon">
+                        <i class="fas fa-play"></i>
                     </div>
-                    <div class="info-item">
-                        <p>代币总量</p>
-                        <h3 id="totalSupply">3,000,000</h3>
-                    </div>
-                    <div class="info-item">
-                        <p>您的代币余额</p>
-                        <h3 id="userTokenBalance">0</h3>
-                    </div>
-                    <div class="info-item">
-                        <p>授权额度</p>
-                        <h3 id="approvedBalance">0</h3>
-                    </div>
-                </div>
-                <button id="approveToken" class="btn btn-warning">
-                    <i class="fas fa-key"></i> 授权使用代币
-                </button>
-            </div>
-        </div>
-        
-        <!-- 奖励信息选项卡 -->
-        <div id="rewards-tab" class="tab-content">
-            <div class="card">
-                <div class="card-title">
-                    <i class="fas fa-gift"></i> 奖励信息
-                </div>
-                
-                <div class="rewards-grid">
-                    <div class="reward-item">
-                        <p class="label">当前区块奖励率</p>
-                        <p class="value" id="currentReward">0 Mα</p>
-                    </div>
-                    <div class="reward-item">
-                        <p class="label">您的矿机数量</p>
-                        <p class="value" id="userMachines">0台</p>
-                    </div>
-                    <div class="reward-item">
-                        <p class="label">未领取奖励</p>
-                        <p class="value" id="pendingRewards">0 Mα</p>
-                    </div>
-                    <div class="reward-item">
-                        <p class="label">总产出奖励</p>
-                        <p class="value" id="totalRewards">0 Mα</p>
+                    <div class="card-title">购买初始矿机</div>
+                    <div class="card-desc">支付0.01 BNB</div>
+                    <div class="card-content">
+                        <div class="cost-info">
+                            首次购买矿机费用
+                        </div>
+                        <button class="execute-btn" id="buyInitialBtn">
+                            <i class="fas fa-play-circle"></i> 开始使用
+                        </button>
                     </div>
                 </div>
                 
-                <button id="claimRewards" class="btn btn-success" disabled>
-                    <i class="fas fa-gift"></i> 领取全部奖励
-                </button>
-            </div>
-        </div>
-        
-        <!-- 矿机操作选项卡 -->
-        <div id="mining-tab" class="tab-content">
-            <div class="card">
-                <div class="card-title">
-                    <i class="fas fa-server"></i> 矿机操作
-                </div>
-                
-                <div class="info-item">
-                    <p>您的矿机数量</p>
-                    <h3 id="userRigs">0台</h3>
-                </div>
-                
-                <button id="buyInitialMachine" class="btn btn-warning" disabled>
-                    <i class="fas fa-shopping-cart"></i> 购买初始矿机 (0.01 BNB)
-                </button>
-                
-                <div class="form-group">
-                    <label for="additionalMachines">购买额外矿机数量:</label>
-                    <input type="number" id="additionalMachines" min="1" value="1" placeholder="输入数量">
-                </div>
-                
-                <button id="buyAdditionalMachine" class="btn" disabled>
-                    <i class="fas fa-plus-circle"></i> 购买额外矿机
-                </button>
-                
-                <div class="price-info">
-                    <p>每台矿机价格: <span id="machinePrice">100 Mα</span></p>
-                </div>
-            </div>
-        </div>
-        
-        <!-- 矿池概览选项卡 -->
-        <div id="pool-tab" class="tab-content">
-            <div class="card">
-                <div class="card-title">
-                    <i class="fas fa-sitemap"></i> 矿池概览
-                </div>
-                <div class="info-grid">
-                    <div class="info-item">
-                        <p>总矿机数量</p>
-                        <h3 id="totalMachines">0台</h3>
+                <!-- 购买额外矿机 -->
+                <div class="card" id="additionalMachineCard">
+                    <div class="card-icon">
+                        <i class="fas fa-plus-circle"></i>
                     </div>
-                    <div class="info-item">
-                        <p>矿池余额</p>
-                        <h3 id="poolBalance">0 Mα</h3>
+                    <div class="card-title">购买额外矿机</div>
+                    <div class="card-desc">100 代币/台</div>
+                    <div class="card-content">
+                        <div class="input-group">
+                            <label class="input-label" for="machineCount">矿机数量</label>
+                            <input type="number" id="machineCount" class="input-field" value="1" min="1">
+                        </div>
+                        <button class="execute-btn" id="buyAdditionalBtn">
+                            <i class="fas fa-cart-plus"></i> 购买矿机
+                        </button>
                     </div>
-                    <div class="info-item">
-                        <p>当前区块高度</p>
-                        <h3 id="currentBlockNum">0</h3>
+                </div>
+                
+                <!-- 领取奖励 -->
+                <div class="card" id="rewardsCard">
+                    <div class="card-icon">
+                        <i class="fas fa-hand-holding-usd"></i>
                     </div>
-                    <div class="info-item">
-                        <p>区块奖励率</p>
-                        <h3 id="poolRewardRate">0 Mα</h3>
+                    <div class="card-title">领取奖励</div>
+                    <div class="card-desc">获取您的收益</div>
+                    <div class="card-content">
+                        <div class="input-group">
+                            <label class="input-label" for="estimatedReward">估算奖励</label>
+                            <input type="text" id="estimatedReward" class="input-field" placeholder="连接钱包后自动计算" disabled>
+                        </div>
+                        <button class="execute-btn" id="claimRewardsBtn">
+                            <i class="fas fa-download"></i> 领取奖励
+                        </button>
                     </div>
                 </div>
             </div>
-        </div>
-        
-        <div class="contract-info">
-            <p>奖励代币: Mα | 合约地址: <span id="contractAddress">0x1234567890abcdef</span></p>
-        </div>
-        
-        <!-- 底部图标导航栏 -->
-        <div class="bottom-bar">
-            <div class="nav-item active" data-tab="token-tab">
-                <i class="fas fa-database"></i>
-                <span>代币</span>
-            </div>
-            <div class="nav-item" data-tab="rewards-tab">
-                <i class="fas fa-gift"></i>
-                <span>奖励</span>
-            </div>
-            <div class="nav-item" data-tab="mining-tab">
-                <i class="fas fa-server"></i>
-                <span>矿机</span>
-            </div>
-            <div class="nav-item" data-tab="pool-tab">
-                <i class="fas fa-network-wired"></i>
-                <span>矿池</span>
+            
+            <!-- 交易状态区域 -->
+            <div class="status-container">
+                <div class="status-header">
+                    <i class="fas fa-exchange-alt status-icon"></i>
+                    <span>交易状态</span>
+                </div>
+                <div class="status-content" id="statusMessage">
+准备连接到BSC主网...
+                </div>
             </div>
         </div>
         
-        <div class="loading" id="loading">
-            <div class="loading-content">
-                <div class="spinner"></div>
-                <h3 id="loadingMessage">获取区块链数据中...</h3>
-            </div>
+        <!-- 重要提示 -->
+        <div class="alert-warning">
+            <i class="fas fa-exclamation-circle alert-icon"></i>
+            注意: 所有交易需要支付BNB作为Gas费用，请确保钱包有足够余额
         </div>
-        
-        <!-- 操作结果提示 -->
-        <div id="toast" class="toast">操作成功</div>
     </div>
 
     <script>
-        // ===== 应用状态 =====
-        const AppState = {
-            provider: null,
-            signer: null,
-            walletAddress: null,
-            isConnected: false,
-            tokenContract: null,
-            miningContract: null,
+        // 全局变量
+        let provider;
+        let signer;
+        let contract;
+        let userAddress;
+        
+        // DOM元素
+        const connectWalletBtn = document.getElementById('connectWallet');
+        const buyInitialBtn = document.getElementById('buyInitialBtn');
+        const buyAdditionalBtn = document.getElementById('buyAdditionalBtn');
+        const claimRewardsBtn = document.getElementById('claimRewardsBtn');
+        const statusMessage = document.getElementById('statusMessage');
+        const statusIndicator = document.getElementById('statusIndicator');
+        const connectionStatus = document.getElementById('connectionStatus');
+        const estimatedReward = document.getElementById('estimatedReward');
+        
+        // 卡片元素
+        const initialMachineCard = document.getElementById('initialMachineCard');
+        const additionalMachineCard = document.getElementById('additionalMachineCard');
+        const rewardsCard = document.getElementById('rewardsCard');
+        
+        // 初始化
+        function init() {
+            // 事件监听器
+            connectWalletBtn.addEventListener('click', connectWallet);
+            buyInitialBtn.addEventListener('click', buyInitialMachine);
+            buyAdditionalBtn.addEventListener('click', buyAdditionalMachine);
+            claimRewardsBtn.addEventListener('click', claimRewards);
             
-            // 初始化应用
-            async init() {
-                // 初始化Web3 provider
-                this.provider = new ethers.providers.Web3Provider(window.ethereum);
-                
-                // 设置BSC网络信息 (实际应用中应使用正确的合约地址)
-                this.setupContractAddresses();
-                
-                // 监听网络变化
-                window.ethereum.on('chainChanged', () => window.location.reload());
-                window.ethereum.on('accountsChanged', () => this.updateUI());
-                
-                // 初始化区块高度更新
-                this.updateBlockHeight();
-                
-                // 设置事件监听
-                this.setupEventListeners();
-                
-                // 检查钱包连接状态
-                this.checkWalletConnection();
-            },
+            // 卡片点击事件
+            initialMachineCard.addEventListener('click', () => toggleCard(initialMachineCard));
+            additionalMachineCard.addEventListener('click', () => toggleCard(additionalMachineCard));
+            rewardsCard.addEventListener('click', () => toggleCard(rewardsCard));
             
-            // 设置合约地址
-            setupContractAddresses() {
-                // 注意: 这些是示例地址，实际应用中需要替换为真实的合约地址
-                const tokenAddress = '0xTokenContractAddress'; // ERC20代币合约地址
-                const miningAddress = '0xMiningContractAddress'; // 挖矿合约地址
-                
-                // 代币合约ABI (实际应用中需要正确的ABI)
-                const tokenABI = [
-                    // ERC20基本接口
-                    "function balanceOf(address account) view returns (uint256)",
-                    "function totalSupply() view returns (uint256)",
-                    "function approve(address spender, uint256 amount) returns (bool)"
-                ];
-                
-                // 挖矿合约ABI (实际应用中需要正确的ABI)
-                const miningABI = [
-                    "function userMachines(address user) view returns (uint256)",
-                    "function pendingRewards(address user) view returns (uint256)",
-                    "function totalRewardsEarned(address user) view returns (uint256)",
-                    "function buyInitialMachine() payable returns (bool)",
-                    "function buyAdditionalMachines(uint256 count) returns (bool)",
-                    "function claimRewards() returns (bool)",
-                    "function currentRewardRate() view returns (uint256)",
-                    "function totalMachines() view returns (uint256)",
-                    "function poolBalance() view returns (uint256)",
-                    "function machinePrice() view returns (uint256)"
-                ];
-                
-                // 创建合约实例
-                this.tokenContract = new ethers.Contract(tokenAddress, tokenABI, this.provider);
-                this.miningContract = new ethers.Contract(miningAddress, miningABI, this.provider);
-            },
-            
-            // 设置事件监听
-            setupEventListeners() {
-                // 连接钱包按钮
-                document.getElementById('connectWallet').addEventListener('click', async () => this.connectWallet());
-                
-                // 授权代币按钮
-                document.getElementById('approveToken').addEventListener('click', async () => this.approveToken());
-                
-                // 事件委托用于顶部选项卡
-                document.querySelector('.tabs-container').addEventListener('click', (e) => {
-                    const tab = e.target.closest('.tab');
-                    if (!tab) return;
-                    const tabId = tab.getAttribute('data-tab');
-                    this.switchTab(tabId);
-                });
-                
-                // 事件委托用于底部导航
-                document.querySelector('.bottom-bar').addEventListener('click', (e) => {
-                    const navItem = e.target.closest('.nav-item');
-                    if (!navItem) return;
-                    const tabId = navItem.getAttribute('data-tab');
-                    this.switchTab(tabId);
-                });
-                
-                // 操作按钮
-                document.getElementById('buyInitialMachine').addEventListener('click', async () => this.buyInitialMachine());
-                document.getElementById('buyAdditionalMachine').addEventListener('click', async () => this.buyAdditionalMachine());
-                document.getElementById('claimRewards').addEventListener('click', async () => this.claimRewards());
-            },
-            
-            // 检查钱包连接状态
-            async checkWalletConnection() {
-                try {
-                    if (window.ethereum) {
-                        const accounts = await window.ethereum.request({ method: 'eth_accounts' });
-                        if (accounts.length > 0) {
-                            this.walletAddress = accounts[0];
-                            this.isConnected = true;
-                            this.signer = this.provider.getSigner();
-                            this.tokenContract = this.tokenContract.connect(this.signer);
-                            this.miningContract = this.miningContract.connect(this.signer);
-                            this.updateUI();
-                        }
-                    }
-                } catch (error) {
-                    console.error('检查钱包连接失败:', error);
-                }
-            },
-            
-            // 连接钱包
-            async connectWallet() {
-                if (this.isConnected) return;
-                
-                try {
-                    this.showLoading('正在连接钱包...');
-                    const accounts = await window.ethereum.request({ 
-                        method: 'eth_requestAccounts' 
-                    });
-                    
-                    if (accounts.length > 0) {
-                        this.walletAddress = accounts[0];
-                        this.isConnected = true;
-                        this.signer = this.provider.getSigner();
-                        this.tokenContract = this.tokenContract.connect(this.signer);
-                        this.miningContract = this.miningContract.connect(this.signer);
-                        this.showToast('钱包连接成功');
-                        this.updateUI();
-                    }
-                } catch (error) {
-                    console.error('连接钱包失败:', error);
-                    this.showToast('连接钱包失败: ' + error.message);
-                } finally {
-                    this.hideLoading();
-                }
-            },
-            
-            // 授权代币
-            async approveToken() {
-                if (!this.isConnected) {
-                    this.showToast('请先连接钱包');
-                    return;
-                }
-                
-                try {
-                    this.showLoading('正在授权代币...');
-                    const machinePrice = await this.miningContract.machinePrice();
-                    const approvalTx = await this.tokenContract.approve(
-                        this.miningContract.address, 
-                        machinePrice.mul(100) // 授权足够购买100台矿机的数量
-                    );
-                    
-                    await approvalTx.wait();
-                    this.showToast('代币授权成功');
-                    this.updateUI();
-                } catch (error) {
-                    console.error('代币授权失败:', error);
-                    this.showToast('代币授权失败: ' + error.message);
-                } finally {
-                    this.hideLoading();
-                }
-            },
-            
-            // 更新UI
-            async updateUI() {
-                if (!this.isConnected) {
-                    document.getElementById('walletAddress').textContent = '未连接钱包';
-                    document.getElementById('tokenBalance').textContent = '0';
-                    document.getElementById('userTokenBalance').textContent = '0';
-                    document.getElementById('approvedBalance').textContent = '0';
-                    document.getElementById('userMachines').textContent = '0台';
-                    document.getElementById('pendingRewards').textContent = '0 Mα';
-                    document.getElementById('totalRewards').textContent = '0 Mα';
-                    document.getElementById('userRigs').textContent = '0台';
-                    document.getElementById('totalMachines').textContent = '0台';
-                    document.getElementById('poolBalance').textContent = '0 Mα';
-                    document.getElementById('currentBlockNum').textContent = '0';
-                    document.getElementById('poolRewardRate').textContent = '0 Mα';
-                    
-                    // 禁用所有需要钱包连接的按钮
-                    document.getElementById('connectWallet').disabled = false;
-                    document.getElementById('approveToken').disabled = true;
-                    document.getElementById('buyInitialMachine').disabled = true;
-                    document.getElementById('buyAdditionalMachine').disabled = true;
-                    document.getElementById('claimRewards').disabled = true;
-                    
-                    return;
-                }
-                
-                // 显示钱包地址
-                document.getElementById('walletAddress').textContent = this.walletAddress;
-                
-                try {
-                    // 更新代币信息
-                    const tokenBalance = await this.tokenContract.balanceOf(this.walletAddress);
-                    const totalSupply = await this.tokenContract.totalSupply();
-                    const approvedBalance = await this.tokenContract.allowance(
-                        this.walletAddress, 
-                        this.miningContract.address
-                    );
-                    
-                    // 更新挖矿信息
-                    const userMachines = await this.miningContract.userMachines(this.walletAddress);
-                    const pendingRewards = await this.miningContract.pendingRewards(this.walletAddress);
-                    const totalRewards = await this.miningContract.totalRewardsEarned(this.walletAddress);
-                    const currentReward = await this.miningContract.currentRewardRate();
-                    const totalMachines = await this.miningContract.totalMachines();
-                    const poolBalance = await this.miningContract.poolBalance();
-                    const machinePrice = await this.miningContract.machinePrice();
-                    
-                    // 格式化显示数据
-                    const formattedTokenBalance = this.formatNumber(tokenBalance);
-                    const formattedTotalSupply = this.formatNumber(totalSupply);
-                    const formattedApprovedBalance = this.formatNumber(approvedBalance);
-                    const formattedUserMachines = userMachines.toString();
-                    const formattedPendingRewards = this.formatNumber(pendingRewards) + ' Mα';
-                    const formattedTotalRewards = this.formatNumber(totalRewards) + ' Mα';
-                    const formattedCurrentReward = this.formatNumber(currentReward) + ' Mα';
-                    const formattedTotalMachines = totalMachines.toString() + '台';
-                    const formattedPoolBalance = this.formatNumber(poolBalance) + ' Mα';
-                    const formattedMachinePrice = this.formatNumber(machinePrice) + ' Mα';
-                    
-                    // 更新UI元素
-                    document.getElementById('tokenBalance').textContent = formattedTokenBalance;
-                    document.getElementById('totalSupply').textContent = formattedTotalSupply;
-                    document.getElementById('userTokenBalance').textContent = formattedTokenBalance;
-                    document.getElementById('approvedBalance').textContent = formattedApprovedBalance;
-                    document.getElementById('userMachines').textContent = formattedUserMachines + '台';
-                    document.getElementById('pendingRewards').textContent = formattedPendingRewards;
-                    document.getElementById('totalRewards').textContent = formattedTotalRewards;
-                    document.getElementById('userRigs').textContent = formattedUserMachines + '台';
-                    document.getElementById('totalMachines').textContent = formattedTotalMachines;
-                    document.getElementById('poolBalance').textContent = formattedPoolBalance;
-                    document.getElementById('currentBlockNum').textContent = await this.getBlockNumber();
-                    document.getElementById('poolRewardRate').textContent = formattedCurrentReward;
-                    document.getElementById('machinePrice').textContent = formattedMachinePrice;
-                    
-                    // 启用按钮
-                    document.getElementById('approveToken').disabled = formattedApprovedBalance < machinePrice;
-                    document.getElementById('buyInitialMachine').disabled = false;
-                    document.getElementById('buyAdditionalMachine').disabled = formattedApprovedBalance < machinePrice;
-                    document.getElementById('claimRewards').disabled = pendingRewards.eq(0);
-                    
-                } catch (error) {
-                    console.error('更新UI失败:', error);
-                    this.showToast('更新数据失败: ' + error.message);
-                }
-            },
-            
-            // 切换标签页
-            switchTab(tabId) {
-                console.log('切换至标签页: ', tabId);
-                
-                // 隐藏所有内容面板
-                document.querySelectorAll('.tab-content').forEach(content => {
-                    content.classList.remove('active');
-                });
-                
-                // 移除所有顶部选项卡活动状态
-                document.querySelectorAll('.tab').forEach(tab => {
-                    tab.classList.remove('active');
-                });
-                
-                // 移除所有底部导航活动状态
-                document.querySelectorAll('.nav-item').forEach(item => {
-                    item.classList.remove('active');
-                });
-                
-                // 添加当前内容面板活动状态
-                const targetContent = document.getElementById(tabId);
-                if (targetContent) {
-                    targetContent.classList.add('active');
-                }
-                
-                // 添加顶部选项卡活动状态
-                const targetTopTab = document.querySelector(`.tab[data-tab="${tabId}"]`);
-                if (targetTopTab) {
-                    targetTopTab.classList.add('active');
-                }
-                
-                // 添加底部导航活动状态
-                const targetNavItem = document.querySelector(`.nav-item[data-tab="${tabId}"]`);
-                if (targetNavItem) {
-                    targetNavItem.classList.add('active');
-                }
-            },
-            
-            // 购买初始矿机
-            async buyInitialMachine() {
-                if (!this.isConnected) {
-                    this.showToast('请先连接钱包');
-                    return;
-                }
-                
-                try {
-                    this.showLoading('正在购买初始矿机...');
-                    const tx = await this.miningContract.buyInitialMachine({
-                        value: ethers.utils.parseEther('0.01') // 0.01 BNB
-                    });
-                    
-                    await tx.wait();
-                    this.showToast('初始矿机购买成功');
-                    this.updateUI();
-                } catch (error) {
-                    console.error('购买初始矿机失败:', error);
-                    this.showToast('购买初始矿机失败: ' + error.message);
-                } finally {
-                    this.hideLoading();
-                }
-            },
-            
-            // 购买额外矿机
-            async buyAdditionalMachine() {
-                if (!this.isConnected) {
-                    this.showToast('请先连接钱包');
-                    return;
-                }
-                
-                const count = parseInt(document.getElementById('additionalMachines').value);
-                if (count <= 0) {
-                    this.showToast('请输入有效的矿机数量');
-                    return;
-                }
-                
-                try {
-                    this.showLoading(`正在购买 ${count} 台矿机...`);
-                    const tx = await this.miningContract.buyAdditionalMachines(count);
-                    
-                    await tx.wait();
-                    this.showToast(`${count} 台矿机购买成功`);
-                    this.updateUI();
-                } catch (error) {
-                    console.error('购买额外矿机失败:', error);
-                    this.showToast('购买额外矿机失败: ' + error.message);
-                } finally {
-                    this.hideLoading();
-                }
-            },
-            
-            // 领取奖励
-            async claimRewards() {
-                if (!this.isConnected) {
-                    this.showToast('请先连接钱包');
-                    return;
-                }
-                
-                try {
-                    this.showLoading('正在领取奖励...');
-                    const tx = await this.miningContract.claimRewards();
-                    
-                    await tx.wait();
-                    this.showToast('奖励领取成功');
-                    this.updateUI();
-                } catch (error) {
-                    console.error('领取奖励失败:', error);
-                    this.showToast('领取奖励失败: ' + error.message);
-                } finally {
-                    this.hideLoading();
-                }
-            },
-            
-            // 获取当前区块高度
-            async getBlockNumber() {
-                const block = await this.provider.getBlock('latest');
-                return block ? block.number : 0;
-            },
-            
-            // 定期更新区块高度
-            updateBlockHeight() {
-                setInterval(async () => {
-                    const blockNumber = await this.getBlockNumber();
-                    document.getElementById('currentBlock').textContent = blockNumber;
-                }, 5000); // 每5秒更新一次
-            },
-            
-            // 显示加载状态
-            showLoading(message) {
-                const loader = document.getElementById('loading');
-                const messageEl = document.getElementById('loadingMessage');
-                
-                messageEl.textContent = message;
-                loader.classList.add('active');
-            },
-            
-            // 隐藏加载状态
-            hideLoading() {
-                document.getElementById('loading').classList.remove('active');
-            },
-            
-            // 显示操作提示
-            showToast(message) {
-                const toast = document.getElementById('toast');
-                toast.textContent = message;
-                toast.classList.add('show');
-                
-                setTimeout(() => {
-                    toast.classList.remove('show');
-                }, 3000);
-            },
-            
-            // 格式化数字
-            formatNumber(amount) {
-                if (typeof amount === 'string' || amount instanceof ethers.BigNumber) {
-                    amount = ethers.BigNumber.from(amount);
-                    // 假设代币有18位小数
-                    return (amount.div(10**18)).toString();
-                }
-                return amount.toString();
+            // 禁用交易按钮直到钱包连接
+            toggleTransactionButtons(false);
+        }
+        
+        // 连接钱包
+        async function connectWallet() {
+            if (!window.ethereum) {
+                updateStatus('请安装MetaMask或其他Web3钱包', false);
+                return;
             }
-        };
-        
-        // 初始化应用
-        window.addEventListener('load', () => {
-            AppState.init();
             
-            // 初始切换至默认标签页
-            AppState.switchTab('token-tab');
-        });
-    </script>
-    
-    <style>
-        .toast {
-            position: fixed;
-            bottom: 100px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: rgba(76, 201, 240, 0.9);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 20px;
-            font-weight: 500;
-            z-index: 9998;
-            opacity: 0;
-            transition: opacity 0.3s ease;
+            try {
+                // 更新按钮状态
+                connectWalletBtn.innerHTML = '<div class="loading"></div> 连接中...';
+                connectWalletBtn.disabled = true;
+                
+                // 更新状态
+                updateStatus('正在连接钱包...');
+                
+                // 请求账户访问
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                userAddress = accounts[0];
+                
+                // 更新状态
+                updateStatus('钱包已连接，正在初始化合约...');
+                
+                // 设置提供者和签名者
+                provider = new ethers.providers.Web3Provider(window.ethereum);
+                signer = provider.getSigner();
+                
+                // 更新UI状态
+                setupAfterConnection();
+                
+                // 获取估算奖励
+                estimateRewards();
+                
+                // 自动打开第一个卡片
+                toggleCard(initialMachineCard);
+                
+            } catch (error) {
+                updateStatus('钱包连接失败: ' + error.message, false);
+                connectWalletBtn.innerHTML = '<i class="fas fa-plug"></i> 连接钱包';
+                connectWalletBtn.disabled = false;
+            }
         }
         
-        .toast.show {
-            opacity: 1;
+        // 连接后的设置
+        function setupAfterConnection() {
+            if (!userAddress) return;
+            
+            // 更新连接状态
+            statusIndicator.classList.add('connected');
+            connectionStatus.textContent = '已连接';
+            
+            // 更改连接按钮为断开连接
+            connectWalletBtn.innerHTML = '<i class="fas fa-plug"></i> 断开连接';
+            connectWalletBtn.disabled = false;
+            connectWalletBtn.onclick = disconnectWallet;
+            
+            // 启用所有交易按钮
+            toggleTransactionButtons(true);
+            
+            // 更新状态
+            updateStatus('钱包连接成功！您现在可以调用合约功能。');
         }
-    </style>
+        
+        // 断开连接
+        function disconnectWallet() {
+            userAddress = null;
+            provider = null;
+            signer = null;
+            contract = null;
+            
+            // 更新UI状态
+            statusIndicator.classList.remove('connected');
+            connectionStatus.textContent = '未连接钱包';
+            
+            // 重置连接按钮
+            connectWalletBtn.innerHTML = '<i class="fas fa-plug"></i> 连接钱包';
+            connectWalletBtn.onclick = connectWallet;
+            
+            // 禁用所有交易按钮
+            toggleTransactionButtons(false);
+            
+            // 重置估算奖励
+            estimatedReward.value = '';
+            estimatedReward.placeholder = '连接钱包后自动计算';
+            
+            // 关闭所有卡片
+            closeAllCards();
+            
+            updateStatus('钱包连接已断开。请连接钱包以继续使用矿机管理功能。');
+        }
+        
+        // 切换卡片状态
+        function toggleCard(card) {
+            // 如果点击已激活的卡片，则关闭它
+            if (card.classList.contains('active')) {
+                card.classList.remove('active');
+                return;
+            }
+            
+            // 关闭所有卡片
+            closeAllCards();
+            
+            // 激活点击的卡片
+            card.classList.add('active');
+        }
+        
+        // 关闭所有卡片
+        function closeAllCards() {
+            initialMachineCard.classList.remove('active');
+            additionalMachineCard.classList.remove('active');
+            rewardsCard.classList.remove('active');
+        }
+        
+        // 购买初始矿机（模拟）
+        function buyInitialMachine() {
+            updateStatus('正在处理购买初始矿机交易...');
+            
+            // 模拟处理过程
+            setTimeout(() => {
+                updateStatus('交易成功！矿机购买完成。');
+                
+                // 更新按钮状态
+                buyInitialBtn.innerHTML = '<i class="fas fa-check"></i> 成功';
+                setTimeout(() => {
+                    buyInitialBtn.innerHTML = '<i class="fas fa-play-circle"></i> 开始使用';
+                }, 2000);
+            }, 1500);
+        }
+        
+        // 购买额外矿机（模拟）
+        function buyAdditionalMachine() {
+            const machineCount = document.getElementById('machineCount').value;
+            if (!machineCount || machineCount < 1) {
+                updateStatus('请输入有效的矿机数量', false);
+                return;
+            }
+            
+            updateStatus(`正在处理购买 ${machineCount} 台额外矿机交易...`);
+            
+            // 模拟处理过程
+            setTimeout(() => {
+                updateStatus(`交易成功！已购买 ${machineCount} 台矿机。`);
+                
+                // 更新按钮状态
+                buyAdditionalBtn.innerHTML = '<i class="fas fa-check"></i> 成功';
+                setTimeout(() => {
+                    buyAdditionalBtn.innerHTML = '<i class="fas fa-cart-plus"></i> 购买矿机';
+                }, 2000);
+            }, 1500);
+        }
+        
+        // 领取奖励（模拟）
+        function claimRewards() {
+            updateStatus('正在处理奖励领取交易...');
+            
+            // 模拟处理过程
+            setTimeout(() => {
+                updateStatus('交易成功！奖励已领取。');
+                
+                // 更新按钮状态
+                claimRewardsBtn.innerHTML = '<i class="fas fa-check"></i> 成功';
+                setTimeout(() => {
+                    claimRewardsBtn.innerHTML = '<i class="fas fa-download"></i> 领取奖励';
+                }, 2000);
+            }, 1500);
+        }
+        
+        // 估算奖励（模拟）
+        function estimateRewards() {
+            // 模拟请求过程
+            updateStatus('正在估算您的奖励...');
+            
+            // 模拟网络请求延迟
+            setTimeout(() => {
+                // 随机生成估算值
+                const estimated = Math.floor(Math.random() * 300) + 50;
+                
+                // 更新UI
+                estimatedReward.value = `≈ ${estimated} 代币`;
+                
+                updateStatus('奖励估算完成');
+            }, 1000);
+        }
+        
+        // 切换交易按钮状态
+        function toggleTransactionButtons(enabled) {
+            const buttons = [buyInitialBtn, buyAdditionalBtn, claimRewardsBtn];
+            buttons.forEach(btn => {
+                btn.disabled = !enabled;
+            });
+        }
+        
+        // 更新状态信息
+        function updateStatus(message, isSuccess = true) {
+            const now = new Date();
+            const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            
+            if (isSuccess === false) {
+                statusMessage.innerHTML = `❌ [${time}] ${message}`;
+                statusMessage.style.color = 'var(--error-color)';
+            } else {
+                statusMessage.innerHTML = `✓ [${time}] ${message}`;
+                statusMessage.style.color = 'var(--primary-color)';
+            }
+            
+            // 滚动到状态区域底部
+            statusMessage.scrollTop = statusMessage.scrollHeight;
+        }
+        
+        // 页面加载完成后初始化
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
 </body>
 </html>
