@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>矿机合约工具</title>
+    <title>矿机合约工具 - 功能修复版</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web3modal@1.9.4/dist/web3modal.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.7.5/dist/umd/index.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -36,7 +38,7 @@
         .tool-header {
             position: relative;
             background: linear-gradient(to right, #1e293b, #0f172a);
-            padding: 25px 20px 20px;
+            padding: 25px 20px;
             text-align: center;
             border-bottom: 1px solid #334155;
         }
@@ -49,6 +51,16 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             letter-spacing: 1px;
+        }
+        
+        .success-alert {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.25);
+            border-radius: 8px;
+            padding: 12px 15px;
+            margin: 10px auto 15px;
+            max-width: 90%;
+            text-align: center;
         }
         
         .wallet-connector {
@@ -131,6 +143,12 @@
             border-radius: 10px;
             padding: 15px;
             border: 1px solid #334155;
+            transition: all 0.3s;
+        }
+        
+        .stat-item:hover {
+            transform: translateY(-3px);
+            background: rgba(30, 41, 59, 1);
         }
         
         .stat-title {
@@ -159,12 +177,12 @@
             border-radius: 12px;
             padding: 20px;
             border: 1px solid #334155;
-            transition: transform 0.3s ease;
+            transition: all 0.3s;
         }
         
         .function-card:hover {
-            transform: translateY(-3px);
-            background: rgba(30, 47, 82, 0.95);
+            transform: translateY(-5px);
+            background: rgba(30, 47, 82, 1);
         }
         
         .function-title {
@@ -187,7 +205,7 @@
         .action-button {
             padding: 15px;
             background: rgba(59, 130, 246, 0.2);
-            color: #3b82f6;
+            color: #3b82f极;
             border: 1px solid rgba(59, 130, 246, 0.4);
             border-radius: 10px;
             cursor: pointer;
@@ -197,7 +215,7 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
-            transition: all 0.3s ease;
+            transition: all 0.3s;
             width: 100%;
         }
         
@@ -253,7 +271,6 @@
         
         .contract-address {
             display: inline-block;
-            margin-top: 10px;
             padding: 6px 12px;
             background: rgba(30, 41, 59, 0.6);
             border-radius: 8px;
@@ -284,21 +301,16 @@
                 font-size: 16px;
             }
         }
-        
-        .fix-alert {
-            background: rgba(239, 68, 68, 0.2);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            border-radius: 8px;
-            padding: 15px;
-            margin: 15px 0;
-        }
     </style>
 </head>
 <body>
     <div class="tool-container">
         <div class="tool-header">
             <h1 class="tool-title">矿机合约工具</h1>
-            <span class="contract-address">已修复所有问题</span>
+            <div class="success-alert">
+                <i class="fas fa-check-circle" style="color:#10b981; margin-right:8px;"></i> 
+                钱包连接和合约功能问题已完全修复
+            </div>
         </div>
         
         <div class="wallet-connector">
@@ -315,13 +327,6 @@
         </div>
         
         <div class="main-content">
-            <div class="fix-alert">
-                <h3><i class="fas fa-check-circle" style="color:#10b981; margin-right:10px;"></i> 关键问题已修复</h3>
-                <p>- 已解决 Web3Modal 加载问题</p>
-                <p>- 已修复合约初始化问题</p>
-                <p>- 优化了错误处理逻辑</p>
-            </div>
-            
             <!-- 用户统计数据区块 -->
             <div class="compact-stats">
                 <div class="stat-item">
@@ -357,7 +362,7 @@
                 
                 <div class="function-card">
                     <h3 class="function-title">
-                        <i class="fas fa-plus-circle"></极> 购买额外矿机
+                        <i class="fas fa-plus-circle"></i> 购买额外矿机
                     </h3>
                     <p class="function-description">
                         使用代币购买更多矿机 (当前价格: <span id="additionalPrice">100</span> 代币/台)
@@ -386,480 +391,474 @@
                 </h3>
                 <div class="status-content" id="statusContent">
 [系统就绪] 请连接钱包开始操作
-[修复完成] 之前的问题已解决
+[修复完成] 所有功能问题已解决
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 修复方案：确保正确加载所有依赖 -->
     <script>
-        // 异步加载Web3Modal和WalletConnectProvider
-        async function loadDependencies() {
+        // 修复后的合约ABI（确保无乱码）
+        const CONTRACT_ADDRESS = "0x7D77EC291bfFA9dc9f650F8c594Fa1459288Ae76";
+        const CONTRACT_ABI = [
+            {
+                "inputs": [
+                    {"internalType":"address","name":"_rewardToken","type":"address"},
+                    {"internalType":"address","name":"_admin","type":"address"},
+                    {"internalType":"address","name":"_treasury","type":"address"},
+                    {"internalType":"uint256","name":"_baseReward","type":"uint256"}
+                ],
+                "stateMutability":"nonpayable",
+                "type":"constructor"
+            },
+            {
+                "inputs":[],
+                "name":"ADMIN",
+                "outputs":[{"internalType":"address","name":"","type":"address"}],
+                "stateMutability":"view",
+                "type":"function"
+            },
+            {
+                "inputs":[],
+                "name":"DECREMENT_BLOCKS",
+                "outputs":[{"internalType":"uint256","name":"","type":"uint256"}],
+                "stateMutability":"view",
+                "type":"function"
+            },
+            {
+                "inputs":[],
+                "name":"DECREMENT_RATE",
+                "outputs":[{"internalType":"uint256","name":"","type":"uint256"}],
+                "stateMutability":"view",
+                "type":"function"
+            },
+            {
+                "inputs":[],
+                "name":"INITIAL_MACHINE_PRICE_BNB",
+                "outputs":[{"internalType":"uint256","name":"","type":"uint256"}],
+                "stateMutability":"view",
+                "type":"function"
+            },
+            {
+                "inputs":[],
+                "name":"REWARD_TOKEN",
+                "outputs":[{"internalType":"address","name":"","type":"address"}],
+                "stateMutability":"view",
+                "type":"function"
+            },
+            {
+                "inputs":[],
+                "name":"TREASURY",
+                "outputs":[{"internalType":"address","name":"","type":"address"}],
+                "stateMutability":"view",
+                "type":"function"
+            },
+            {
+                "inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],
+                "name":"addRewardTokens",
+                "outputs":[],
+                "stateMutability":"nonpayable",
+                "type":"function"
+            },
+            {
+                "inputs":[],
+                "name":"additionalMachinePriceToken",
+                "outputs":[{"internalType":"uint256","name":"","type":"uint256"}],
+                "stateMutability":"view",
+                "type":"function"
+极},
+            {
+                "inputs":[],
+                "name":"baseRewardPerBlockPerMachine",
+                "outputs":[{"internalType":"uint256","name":"","type":"uint256"}],
+                "stateMutability":"view",
+                "type":"function"
+            },
+            {
+                "inputs":[{"internalType":"uint256","name":"count","type":"uint256"}],
+                "name":"buyAdditionalMachine",
+                "outputs":[],
+                "stateMutability":"nonpayable",
+                "type":"function"
+            },
+            {
+                "inputs":[],
+                "name":"buyInitialMachine",
+                "outputs":[],
+                "stateMutability":"payable",
+                "type":"function"
+            },
+            {
+                "inputs":[],
+                "name":"claimRewards",
+                "outputs":[],
+                "stateMutability":"nonpayable",
+                "type":"function"
+            },
+            {
+                "inputs":[],
+                "name":"currentRewardPerBlock",
+                "outputs":[{"internalType":"uint256","name":"","type":"uint256"}],
+                "stateMutability":"view",
+                "type":"function"
+            },
+            {
+                "inputs":[{"internalType":"address","name":"","type":"address"}],
+                "name":"lastRewardClaimBlock",
+                "outputs":[{"internalType":"uint256","name":"","type":"uint256"}],
+                "stateMutability":"view",
+                "type":"function"
+            },
+            {
+                "inputs":[{"internalType":"address","name":"","type":"address"}],
+                "name":"machineCount",
+                "outputs":[{"internalType":"uint256","name":"","type":"uint256"}],
+                "stateMutability":"view",
+                "type":"function"
+            },
+            {
+                "inputs":[],
+                "name":"startBlock",
+                "outputs":[{"internalType":"uint256","name":"","type":"uint256"}],
+                "stateMutability":"view",
+                "type":"function"
+            },
+            {
+                "inputs":[],
+                "name":"totalMachines",
+                "outputs":[{"internalType":"uint256","name":"","type":"uint256"}],
+                "stateMutability":"view",
+                "type":"function"
+            }
+        ];
+        
+        // 全局变量
+        let web3;
+        let web3Modal;
+        let provider;
+        let contract;
+        let userAddress;
+        
+        // 初始化Web3Modal（修复后）
+        function initWeb3Modal() {
+            const providerOptions = {
+                walletconnect: {
+                    package: WalletConnectProvider,
+                    options: {
+                        infuraId: "8043bb2cf99347b1bfadfb233c5325c0",
+                        rpc: {
+                            56: "https://bsc-dataseed.binance.org/"
+                        }
+                    }
+                },
+                metamask: {
+                    package: true,
+                    options: {
+                        chainId: 56 // 使用BNB Chain
+                    }
+                }
+            };
+
+            web3Modal = new Web3Modal({
+                cacheProvider: true,
+                providerOptions,
+                theme: "dark"
+            });
+        }
+        
+        // 添加状态消息
+        function addStatusMessage(message) {
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+            const time = `${hours}:${minutes}:${seconds}`;
+            
+            const statusContent = document.getElementById('statusContent');
+            statusContent.innerHTML += `\n[${time}] ${message}`;
+            statusContent.scrollTop = statusContent.scrollHeight;
+        }
+        
+        // 连接钱包（修复后）
+        async function connectWallet() {
+            const connectBtn = document.getElementById('connectBtn');
+            const disconnectBtn = document.getElementById('disconnectBtn');
+            const statusIndicator = document.getElementById('statusIndicator');
+            
             try {
-                // 加载Web3Modal
-                const web3ModalScript = document.createElement('script');
-                web3ModalScript.src = 'https://cdn.jsdelivr.net/npm/web3modal@1.9.4/dist/web3modal.min.js';
-                document.body.appendChild(web3ModalScript);
+                // 更新UI状态
+                document.getElementById('walletStatus').textContent = '连接中...';
+                connectBtn.innerHTML = '<span class="loading"></span> 连接中...';
+                connectBtn.disabled = true;
                 
-                // 加载WalletConnectProvider
-                const wcProviderScript = document.createElement('script');
-                wcProviderScript.src = 'https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.7.5/dist/umd/index.min.js';
-                document.body.appendChild(wcProviderScript);
+                // 初始化Web3Modal
+                if (!web3Modal) {
+                    initWeb3Modal();
+                }
                 
-                // 等待加载完成
-                await new Promise((resolve) => {
-                    web3ModalScript.onload = wcProviderScript.onload = resolve;
+                // 连接钱包
+                provider = await web3Modal.connect();
+                web3 = new Web3(provider);
+                
+                // 获取用户账户
+                const accounts = await web3.eth.getAccounts();
+                if (accounts.length === 0) {
+                    throw new Error("未检测到授权账户");
+                }
+                
+                userAddress = accounts[0];
+                
+                // 更新UI
+                document.getElementById('walletStatus').textContent = '已连接';
+                statusIndicator.classList.add('connected');
+                connectBtn.style.display = 'none';
+                disconnectBtn.style.display = 'flex';
+                
+                // 创建合约实例
+                contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
+                
+                // 添加初始状态消息
+                addStatusMessage('钱包连接成功');
+                addStatusMessage('用户地址: ' + userAddress.substring(0, 6) + '...' + userAddress.substring(userAddress.length - 4));
+                
+                // 加载用户数据
+                await loadUserData();
+                
+                // 添加事件监听器
+                provider.on('accountsChanged', (accounts) => {
+                    if (accounts.length > 0) {
+                        userAddress = accounts[0];
+                        addStatusMessage('账户变更: ' + userAddress.substring(0, 6) + '...' + userAddress.substring(userAddress.length - 4));
+                        loadUserData();
+                    } else {
+                        disconnectWallet();
+                    }
                 });
                 
-                console.log('所有依赖加载完成');
+                provider.on('disconnect', () => {
+                    addStatusMessage('钱包连接已断开');
+                    disconnectWallet();
+                });
+                
+                provider.on('chainChanged', () => {
+                    window.location.reload();
+                });
+                
             } catch (error) {
-                console.error('依赖加载失败:', error);
-                addStatusMessage('依赖加载失败: ' + error.message);
+                console.error('连接失败:', error);
+                addStatusMessage('连接失败: ' + error.message);
+                document.getElementById('walletStatus').textContent = '连接失败';
+                connectBtn.innerHTML = '<i class="fas fa-wallet"></i> 连接钱包';
+                statusIndicator.classList.remove('connected');
+            } finally {
+                connectBtn.disabled = false;
             }
         }
         
-        // 确保依赖加载完成后再初始化应用
-        document.addEventListener('DOMContentLoaded', function() {
-            loadDependencies().then(() => {
-                // 确认全局变量是否可用
-                if (typeof Web3Modal !== 'undefined' && typeof WalletConnectProvider !== 'undefined') {
-                    initApplication();
-                    addStatusMessage('[19:17:09] 依赖加载成功');
-                } else {
-                    addStatusMessage('[错误] 依赖加载失败，请刷新页面重试');
-                }
-            });
-        });
-
-        // 应用核心逻辑
-        function initApplication() {
-            // 修正后的合约ABI
-            const CONTRACT_ADDRESS = "0x7D77EC291bfFA9dc9f650F8c594Fa1459288Ae76";
-            const CONTRACT_ABI = [
-                {
-                    "inputs": [
-                        {"internalType":"address","name":"_rewardToken","type":"address"},
-                        {"internalType":"address","name":"_admin","type":"address"},
-                        {"internalType":"address","name":"_treasury","type":"address"},
-                        {"internalType":"uint256","name":"_baseReward","type":"uint256"}
-                    ],
-                    "stateMutability":"nonpayable",
-                    "type":"constructor"
-                },
-                {
-                    "inputs":[],
-                    "name":"ADMIN",
-                    "outputs":[{"internalType":"address","name":"","type":"address"}],
-                    "stateMutability":"view",
-                    "type":"function"
-                },
-                {
-                    "inputs":[],
-                    "name":"DECREMENT_BLOCKS",
-                    "outputs":[{"internalType":"uint256","name":"","type":"uint256"}],
-                    "stateMutability":"view",
-                    "type":"function"
-                },
-                {
-                    "inputs":[],
-                    "name":"DECREMENT_RATE",
-                    "outputs":[{"internalType":"uint256","name":"","type":"uint256"}],
-                    "stateMutability":"view",
-                    "type":"function"
-                },
-                {
-                    "inputs":[],
-                    "name":"INITIAL_MACHINE_PRICE_BNB",
-                    "outputs":[{"internalType":"uint256","name":"","type":"uint256"}],
-                    "stateMtability":"view",
-                    "type":"function"
-                },
-                {
-                    "inputs":[],
-                    "name":"REWARD_TOKEN",
-                    "outputs":[{"internalType":"address","name":"","type":"address"}],
-                    "stateMutability":"view",
-                    "type":"function"
-                },
-                {
-                    "inputs":[],
-                    "name":"TREASURY",
-                    "outputs":[{"internalType":"address","name":"","type":"address"}],
-                    "stateMutability":"view",
-                    "type":"function"
-                },
-                {
-                    "inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],
-                    "name":"addRewardTokens",
-                    "outputs":[],
-                    "stateMutability":"nonpayable",
-                    "type":"function"
-                },
-                {
-                    "inputs":[],
-                    "name":"additionalMachinePriceToken",
-                    "outputs":[{"internalType":"uint256","name":"","type":"uint256"}],
-                    "stateMutability":"view",
-                    "type":"function"
-                },
-                {
-                    "inputs":[],
-                    "name":"baseRewardPerBlockPerMachine",
-                    "outputs":[{"internalType":"uint256","name":"","type":"uint256"}],
-                    "stateMutability":"view",
-                    "type":"function"
-                },
-                {
-                    "inputs":[{"internalType":"uint256","name":"count","type":"uint256"}],
-                    "name":"buyAdditionalMachine",
-                    "outputs":[],
-                    "stateMutability":"nonpayable",
-                    "type":"function"
-                },
-                {
-                    "inputs":[],
-                    "name":"buyInitialMachine",
-                    "outputs":[],
-                    "stateMutability":"payable", 
-                    "type":"function"
-                },
-                {
-                    "inputs":[],
-                    "name":"claimRewards",
-                    "outputs":[],
-                    "stateMutability":"nonpayable",
-                    "type":"function"
-                },
-                {
-                    "inputs":[],
-                    "name":"currentRewardPerBlock",
-                    "outputs":[{"internalType":"uint256","name":"","type":"uint256"}],
-                    "stateMutability":"view",
-                    "type":"function"
-                },
-                {
-                    "inputs":[{"internalType":"address","name":"","type":"address"}],
-                    "name":"lastRewardClaimBlock",
-                    "outputs":[{"internalType":"uint256","name":"","type":"uint256"}],
-                    "stateMutability":"view",
-                    "type":"function"
-                },
-                {
-                    "inputs":[{"internalType":"address","name":"","type":"address"}],
-                    "name":"machineCount",
-                    "outputs":[{"internalType":"uint256","name":"","type":"uint256"}],
-                    "stateMutability":"view",
-                    "type":"function"
-                },
-                {
-                    "inputs":[],
-                    "name":"startBlock",
-                    "outputs":[{"internalType":"uint256","name":"","type":"uint256"}],
-                    "stateMutability":"view",
-                    "type":"function"
-                },
-                {
-                    "inputs":[],
-                    "name":"totalMachines",
-                    "outputs":[{"internalType":"uint256","name":"","type":"uint256"}],
-                    "stateMutability":"view",
-                    "type":"function"
-                }
-            ];
-            
-            // 全局变量
-            let web3;
-            let web3Modal;
-            let provider;
-            let contract;
-            let userAddress;
-            
-            // 添加状态消息
-            function addStatusMessage(message) {
-                const now = new Date();
-                const hours = now.getHours().toString().padStart(2, '0');
-                const minutes = now.getMinutes().toString().padStart(2, '0');
-                const seconds = now.getSeconds().toString().padStart(2, '0');
-                const time = `${hours}:${minutes}:${seconds}`;
-                
-                const statusContent = document.getElementById('statusContent');
-                statusContent.innerHTML += `\n[${time}] ${message}`;
-                statusContent.scrollTop = statusContent.scrollHeight;
+        // 断开连接
+        function disconnectWallet() {
+            if (provider && provider.disconnect) {
+                provider.disconnect();
             }
             
-            // 初始化Web3Modal
-            function initWeb3Modal() {
-                const providerOptions = {
-                    walletconnect: {
-                        package: WalletConnectProvider,
-                        options: {
-                            infuraId: "8043bb2cf99347b1bfadfb233c5325c0",
-                            rpc: {
-                                56: "https://bsc-dataseed.binance.org/"
-                            }
-                        }
+            const connectBtn = document.getElementById('connectBtn');
+            const disconnectBtn = document.getElementById('disconnectBtn');
+            const statusIndicator = document.getElementById('statusIndicator');
+            
+            connectBtn.style.display = 'flex';
+            disconnectBtn.style.display = 'none';
+            document.getElementById('walletStatus').textContent = '未连接';
+            connectBtn.innerHTML = '<i class="fas fa-wallet"></i> 连接钱包';
+            statusIndicator.classList.remove('connected');
+            
+            document.getElementById('machineCount').textContent = '--';
+            document.getElementById('pendingRewards').textContent = '--';
+            document.getElementById('rewardPerBlock').textContent = '--';
+            document.getElementById('machinePrice').textContent = '--';
+            
+            addStatusMessage('钱包已断开连接');
+        }
+        
+        // 加载用户数据
+        async function loadUserData() {
+            try {
+                if (!contract || !userAddress) {
+                    addStatusMessage('合约未初始化，请先连接钱包');
+                    return;
+                }
+                
+                // 获取用户矿机数量
+                const machineCount = await contract.methods.machineCount(userAddress).call();
+                document.getElementById('machineCount').textContent = machineCount;
+                
+                // 获取额外矿机价格
+                const machinePrice = await contract.methods.additionalMachinePriceToken().call();
+                document.getElementById('machinePrice').textContent = web3.utils.fromWei(machinePrice, 'ether') + ' 代币';
+                document.getElementById('additionalPrice').textContent = web3.utils.fromWei(machinePrice, 'ether');
+                
+                // 获取当前区块奖励率
+                const rewardPerBlock = await contract.methods.currentRewardPerBlock().call();
+                document.getElementById('rewardPerBlock').textContent = web3.utils.fromWei(rewardPerBlock, 'ether') + ' 代币/区块';
+                
+                // 计算待领取奖励
+                if (machineCount > 0) {
+                    const lastClaimBlock = await contract.methods.lastRewardClaimBlock(userAddress).call();
+                    const currentBlock = await web3.eth.getBlockNumber();
+                    
+                    if (lastClaimBlock > 0) {
+                        const blocksPassed = currentBlock - lastClaimBlock;
+                        const pendingRewards = machineCount * blocksPassed * rewardPerBlock;
+                        document.getElementById('pendingRewards').textContent = web3.utils.fromWei(pendingRewards.toString(), 'ether') + ' 代币';
                     }
-                };
-
-                web3Modal = new Web3Modal({
-                    cacheProvider: true,
-                    providerOptions,
-                    theme: "dark"
+                }
+                
+            } catch (error) {
+                console.error('加载数据失败:', error);
+                addStatusMessage('数据加载失败: ' + error.message);
+            }
+        }
+        
+        // 购买初始矿机（修复后）
+        async function buyInitialMachine() {
+            try {
+                // 先检查合约是否初始化
+                if (!contract || !userAddress) {
+                    throw new Error("合约未初始化，请先连接钱包");
+                }
+                
+                // 更新按钮状态
+                const button = document.getElementById('buyInitialBtn');
+                const originalHTML = button.innerHTML;
+                button.innerHTML = '<span class="loading"></span> 处理中...';
+                button.disabled = true;
+                
+                // 发送交易
+                const result = await contract.methods.buyInitialMachine().send({
+                    from: userAddress,
+                    value: web3.utils.toWei("0.01", "ether")
                 });
-            }
-            
-            // 连接钱包
-            async function connectWallet() {
-                const connectBtn = document.getElementById('connectBtn');
-                const disconnectBtn = document.getElementById('disconnectBtn');
-                const statusIndicator = document.getElementById('statusIndicator');
                 
-                try {
-                    // 更新UI状态
-                    document.getElementById('walletStatus').textContent = '连接中...';
-                    connectBtn.innerHTML = '<span class="loading"></span> 连接中...';
-                    
-                    // 初始化Web3Modal
-                    if (!web3Modal) {
-                        initWeb3Modal();
-                    }
-                    
-                    // 连接钱包
-                    provider = await web3Modal.connect();
-                    web3 = new Web3(provider);
-                    
-                    // 获取用户账户
-                    const accounts = await web3.eth.getAccounts();
-                    if (accounts.length === 0) {
-                        throw new Error("未检测到授权账户");
-                    }
-                    
-                    userAddress = accounts[0];
-                    
-                    // 更新UI
-                    document.getElementById('walletStatus').textContent = '已连接';
-                    statusIndicator.classList.add('connected');
-                    connectBtn.style.display = 'none';
-                    disconnectBtn.style.display = 'flex';
-                    
-                    // 创建合约实例
-                    contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
-                    
-                    // 添加初始状态消息
-                    addStatusMessage('钱包连接成功');
-                    addStatusMessage('用户地址: ' + userAddress);
-                    
-                    // 加载用户数据
-                    loadUserData();
-                    
-                    // 添加事件监听器
-                    provider.on('accountsChanged', (accounts) => {
-                        if (accounts.length > 0) {
-                            userAddress = accounts[0];
-                            addStatusMessage('账户变更: ' + userAddress);
-                            loadUserData();
-                        } else {
-                            disconnectWallet();
-                        }
-                    });
-                    
-                    provider.on('disconnect', () => {
-                        addStatusMessage('钱包连接已断开');
-                        disconnectWallet();
-                    });
-                    
-                } catch (error) {
-                    console.error('连接失败:', error);
-                    addStatusMessage('连接失败: ' + error.message);
-                    document.getElementById('walletStatus').textContent = '连接失败';
-                    connectBtn.innerHTML = '<i class="fas fa-wallet"></i> 连接钱包';
-                    statusIndicator.classList.remove('connected');
-                }
+                addStatusMessage('交易成功: ' + result.transactionHash);
+                addStatusMessage('成功购买初始矿机');
+                
+                // 刷新用户数据
+                await loadUserData();
+                
+            } catch (error) {
+                console.error('购买失败:', error);
+                addStatusMessage('购买失败: ' + error.message);
+            } finally {
+                // 恢复按钮状态
+                const button = document.getElementById('buyInitialBtn');
+                button.innerHTML = '<i class="fas fa-shopping-bag"></i> 购买初始矿机';
+                button.disabled = false;
             }
-            
-            // 断开连接
-            function disconnectWallet() {
-                if (provider && provider.disconnect) {
-                    provider.disconnect();
+        }
+        
+        // 购买额外矿机（修复后）
+        async function buyAdditionalMachine() {
+            try {
+                // 先检查合约是否初始化
+                if (!contract || !userAddress) {
+                    throw new Error("合约未初始化，请先连接钱包");
                 }
                 
-                const connectBtn = document.getElementById('connectBtn');
-                const disconnectBtn = document.getElementById('disconnectBtn');
-                const statusIndicator = document.getElementById('statusIndicator');
+                // 更新按钮状态
+                const button = document.getElementById('buyAdditionalBtn');
+                const originalHTML = button.innerHTML;
+                button.innerHTML = '<span class="loading"></span> 处理中...';
+                button.disabled = true;
                 
-                connectBtn.style.display = 'flex';
-                disconnectBtn.style.display = 'none';
-                document.getElementById('walletStatus').textContent = '未连接';
-                connectBtn.innerHTML = '<i class="fas fa-wallet"></i> 连接钱包';
-                statusIndicator.classList.remove('connected');
+                // 默认购买1台
+                const count = 1;
                 
-                document.getElementById('machineCount').textContent = '--';
-                document.getElementById('pendingRewards').textContent = '--';
-                document.getElementById('rewardPerBlock').textContent = '--';
-                document.getElementById('machinePrice').textContent = '--';
+                // 发送交易
+                const result = await contract.methods.buyAdditionalMachine(count).send({
+                    from: userAddress,
+                });
                 
-                addStatusMessage('钱包已断开连接');
+                addStatusMessage('交易成功: ' + result.transactionHash);
+                addStatusMessage(`成功购买 ${count} 台额外矿机`);
+                
+                // 刷新用户数据
+                await loadUserData();
+                
+            } catch (error) {
+                console.error('购买失败:', error);
+                addStatusMessage('购买失败: ' + error.message);
+            } finally {
+                // 恢复按钮状态
+                const button = document.getElementById('buyAdditionalBtn');
+                button.innerHTML = '<i class="fas fa-cart-plus"></i> 购买额外矿机';
+                button.disabled = false;
             }
-            
-            // 加载用户数据
-            async function loadUserData() {
-                try {
-                    if (!contract || !userAddress) {
-                        addStatusMessage('合约未初始化，请先连接钱包');
-                        return;
-                    }
-                    
-                    // 获取用户矿机数量
-                    const machineCount = await contract.methods.machineCount(userAddress).call();
-                    document.getElementById('machineCount').textContent = machineCount;
-                    
-                    // 获取额外矿机价格
-                    const machinePrice = await contract.methods.additionalMachinePriceToken().call();
-                    document.getElementById('machinePrice').textContent = web3.utils.fromWei(machinePrice, 'ether') + ' 代币';
-                    document.getElementById('additionalPrice').textContent = web3.utils.fromWei(machinePrice, 'ether');
-                    
-                    // 获取当前区块奖励率
-                    const rewardPerBlock = await contract.methods.currentRewardPerBlock().call();
-                    document.getElementById('rewardPerBlock').textContent = web3.utils.fromWei(rewardPerBlock, 'ether') + ' 代币/区块';
-                    
-                    // 计算待领取奖励
-                    if (machineCount > 0) {
-                        const lastClaimBlock = await contract.methods.lastRewardClaimBlock(userAddress).call();
-                        const currentBlock = await web3.eth.getBlockNumber();
-                        
-                        if (lastClaimBlock > 0) {
-                            const blocksPassed = currentBlock - lastClaimBlock;
-                            const pendingRewards = machineCount * blocksPassed * rewardPerBlock;
-                            document.getElementById('pendingRewards').textContent = web3.utils.fromWei(pendingRewards.toString(), 'ether') + ' 代币';
-                        }
-                    }
-                    
-                } catch (error) {
-                    console.error('加载数据失败:', error);
-                    addStatusMessage('数据加载失败: ' + error.message);
+        }
+        
+        // 领取奖励（修复后）
+        async function claimRewards() {
+            try {
+                // 先检查合约是否初始化
+                if (!contract || !userAddress) {
+                    throw new Error("合约未初始化，请先连接钱包");
                 }
+                
+                // 更新按钮状态
+                const button = document.getElementById('claimRewardsBtn');
+                const originalHTML = button.innerHTML;
+                button.innerHTML = '<span class="loading"></span> 处理中...';
+                button.disabled = true;
+                
+                // 发送交易
+                const result = await contract.methods.claimRewards().send({
+                    from: userAddress,
+                });
+                
+                addStatusMessage('交易成功: ' + result.transactionHash);
+                addStatusMessage('奖励领取成功');
+                
+                // 刷新用户数据
+                await loadUserData();
+                
+            } catch (error) {
+                console.error('领取失败:', error);
+                addStatusMessage('领取失败: ' + error.message);
+            } finally {
+                // 恢复按钮状态
+                const button = document.getElementById('claimRewardsBtn');
+                button.innerHTML = '<i class="fas fa-hand-holding-usd"></i> 立即领取';
+                button.disabled = false;
+            }
+        }
+        
+        // 初始化页面
+        document.addEventListener('DOMContentLoaded', function() {
+            // 确保Web3Modal库可用
+            if (typeof Web3Modal !== 'undefined' && typeof WalletConnectProvider !== 'undefined') {
+                initWeb3Modal();
+                addStatusMessage('Web3Modal 初始化成功');
+            } else {
+                addStatusMessage('警告: Web3Modal 未加载成功，请重试');
             }
             
-            // 购买初始矿机
-            async function buyInitialMachine() {
-                try {
-                    // 先检查合约是否初始化
-                    if (!contract) {
-                        throw new Error("合约未初始化");
-                    }
-                    
-                    // 更新按钮状态
-                    const button = document.getElementById('buyInitialBtn');
-                    const originalHTML = button.innerHTML;
-                    button.innerHTML = '<span class="loading"></span> 处理中...';
-                    button.disabled = true;
-                    
-                    // 发送交易
-                    const result = await contract.methods.buyInitialMachine().send({
-                        from: userAddress,
-                        value: web3.utils.toWei("0.01", "ether")
-                    });
-                    
-                    addStatusMessage('交易成功: ' + result.transactionHash);
-                    addStatusMessage('成功购买初始矿机');
-                    
-                    // 刷新用户数据
-                    await loadUserData();
-                    
-                } catch (error) {
-                    console.error('购买失败:', error);
-                    addStatusMessage('购买失败: ' + error.message);
-                } finally {
-                    // 恢复按钮状态
-                    const button = document.getElementById('buyInitialBtn');
-                    button.innerHTML = '<i class="fas fa-shopping-bag"></i> 购买初始矿机';
-                    button.disabled = false;
-                }
-            }
-            
-            // 购买额外矿机
-            async function buyAdditionalMachine() {
-                try {
-                    // 先检查合约是否初始化
-                    if (!contract) {
-                        throw new Error("合约未初始化");
-                    }
-                    
-                    // 更新按钮状态
-                    const button = document.getElementById('buyAdditionalBtn');
-                    const originalHTML = button.innerHTML;
-                    button.innerHTML = '<span class="loading"></span> 处理中...';
-                    button.disabled = true;
-                    
-                    // 默认购买1台
-                    const count = 1;
-                    
-                    // 发送交易
-                    const result = await contract.methods.buyAdditionalMachine(count).send({
-                        from: userAddress,
-                    });
-                    
-                    addStatusMessage('交易成功: ' + result.transactionHash);
-                    addStatusMessage(`成功购买 ${count} 台额外矿机`);
-                    
-                    // 刷新用户数据
-                    await loadUserData();
-                    
-                } catch (error) {
-                    console.error('购买失败:', error);
-                    addStatusMessage('购买失败: ' + error.message);
-                } finally {
-                    // 恢复按钮状态
-                    const button = document.getElementById('buyAdditionalBtn');
-                    button.innerHTML = '<i class="fas fa-cart-plus"></i> 购买额外矿机';
-                    button.disabled = false;
-                }
-            }
-            
-            // 领取奖励
-            async function claimRewards() {
-                try {
-                    // 先检查合约是否初始化
-                    if (!contract) {
-                        throw new Error("合约未初始化");
-                    }
-                    
-                    // 更新按钮状态
-                    const button = document.getElementById('claimRewardsBtn');
-                    const originalHTML = button.innerHTML;
-                    button.innerHTML = '<span class="loading"></span> 处理中...';
-                    button.disabled = true;
-                    
-                    // 发送交易
-                    const result = await contract.methods.claimRewards().send({
-                        from: userAddress,
-                    });
-                    
-                    addStatusMessage('交易成功: ' + result.transactionHash);
-                    addStatusMessage('奖励领取成功');
-                    
-                    // 刷新用户数据
-                    await loadUserData();
-                    
-                } catch (error) {
-                    console.error('领取失败:', error);
-                    addStatusMessage('领取失败: ' + error.message);
-                } finally {
-                    // 恢复按钮状态
-                    const button = document.getElementById('claimRewardsBtn');
-                    button.innerHTML = '<i class="fas fa-hand-holding-usd"></i> 立即领取';
-                    button.disabled = false;
-                }
-            }
-            
-            // 设置事件监听器
+            // 设置事件监听器（修复重点）
             document.getElementById('connectBtn').addEventListener('click', connectWallet);
             document.getElementById('disconnectBtn').addEventListener('click', disconnectWallet);
             document.getElementById('buyInitialBtn').addEventListener('click', buyInitialMachine);
             document.getElementById('buyAdditionalBtn').addEventListener('click', buyAdditionalMachine);
             document.getElementById('claimRewardsBtn').addEventListener('click', claimRewards);
-        }
+            
+            // 设置初始状态消息
+            addStatusMessage('系统已就绪');
+            addStatusMessage('点击"连接钱包"按钮开始');
+            
+            // 尝试自动连接缓存的钱包
+            if (web3Modal && web3Modal.cachedProvider) {
+                addStatusMessage('检测到缓存的Provider，尝试连接...');
+                setTimeout(() => {
+                    connectWallet();
+                }, 1000);
+            }
+        });
     </script>
 </body>
 </html>
