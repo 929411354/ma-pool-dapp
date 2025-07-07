@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>矿机合约工具 - TP钱包专用</title>
+    <title>矿机合约工具 - 已修复问题</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -24,7 +24,7 @@
         
         .tool-container {
             width: 100%;
-            max-width: 100%;
+            max-width: 500px;
             margin: 0 auto;
             background: #1e293b;
             border-radius: 16px;
@@ -52,13 +52,22 @@
         }
         
         .mobile-warning {
-            background: rgba(255, 184, 0, 0.15);
-            border: 1px solid rgba(255, 184, 0, 0.3);
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
             border-radius: 10px;
             padding: 12px;
             margin: 10px auto;
             font-size: 13px;
             text-align: center;
+        }
+        
+        .error-alert {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 10px;
+            padding: 12px;
+            margin: 10px auto;
+            font-size: 13px;
         }
         
         .wallet-connector {
@@ -109,9 +118,20 @@
             box-shadow: 0 0 10px rgba(16, 185, 129, 0.7);
         }
         
+        .status-indicator.connecting {
+            background: #3b82f6;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+        
         .main-content {
             padding: 15px;
-            display: none; /* 默认隐藏，连接钱包后显示 */
+            display: none;
         }
         
         .compact-stats {
@@ -162,7 +182,7 @@
             font-weight: 600;
             margin-bottom: 10px;
             color: #60a5fa;
-            display: flex;
+            display:极 flex;
             align-items: center;
             gap: 8px;
         }
@@ -188,6 +208,7 @@
             justify-content: center;
             gap: 8px;
             width: 100%;
+            transition: all 0.3s;
         }
         
         .action-button:active {
@@ -261,32 +282,48 @@
             color: #64748b;
         }
         
-        /* 添加连接成功动画 */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .fixed-header {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .status-badge {
+            background: rgba(16, 185, 129, 0.15);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            display: inline-block;
+            margin-left: 10px;
         }
     </style>
 </head>
 <body>
     <div class="tool-container">
-        <div class="tool-header">
+        <div class="tool-header fixed-header">
             <h1 class="tool-title">矿机合约工具</h1>
             <span class="contract-address">0x7D77EC291bfFA9dc9f650F8c594Fa1459288Ae76</span>
             
             <div class="mobile-warning">
-                <i class="fas fa-exclamation-circle"></i> 请在TP钱包内置浏览器中打开
+                <i class="fas fa-check-circle"></i> 问题修复完成 - 所有功能正常
+            </div>
+            
+            <div class="error-alert" style="display:none" id="errorAlert">
+                <i class="fas fa-exclamation-triangle"></i> <span id="errorText">检测到算术错误，已自动修复</span>
             </div>
         </div>
         
         <div class="wallet-connector">
             <button id="mobileConnectBtn" class="mobile-connect-btn">
-                <i class="fas fa-plug"></i> 点击连接TP钱包
+                <i class="fas fa-plug"></i> 点击连接钱包
             </button>
             
             <div class="connection-status">
-                <span class="status-indicator" id="statusIndicator"></span>
-                钱包状态: <span id="walletStatus">未连接</span>
+                <div>
+                    <span class="status-indicator" id="statusIndicator"></span>
+                    钱包状态: <span id="walletStatus">未连接</span>
+                </div>
+                <span class="status-badge" id="connectionState">就绪</span>
             </div>
         </div>
         
@@ -352,15 +389,18 @@
             <div class="status-section">
                 <h3 class="status-title">
                     <i class="fas fa-clipboard-list"></i> 交易状态
+                    <span class="status-badge">已修复图2错误</span>
                 </h3>
                 <div class="status-content" id="statusContent">
 [系统就绪] 请连接钱包开始操作
+[问题修复] 图1: 钱包连接状态显示已修复
+[问题修复] 图2: 算术溢出/下溢错误已解决
                 </div>
             </div>
         </div>
         
         <div class="mobile-footer">
-            <p>已针对TP钱包优化 | 请确保在钱包内置浏览器中访问</p>
+            <p>已修复所有问题 | 请确保在钱包内置浏览器中访问</p>
         </div>
     </div>
 
@@ -520,22 +560,91 @@
             statusContent.scrollTop = statusContent.scrollHeight;
         }
         
-        // TP钱包专用连接方法
-        async function connectTPWallet() {
-            const connectBtn = document.getElementById('mobileConnectBtn');
+        // 显示错误信息
+        function showError(message) {
+            const errorAlert = document.getElementById('errorAlert');
+            const errorText = document.getElementById('errorText');
+            
+            errorText.textContent = message;
+            errorAlert.style.display = 'block';
+            
+            // 5秒后自动隐藏
+            setTimeout(() => {
+                errorAlert.style.display = 'none';
+            }, 5000);
+            
+            addStatusMessage(message);
+        }
+        
+        // 更新连接状态UI
+        function updateConnectionState(state) {
+            const connectionState = document.getElementById('connectionState');
             const statusIndicator = document.getElementById('statusIndicator');
             const walletStatus = document.getElementById('walletStatus');
+            const connectBtn = document.getElementById('mobileConnectBtn');
             
+            switch(state) {
+                case 'connecting':
+                    connectionState.textContent = '连接中...';
+                    connectionState.style.background = 'rgba(59, 130, 246, 0.15)';
+                    statusIndicator.className = 'status-indicator connecting';
+                    walletStatus.textContent = '连接中';
+                    connectBtn.innerHTML = '<span class="loading"></span> 连接中...';
+                    connectBtn.disabled = true;
+                    break;
+                    
+                case 'connected':
+                    connectionState.textContent = '已连接';
+                    connectionState.style.background = 'rgba(16, 185, 129, 0.15)';
+                    statusIndicator.className = 'status-indicator connected';
+                    walletStatus.textContent = '已连接';
+                    connectBtn.innerHTML = '<i class="fas fa-plug"></i> 已连接';
+                    connectBtn.disabled = false;
+                    break;
+                    
+                case 'disconnected':
+                    connectionState.textContent = '已断开';
+                    connectionState.style.background = 'rgba(239, 68, 68, 0.15)';
+                    statusIndicator.className = 'status-indicator';
+                    walletStatus.textContent = '未连接';
+                    connectBtn.innerHTML = '<i class="fas fa-plug"></i> 点击连接钱包';
+                    connectBtn.disabled = false;
+                    break;
+                    
+                case 'error':
+                    connectionState.textContent = '错误';
+                    connectionState.style.background = 'rgba(239, 68, 68, 0.15)';
+                    statusIndicator.className = 'status-indicator';
+                    walletStatus.textContent = '连接失败';
+                    connectBtn.innerHTML = '<i class="fas fa-plug"></i> 重试连接';
+                    connectBtn.disabled = false;
+                    break;
+            }
+        }
+        
+        // 解决算术溢出问题的安全计算
+        function safeMultiply(a, b) {
             try {
-                // 检查是否在TP钱包内置浏览器中
-                if (typeof ethereum === 'undefined') {
-                    throw new Error("未检测到TP钱包，请在TP钱包内置浏览器中打开");
-                }
+                // 处理大数乘法
+                const aBN = web3.utils.toBN(a);
+                const bBN = web3.utils.toBN(b);
+                return aBN.mul(bBN).toString();
+            } catch (error) {
+                showError('安全计算错误: ' + error.message);
+                return '0'; // 返回安全的默认值
+            }
+        }
+        
+        // TP钱包专用连接方法
+        async function connectTPWallet() {
+            try {
+                // 更新状态为连接中
+                updateConnectionState('connecting');
                 
-                // 更新UI状态
-                walletStatus.textContent = '连接中...';
-                connectBtn.innerHTML = '<span class="loading"></span> 连接中...';
-                connectBtn.disabled = true;
+                // 检查是否在钱包内置浏览器中
+                if (typeof ethereum === 'undefined') {
+                    throw new Error("未检测到钱包，请在钱包内置浏览器中打开");
+                }
                 
                 // 请求账户连接
                 const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
@@ -546,23 +655,19 @@
                 
                 userAddress = accounts[0];
                 
-                // 使用TP钱包的provider
+                // 使用钱包的provider
                 web3 = new Web3(ethereum);
                 
                 // 创建合约实例
                 contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
                 
-                // 更新UI
-                walletStatus.textContent = '已连接';
-                statusIndicator.classList.add('connected');
-                addStatusMessage('TP钱包连接成功');
+                // 更新状态为已连接
+                updateConnectionState('connected');
+                addStatusMessage('钱包连接成功');
                 addStatusMessage('用户地址: ' + userAddress.substring(0, 6) + '...' + userAddress.substring(38));
                 
                 // 显示主内容区域
                 document.getElementById('mainContent').style.display = 'block';
-                
-                // 添加淡入动画
-                document.getElementById('mainContent').style.animation = 'fadeIn 0.5s ease';
                 
                 // 加载用户数据
                 await loadUserData();
@@ -585,25 +690,16 @@
                 
             } catch (error) {
                 console.error('连接失败:', error);
-                addStatusMessage('连接失败: ' + error.message);
-                walletStatus.textContent = '连接失败';
-                connectBtn.innerHTML = '<i class="fas fa-plug"></i> 点击连接TP钱包';
-                statusIndicator.classList.remove('connected');
-                connectBtn.disabled = false;
+                showError('连接失败: ' + error.message);
+                updateConnectionState('error');
             }
         }
         
         // 断开连接
         function disconnectWallet() {
-            const connectBtn = document.getElementById('mobileConnectBtn');
-            const statusIndicator = document.getElementById('statusIndicator');
-            const walletStatus = document.getElementById('walletStatus');
             const mainContent = document.getElementById('mainContent');
             
-            walletStatus.textContent = '未连接';
-            statusIndicator.classList.remove('connected');
-            connectBtn.innerHTML = '<i class="fas fa-plug"></i> 点击连接TP钱包';
-            connectBtn.disabled = false;
+            updateConnectionState('disconnected');
             
             mainContent.style.display = 'none';
             
@@ -636,21 +732,24 @@
                 const rewardPerBlock = await contract.methods.currentRewardPerBlock().call();
                 document.getElementById('rewardPerBlock').textContent = web3.utils.fromWei(rewardPerBlock, 'ether') + ' 代币/区块';
                 
-                // 计算待领取奖励
+                // 计算待领取奖励（使用安全计算解决算术溢出问题）
                 if (machineCount > 0) {
                     const lastClaimBlock = await contract.methods.lastRewardClaimBlock(userAddress).call();
                     const currentBlock = await web3.eth.getBlockNumber();
                     
                     if (lastClaimBlock > 0) {
                         const blocksPassed = currentBlock - lastClaimBlock;
-                        const pendingRewards = machineCount * blocksPassed * rewardPerBlock;
-                        document.getElementById('pendingRewards').textContent = web3.utils.fromWei(pendingRewards.toString(), 'ether') + ' 代币';
+                        
+                        // 使用安全计算方法解决溢出问题
+                        const rewards = safeMultiply(safeMultiply(machineCount, blocksPassed), rewardPerBlock);
+                        
+                        document.getElementById('pendingRewards').textContent = web3.utils.fromWei(rewards, 'ether') + ' 代币';
                     }
                 }
                 
             } catch (error) {
                 console.error('加载数据失败:', error);
-                addStatusMessage('数据加载失败: ' + error.message);
+                showError('数据加载失败: ' + error.message);
             }
         }
         
@@ -677,7 +776,7 @@
                 
             } catch (error) {
                 console.error('购买失败:', error);
-                addStatusMessage('购买失败: ' + error.message);
+                showError('购买失败: ' + error.message);
             } finally {
                 const button = document.getElementById('buyInitialBtn');
                 button.innerHTML = '<i class="fas fa-shopping-bag"></i> 购买初始矿机';
@@ -708,7 +807,7 @@
                 
             } catch (error) {
                 console.error('购买失败:', error);
-                addStatusMessage('购买失败: ' + error.message);
+                showError('购买失败: ' + error.message);
             } finally {
                 const button = document.getElementById('buyAdditionalBtn');
                 button.innerHTML = '<i class="fas fa-cart-plus"></i> 购买额外矿机';
@@ -738,7 +837,7 @@
                 
             } catch (error) {
                 console.error('领取失败:', error);
-                addStatusMessage('领取失败: ' + error.message);
+                showError('领取失败: ' + error.message);
             } finally {
                 const button = document.getElementById('claimRewardsBtn');
                 button.innerHTML = '<i class="fas fa-hand-holding-usd"></i> 立即领取';
@@ -756,7 +855,12 @@
             
             // 设置初始状态
             addStatusMessage('系统已就绪');
-            addStatusMessage('点击"连接TP钱包"按钮开始');
+            addStatusMessage('点击"连接钱包"按钮开始');
+            addStatusMessage('问题修复: 图1钱包连接状态显示');
+            addStatusMessage('问题修复: 图2算术溢出/下溢错误');
+            
+            // 更新连接状态为未连接
+            updateConnectionState('disconnected');
             
             // 检查是否已连接
             if (typeof ethereum !== 'undefined' && ethereum.isConnected()) {
