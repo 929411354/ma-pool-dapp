@@ -26,13 +26,13 @@
         .tool-container {
             max-width: 500px;
             margin: 0 auto;
-            background: rgba(18, 27, 45, 0.95);
+            background: rgba(18, 极, 45, 0.95);
             border-radius: 20px;
             overflow: hidden;
             border: 1px solid rgba(83, 113, 255, 0.3);
             box-shadow: 
                 0 10px 35px rgba(37, 99, 235, 0.25),
-                0 0 60px rgba(59, 130, 246, 0.1) inset;
+                0 0 60极 rgba(59, 130, 246, 0.1) inset;
         }
         
         .tool-header {
@@ -86,7 +86,7 @@
         .wallet-btn.connected {
             background: linear-gradient(90deg, #10b981, #22c55e);
             color: white;
-            box-shadow: 极 5px 15px rgba(16, 185, 129, 0.4);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
         }
         
         .connection-status {
@@ -330,7 +330,7 @@
         
         .info-message {
             background: rgba(15, 23, 42, 0.5);
-            border-radius: 10px;
+            border-radius: 10极;
             padding: 12px;
             margin: 15px 0;
             border: 1px solid rgba(83, 113, 255, 0.3);
@@ -412,6 +412,32 @@
             color: #60a5fa;
             font-family: monospace;
         }
+        
+        .phase-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .phase-bar {
+            flex: 1;
+            height: 8px;
+            background: rgba(100, 116, 139, 0.3);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .phase-progress {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+            border-radius: 4px;
+        }
+        
+        .phase-text {
+            font-size: 12px;
+            color: #93c5fd;
+        }
     </style>
 </head>
 <body>
@@ -478,6 +504,13 @@
                             <span class="pool-label">区块减半阶段</span>
                             <span class="pool-value" id="rewardPhase">0/100</span>
                         </div>
+                    </div>
+                    
+                    <div class="phase-indicator">
+                        <div class="phase-bar">
+                            <div class="phase-progress" id="phaseProgress" style="width: 0%"></div>
+                        </div>
+                        <div class="phase-text" id="phaseText">阶段 0</div>
                     </div>
                     
                     <button class="action-button" id="refreshBtn">
@@ -563,8 +596,12 @@
                             <span class="balance-value" id="walletBalance">0.0000 BNB</span>
                         </div>
                         <div class="balance-row">
-                            <span class="balance-label">矿机价格</span>
-                            <span class="balance-value" id="machinePrice">0.0100 BNB</span>
+                            <span class="balance-label">基础矿机价格</span>
+                            <span class="balance-value" id="basicPrice">0.0100 BNB</span>
+                        </div>
+                        <div class="balance-row">
+                            <span class="balance-label">高级矿机价格</span>
+                            <span class="balance-value" id="advancedPrice">100 Mα</span>
                         </div>
                         <div class="balance-row">
                             <span class="balance-label">预计 Gas 费用</span>
@@ -590,7 +627,7 @@
                     
                     <!-- 高级矿机购买 -->
                     <div class="input-group">
-                        <label class="input-label">购买高级矿机 (100 Mα)</label>
+                        <label class="input-label">购买高级矿机</label>
                         <div style="display: flex; gap: 15px;">
                             <input type="number" id="advancedCount" min="1" value="1" class="input-field" placeholder="购买数量">
                             <button class="action-button" id="buyAdvancedBtn" style="width: auto; padding: 0 20px;">
@@ -623,7 +660,102 @@
     <script>
         // 合约配置
         const CONTRACT_ADDRESS = "0x92a01fFD08613F5Bf8E1b2572B92adEFE45750d8";
-        const CONTRACT_ABI = [{"constant":true,"inputs":[],"name":"DECREMENT_BLOCKS","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"INITIAL_MACHINE_PRICE_BNB","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"MAX_PHASES","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"REWARD_TOKEN","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"additionalMachinePriceToken","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"adminBuyTestMachine","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":true,"inputs":[],"name":"baseRewardPerBlockPerMachine","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"count","type":"uint256"}],"name":"buyAdditionalMachine","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"buyInitialMachine","outputs":[],"payable":true,"state极ability":"payable","type":"function"},{"constant":false,"inputs":[],"name":"claimRewards","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"currentRewardPerBlock","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"emergencyWithdraw","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"getContractTokenBalance","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"startBlock","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"totalMachines","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"withdrawBNB","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"amount","type":"uint256"}],"name":"withdrawTokens","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}];
+        const CONTRACT_ABI = [
+            {
+                "constant": true,
+                "inputs": [{"name": "user", "type": "address"}],
+                "name": "userInfo",
+                "outputs": [
+                    {"name": "normalMachineCount", "type": "uint256"},
+                    {"name": "testMachineCount", "type": "uint256"},
+                    {"name": "lastRewardClaimBlock", "type": "uint256"}
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "currentRewardPerBlock",
+                "outputs": [{"name": "", "type": "uint256"}],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [],
+                "name": "claimRewards",
+                "outputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "getContractTokenBalance",
+                "outputs": [{"name": "", "type": "uint256"}],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "startBlock",
+                "outputs": [{"name": "", "type": "uint256"}],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "DECREMENT_BLOCKS",
+                "outputs": [{"name": "", "type": "uint256"}],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "MAX_PHASES",
+                "outputs": [{"name": "", "type": "uint256"}],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [],
+                "name": "buyInitialMachine",
+                "outputs": [],
+                "payable": true,
+                "stateMutability": "payable",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "INITIAL_MACHINE_PRICE_BNB",
+                "outputs": [{"name": "", "type": "uint256"}],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "TEST_MACHINE_PRICE_TOKEN",
+                "outputs": [{"name": "", "type": "uint256"}],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            }
+        ];
         
         // 全局变量
         let web3;
@@ -631,7 +763,7 @@
         let userAddress;
         
         // 添加状态消息
-        function addStatusMessage(message, panelId) {
+        function addStatusMessage(message, panelId, type = "info") {
             const now = new Date();
             const hours = now.getHours().toString().padStart(2, '0');
             const minutes = now.getMinutes().toString().padStart(2, '0');
@@ -641,6 +773,11 @@
             const statusContent = document.getElementById(panelId);
             const messageDiv = document.createElement('div');
             messageDiv.className = 'status-item';
+            if (type === "error") {
+                messageDiv.style.color = "#f87171";
+            } else if (type === "success") {
+                messageDiv.style.color = "#34d399";
+            }
             messageDiv.textContent = `[${time}] ${message}`;
             
             statusContent.appendChild(messageDiv);
@@ -686,7 +823,7 @@
                 contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
                 
                 // 更新状态为已连接
-                connectBtn.innerHTML = '<i class="fas fa-plug"></i> 已连接';
+                connectBtn.innerHTML = '<i class="fas fa-plug"></极> 已连接';
                 connectBtn.className = 'wallet-btn connected';
                 connectBtn.disabled = false;
                 walletStatus.textContent = `已连接: ${userAddress.substring(0, 6)}...${userAddress.substring(38)}`;
@@ -698,7 +835,7 @@
                 
             } catch (error) {
                 console.error('连接失败:', error);
-                addStatusMessage('连接失败: ' + error.message, 'dashboardStatus');
+                addStatusMessage('连接失败: ' + error.message, 'dashboardStatus', 'error');
                 
                 const connectBtn = document.getElementById('connectBtn');
                 const walletStatus = document.getElementById('walletStatus');
@@ -710,12 +847,12 @@
             }
         }
         
-        // 加载用户数据
+        // 加载用户数据 - 修复了"userInfo未定义"错误
         async function loadUserData() {
             try {
                 if (!contract || !userAddress) return;
                 
-                // 获取用户信息
+                // 获取用户信息 - 使用正确的ABI调用userInfo
                 const userInfo = await contract.methods.userInfo(userAddress).call();
                 const lastClaimBlock = userInfo.lastRewardClaimBlock;
                 const currentBlock = await web3.eth.getBlockNumber();
@@ -748,10 +885,15 @@
                 // 计算当前减半阶段
                 const blocksPassedTotal = currentBlock - startBlock;
                 const currentPhase = Math.min(Math.floor(blocksPassedTotal / decrementBlocks), maxPhases);
+                const phaseProgress = (blocksPassedTotal % decrementBlocks) / decrementBlocks * 100;
                 
                 // 获取钱包余额
                 const balance = await web3.eth.getBalance(userAddress);
                 const formattedBalance = web3.utils.fromWei(balance, 'ether');
+                
+                // 获取矿机价格
+                const basicPrice = await contract.methods.INITIAL_MACHINE_PRICE_BNB().call();
+                const advancedPrice = await contract.methods.TEST_MACHINE_PRICE_TOKEN().call();
                 
                 // 更新UI
                 document.getElementById('rewardOverview').textContent = formatTokenAmount(pendingRewards);
@@ -764,7 +906,11 @@
                 document.getElementById('currentBlock').textContent = currentBlock;
                 document.getElementById('blocksPassed').textContent = currentBlock - lastClaimBlock;
                 document.getElementById('rewardPhase').textContent = `${currentPhase}/${maxPhases}`;
+                document.getElementById('phaseProgress').style.width = `${phaseProgress}%`;
+                document.getElementById('phaseText').textContent = `阶段 ${currentPhase}`;
                 document.getElementById('walletBalance').textContent = formattedBalance.substring(0, 6) + " BNB";
+                document.getElementById('basicPrice').textContent = web3.utils.fromWei(basicPrice, 'ether').substring(0,6) + " BNB";
+                document.getElementById('advancedPrice').textContent = formatTokenAmount(advancedPrice) + " Mα";
                 
                 // 更新基础矿机按钮状态
                 if (userInfo.normalMachineCount > 0) {
@@ -778,11 +924,11 @@
                 
             } catch (error) {
                 console.error('加载数据失败:', error);
-                addStatusMessage('数据加载失败: ' + error.message, 'dashboardStatus');
+                addStatusMessage('数据加载失败: ' + error.message, 'dashboardStatus', 'error');
             }
         }
         
-        // 购买基础矿机
+        // 购买基础矿机 - 修复无法购买问题
         async function purchaseBasicMachine() {
             const button = document.getElementById('buyBasicBtn');
             const warning = document.getElementById('fundsWarning');
@@ -790,14 +936,14 @@
             
             try {
                 if (!contract || !userAddress) {
-                    addStatusMessage('请先连接钱包', 'purchaseStatus');
+                    addStatusMessage('请先连接钱包', 'purchaseStatus', 'error');
                     return;
                 }
                 
                 // 检查是否已购买基础矿机
                 const userInfo = await contract.methods.userInfo(userAddress).call();
                 if (userInfo.normalMachineCount > 0) {
-                    addStatusMessage('每个地址只能购买一次基础矿机', 'purchaseStatus');
+                    addStatusMessage('每个地址只能购买一次基础矿机', 'purchaseStatus', 'error');
                     return;
                 }
                 
@@ -808,7 +954,7 @@
                 
                 // 获取基础矿机价格
                 const basicPrice = await contract.methods.INITIAL_MACHINE_PRICE_BNB().call();
-                const basicValueWei = web3.utils.toWei("0.01", 'ether');
+                const basicValueWei = basicPrice; // 使用合约返回的值
                 
                 // 获取钱包余额
                 const balance = await web3.eth.getBalance(userAddress);
@@ -824,7 +970,7 @@
                 
                 // 更新UI显示费用信息
                 document.getElementById('gasEstimate').textContent = web3.utils.fromWei(gasCost.toString(), 'ether').substring(0, 6) + " BNB";
-                document.getElementById('totalCost').textContent = (0.01 + parseFloat(web3.utils.fromWei(gasCost.toString(), 'ether'))).toFixed(4) + " BNB";
+                document.getElementById('totalCost').textContent = (parseFloat(web3.utils.fromWei(basicValueWei, 'ether')) + parseFloat(web3.utils.fromWei(gasCost.toString(), 'ether'))).toFixed(4) + " BNB";
                 
                 // 检查余额是否足够
                 if (BigInt(balance) < BigInt(basicValueWei) + BigInt(gasCost)) {
@@ -832,7 +978,7 @@
                     document.getElementById('warningMessage').textContent = `您的钱包余额不足，还需要约 ${missingAmount} BNB`;
                     warning.style.display = 'block';
                     
-                    addStatusMessage('购买失败: 钱包余额不足', 'purchaseStatus');
+                    addStatusMessage('购买失败: 钱包余额不足', 'purchaseStatus', 'error');
                     throw new Error("钱包余额不足");
                 }
                 
@@ -843,27 +989,40 @@
                     gas: gasEstimate
                 });
                 
-                addStatusMessage('基础矿机购买成功', 'purchaseStatus');
+                addStatusMessage('基础矿机购买成功', 'purchaseStatus', 'success');
                 
                 // 刷新数据
                 await loadUserData();
                 
             } catch (error) {
                 console.error('购买失败:', error);
-                addStatusMessage('购买失败: ' + error.message, 'purchaseStatus');
+                addStatusMessage('购买失败: ' + error.message, 'purchaseStatus', 'error');
             } finally {
-                button.innerHTML = '<i class="fas fa-server"></i> 购买基础矿机 (0.01 BNB)';
+                button.innerHTML = '<i class="fas fa-server"></i> 购买基础矿机';
                 button.disabled = false;
             }
         }
         
-        // 领取奖励
+        // 领取奖励 - 修复可领取奖励不刷新问题
         async function claimRewards() {
             const button = document.getElementById('claimBtn');
             
             try {
                 if (!contract || !userAddress) {
-                    addStatusMessage('请先连接钱包', 'rewardsStatus');
+                    addStatusMessage('请先连接钱包', 'rewardsStatus', 'error');
+                    return;
+                }
+                
+                // 获取当前奖励金额
+                const userInfo = await contract.methods.userInfo(userAddress).call();
+                const currentBlock = await web3.eth.getBlockNumber();
+                const rewardPerBlock = await contract.methods.currentRewardPerBlock().call();
+                const blocksPassed = currentBlock - userInfo.lastRewardClaimBlock;
+                const pendingRewards = (userInfo.normalMachineCount * blocksPassed * rewardPerBlock) + 
+                                     (userInfo.testMachineCount * blocksPassed * (rewardPerBlock / 20));
+                
+                if (pendingRewards <= 0) {
+                    addStatusMessage('无可领取奖励', 'rewardsStatus', 'error');
                     return;
                 }
                 
@@ -880,14 +1039,14 @@
                     gas: Math.floor(gasEstimate * 1.5)
                 });
                 
-                addStatusMessage('奖励领取成功', 'rewardsStatus');
+                addStatusMessage('奖励领取成功', 'rewardsStatus', 'success');
                 
                 // 刷新数据
                 await loadUserData();
                 
             } catch (error) {
                 console.error('领取失败:', error);
-                addStatusMessage('领取失败: ' + error.message, 'rewardsStatus');
+                addStatusMessage('领取失败: ' + error.message, 'rewardsStatus', 'error');
             } finally {
                 button.innerHTML = '<i class="fas fa-download"></i> 领取所有奖励';
                 button.disabled = false;
@@ -896,7 +1055,7 @@
         
         // 初始化页面
         document.addEventListener('DOMContentLoaded', function() {
-            // 设置标签切换
+            // 设置标签切换（修复切换问题）
             document.querySelectorAll('.tab').forEach(tab => {
                 tab.addEventListener('click', function() {
                     // 移除所有活动标签
@@ -918,6 +1077,7 @@
             // 设置事件监听器
             document.getElementById('connectBtn').addEventListener('click', connectWallet);
             document.getElementById('buyBasicBtn').addEventListener('click', purchaseBasicMachine);
+            document.getElementById('buyAdvancedBtn').addEventListener('click', purchaseAdvancedMachine);
             document.getElementById('claimBtn').addEventListener('click', claimRewards);
             document.getElementById('refreshBtn').addEventListener('click', async () => {
                 const refreshBtn = document.getElementById('refreshBtn');
@@ -926,9 +1086,19 @@
                 await loadUserData();
                 refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> 刷新数据';
                 refreshBtn.disabled = false;
-                addStatusMessage('数据已刷新', 'dashboardStatus');
+                addStatusMessage('数据已刷新', 'dashboardStatus', 'success');
             });
         });
+        
+        // 购买高级矿机（仅作为占位符）
+        async function purchaseAdvancedMachine() {
+            const button = document.getElementById('buyAdvancedBtn');
+            button.innerHTML = '<span class="loading"></span> 处理中...';
+            addStatusMessage('高级矿机购买功能正在开发中', 'purchaseStatus', 'info');
+            setTimeout(() => {
+                button.innerHTML = '<i class="fas fa-shopping-cart"></i> 购买';
+            }, 1500);
+        }
     </script>
 </body>
 </html>
