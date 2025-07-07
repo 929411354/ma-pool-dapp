@@ -3,114 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>矿机合约工具 - 已修复问题</title>
+    <title>矿机合约交互工具</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --primary: #0f172a;
+            --secondary: #3b82f6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark-bg: #0c0f2d;
+            --card-bg: #1e293b;
+            --text-light: #e2e8f0;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --highlight: rgba(59, 130, 246, 0.2);
+        }
+        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-            -webkit-tap-highlight-color: transparent;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         body {
-            background: #0f172a;
+            background: linear-gradient(135deg, var(--dark-bg), #1a1740);
+            color: var(--text-light);
             min-height: 100vh;
-            color: #e0f0ff;
-            padding: 15px;
+            padding: 20px;
             overflow-x: hidden;
         }
         
         .tool-container {
-            width: 100%;
-            max-width: 500px;
+            max-width: 1200px;
             margin: 0 auto;
-            background: #1e293b;
-            border-radius: 16px;
+            background: rgba(30, 41, 59, 0.85);
+            border-radius: 20px;
             overflow: hidden;
-            border: 1px solid #334155;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(83, 113, 255, 0.3);
+            box-shadow: 0 10px 35px rgba(37, 99, 235, 0.25);
+            backdrop-filter: blur(8px);
         }
         
         .tool-header {
-            position: relative;
-            background: linear-gradient(to right, #1e293b, #0f172a);
-            padding: 20px 15px;
-            text-align: center;
-            border-bottom: 1px solid #334155;
+            padding: 20px;
+            background: rgba(18, 27, 45, 0.9);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
         .tool-title {
             font-size: 24px;
             font-weight: 700;
-            margin-bottom: 8px;
             background: linear-gradient(90deg, #60a5fa, #3b82f6);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             letter-spacing: 0.5px;
         }
         
-        .mobile-warning {
-            background: rgba(16, 185, 129, 0.15);
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            border-radius: 10px;
-            padding: 12px;
-            margin: 10px auto;
-            font-size: 13px;
-            text-align: center;
+        .wallet-section {
+            display: flex;
+            gap: 15px;
         }
         
-        .error-alert {
-            background: rgba(239, 68, 68, 0.15);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            border-radius: 10px;
-            padding: 12px;
-            margin: 10px auto;
-            font-size: 13px;
-        }
-        
-        .wallet-connector {
-            padding: 15px;
-            background: rgba(18, 27, 45, 0.8);
-            border-bottom: 1px solid #334155;
-        }
-        
-        .mobile-connect-btn {
-            display: block;
-            width: 100%;
-            padding: 16px;
+        .wallet-btn {
+            padding: 12px 25px;
+            border-radius: 12px;
             background: linear-gradient(90deg, #3b82f6, #2563eb);
             color: white;
-            border-radius: 12px;
             font-weight: 600;
-            font-size: 16px;
             border: none;
-            text-align: center;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
             transition: all 0.3s;
         }
         
-        .mobile-connect-btn:hover {
+        .wallet-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(37, 99, 235, 0.3);
         }
         
+        .wallet-btn.connected {
+            background: linear-gradient(90deg, #10b981, #22c55e);
+        }
+        
         .connection-status {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-top: 15px;
+            gap: 10px;
             font-size: 14px;
-            padding: 0 5px;
         }
         
         .status-indicator {
-            display: inline-block;
             width: 12px;
             height: 12px;
             border-radius: 50%;
-            background: #94a3b8;
+            background: #64748b;
         }
         
         .status-indicator.connected {
@@ -130,128 +123,218 @@
         }
         
         .main-content {
-            padding: 15px;
-            display: none;
-        }
-        
-        .compact-stats {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 20px;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+            padding: 20px;
         }
         
-        .stat-item {
-            background: rgba(30, 41, 59, 0.8);
-            border-radius: 10px;
-            padding: 15px;
-            border: 1px solid #334155;
+        .functions-panel {
+            background: rgba(26, 42, 75, 0.8);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            height: fit-content;
         }
         
-        .stat-title {
-            font-size: 13px;
-            color: #94a3b8;
-            margin-bottom: 8px;
+        .panel-header {
             display: flex;
             align-items: center;
-            gap: 6px;
-        }
-        
-        .stat-value {
-            font-size: 16px;
-            font-weight: 600;
-            color: #60a5fa;
-        }
-        
-        .contract-functions {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 15px;
+            gap: 12px;
             margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
         }
         
-        .function-card {
-            background: rgba(26, 42, 75, 0.9);
-            border-radius: 12px;
-            padding: 18px;
-            border: 1px solid #334155;
+        .panel-header i {
+            font-size: 24px;
+            color: var(--secondary);
         }
         
-        .function-title {
-            font-size: 16px;
+        .panel-header h2 {
+            font-size: 20px;
             font-weight: 600;
+        }
+        
+        .function-list {
+            list-style: none;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .function-item {
+            padding: 12px 15px;
             margin-bottom: 10px;
-            color: #60a5fa;
-            display:极 flex;
+            border-radius: 12px;
+            background: rgba(15, 23, 42, 0.5);
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid transparent;
+        }
+        
+        .function-item:hover {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: rgba(83, 113, 255, 0.5);
+        }
+        
+        .function-item.active {
+            background: rgba(59, 130, 246, 0.3);
+            border-color: var(--secondary);
+        }
+        
+        .function-name {
+            font-family: 'Courier New', monospace;
+            font-size: 15px;
+        }
+        
+        .function-type {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+        
+        .interaction-panel {
+            background: rgba(26, 42, 75, 0.8);
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid var(--border-color);
+            min-height: 600px;
+        }
+        
+        .interaction-header {
+            display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+        
+        .interaction-header i {
+            font-size: 24px;
+            color: var(--secondary);
+        }
+        
+        .interaction-header h2 {
+            font-size: 20px;
+            font-weight: 600;
         }
         
         .function-description {
-            color: #94a3b8;
-            margin-bottom: 15px;
-            font-size: 13px;
-            line-height: 1.5;
+            color: var(--text-muted);
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-light);
+            font-size: 16px;
         }
         
         .action-button {
-            padding: 14px;
-            background: rgba(59, 130, 246, 0.2);
-            color: #3b82f6;
-            border: 1px solid rgba(59, 130, 246, 0.4);
-            border-radius: 10px;
-            cursor: pointer;
+            padding: 14px 25px;
+            background: linear-gradient(90deg, #3b82f6, #2563eb);
+            color: white;
+            border: none;
+            border-radius: 12px;
             font-weight: 600;
-            font-size: 15px;
-            display: flex;
+            cursor: pointer;
+            display: inline-flex;
             align-items: center;
-            justify-content: center;
-            gap: 8px;
-            width: 100%;
+            gap: 10px;
             transition: all 0.3s;
         }
         
+        .action-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(37, 99, 235, 0.3);
+        }
+        
         .action-button:active {
-            background: rgba(59, 130, 246, 0.3);
-            transform: translateY(2px);
+            transform: translateY(0);
         }
         
-        .status-section {
-            margin-top: 20px;
-            padding: 15px;
-            background: rgba(18, 27, 45, 0.8);
-            border-radius: 12px;
-            border: 1px solid #334155;
+        .status-panel {
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 25px;
+            border: 1px solid var(--border-color);
         }
         
-        .status-title {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 10px;
+        .status-header {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        
+        .status-header i {
+            font-size: 20px;
+            color: var(--text-muted);
+        }
+        
+        .status-header h3 {
+            font-size: 18px;
+            font-weight: 600;
         }
         
         .status-content {
-            background: rgba(16, 24, 40, 0.9);
-            border-radius: 8px;
+            background: rgba(12, 19, 35, 0.7);
+            border-radius: 12px;
             padding: 15px;
             font-family: 'Courier New', monospace;
-            font-size: 13px;
-            line-height: 1.5;
+            font-size: 14px;
+            line-height: 1.7;
             color: #cbd5e1;
             white-space: pre-wrap;
             overflow-y: auto;
             max-height: 200px;
-            border: 1px solid #334155;
+            border: 1px solid var(--border-color);
+        }
+        
+        .status-item {
+            margin-bottom: 8px;
+            padding-left: 10px;
+            border-left: 2px solid rgba(83, 113, 255, 0.5);
+        }
+        
+        .status-time {
+            color: #6d7e9c;
+            margin-right: 8px;
+        }
+        
+        .status-message {
+            color: #9ca3af;
+        }
+        
+        .success-message {
+            color: #6ee7b7;
+        }
+        
+        .error-message {
+            color: #fca5a5;
         }
         
         .loading {
             display: inline-block;
-            width: 18px;
-            height: 18px;
-            border: 3px solid rgba(255,255,255,.3);
+            width: 22px;
+            height: 22px;
+            border: 3px solid rgba(147, 197, 253, 0.3);
             border-radius: 50%;
             border-top-color: #60a5fa;
             animation: spin 1s linear infinite;
@@ -261,146 +344,88 @@
             to { transform: rotate(360deg); }
         }
         
-        .contract-address {
-            display: block;
-            margin: 5px auto;
-            padding: 5px 10px;
-            background: rgba(30, 41, 59, 0.6);
-            border-radius: 8px;
-            font-size: 12px;
-            color: #60a5fa;
+        .footer {
+            padding: 20px;
             text-align: center;
-            max-width: 80%;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            font-size: 14px;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
         }
         
-        .mobile-footer {
-            padding: 15px;
-            text-align: center;
-            font-size: 12px;
-            color: #64748b;
-        }
-        
-        .fixed-header {
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-        
-        .status-badge {
-            background: rgba(16, 185, 129, 0.15);
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            display: inline-block;
-            margin-left: 10px;
+        @media (max-width: 900px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .functions-panel {
+                height: auto;
+                max-height: 400px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="tool-container">
-        <div class="tool-header fixed-header">
-            <h1 class="tool-title">矿机合约工具</h1>
-            <span class="contract-address">0x7D77EC291bfFA9dc9f650F8c594Fa1459288Ae76</span>
-            
-            <div class="mobile-warning">
-                <i class="fas fa-check-circle"></i> 问题修复完成 - 所有功能正常
+        <div class="tool-header">
+            <div class="tool-title">
+                <i class="fas fa-server"></i> 矿机合约交互工具
             </div>
             
-            <div class="error-alert" style="display:none" id="errorAlert">
-                <i class="fas fa-exclamation-triangle"></i> <span id="errorText">检测到算术错误，已自动修复</span>
-            </div>
-        </div>
-        
-        <div class="wallet-connector">
-            <button id="mobileConnectBtn" class="mobile-connect-btn">
-                <i class="fas fa-plug"></i> 点击连接钱包
-            </button>
-            
-            <div class="connection-status">
-                <div>
+            <div class="wallet-section">
+                <button id="connectBtn" class="wallet-btn">
+                    <i class="fas fa-plug"></i> 连接钱包
+                </button>
+                
+                <div class="connection-status">
                     <span class="status-indicator" id="statusIndicator"></span>
-                    钱包状态: <span id="walletStatus">未连接</span>
-                </div>
-                <span class="status-badge" id="connectionState">就绪</span>
-            </div>
-        </div>
-        
-        <div class="main-content" id="mainContent">
-            <!-- 用户统计数据区块 -->
-            <div class="compact-stats">
-                <div class="stat-item">
-                    <div class="stat-title"><i class="fas fa-microchip"></i> 您的矿机数量</div>
-                    <div class="stat-value" id="machineCount">--</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-title"><i class="fas fa-coins"></i> 可领取奖励</div>
-                    <div class="stat-value" id="pendingRewards">--</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-title"><i class="fas fa-tachometer-alt"></i> 当前奖励率</div>
-                    <div class="stat-value" id="rewardPerBlock">--</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-title"><i class="fas fa-tag"></i> 额外矿机价格</div>
-                    <div class="stat-value" id="machinePrice">--</div>
-                </div>
-            </div>
-            
-            <div class="contract-functions">
-                <div class="function-card">
-                    <h3 class="function-title">
-                        <i class="fas fa-shopping-cart"></i> 购买初始矿机
-                    </h3>
-                    <p class="function-description">
-                        使用0.01 BNB购买您的第一台矿机
-                    </p>
-                    <button class="action-button" id="buyInitialBtn">
-                        <i class="fas fa-shopping-bag"></i> 购买初始矿机
-                    </button>
-                </div>
-                
-                <div class="function-card">
-                    <h3 class="function-title">
-                        <i class="fas fa-plus-circle"></i> 购买额外矿机
-                    </h3>
-                    <p class="function-description">
-                        使用代币购买更多矿机 (当前价格: <span id="additionalPrice">100</span> 代币/台)
-                    </p>
-                    <button class="action-button" id="buyAdditionalBtn">
-                        <i class="fas fa-cart-plus"></i> 购买额外矿机
-                    </button>
-                </div>
-                
-                <div class="function-card">
-                    <h3 class="function-title">
-                        <i class="fas fa-gift"></i> 领取奖励
-                    </h3>
-                    <p class="function-description">
-                        领取您的挖矿奖励代币
-                    </p>
-                    <button class="action-button" id="claimRewardsBtn">
-                        <i class="fas fa-hand-holding-usd"></i> 立即领取
-                    </button>
-                </div>
-            </div>
-            
-            <div class="status-section">
-                <h3 class="status-title">
-                    <i class="fas fa-clipboard-list"></i> 交易状态
-                    <span class="status-badge">已修复图2错误</span>
-                </h3>
-                <div class="status-content" id="statusContent">
-[系统就绪] 请连接钱包开始操作
-[问题修复] 图1: 钱包连接状态显示已修复
-[问题修复] 图2: 算术溢出/下溢错误已解决
+                    <span id="walletStatus">未连接</span>
                 </div>
             </div>
         </div>
         
-        <div class="mobile-footer">
-            <p>已修复所有问题 | 请确保在钱包内置浏览器中访问</p>
+        <div class="main-content">
+            <!-- 左侧函数列表 -->
+            <div class="functions-panel">
+                <div class="panel-header">
+                    <i class="fas fa-list"></i>
+                    <h2>合约函数</h2>
+                </div>
+                
+                <ul class="function-list" id="functionList">
+                    <!-- 函数列表将通过JS动态生成 -->
+                </ul>
+            </div>
+            
+            <!-- 右侧交互面板 -->
+            <div class="interaction-panel">
+                <div class="interaction-header">
+                    <i class="fas fa-terminal"></i>
+                    <h2>函数交互</h2>
+                </div>
+                
+                <div class="function-description" id="functionDescription">
+                    请从左侧选择要交互的函数
+                </div>
+                
+                <div id="functionForm">
+                    <!-- 函数表单将通过JS动态生成 -->
+                </div>
+                
+                <div class="status-panel">
+                    <div class="status-header">
+                        <i class="fas fa-clipboard-list"></i>
+                        <h3>交互日志</h3>
+                    </div>
+                    
+                    <div class="status-content" id="statusContent">
+[系统就绪] 请连接钱包并选择函数进行交互
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>矿机合约交互工具 • 版本 2.2.9 • 适配TP钱包内置浏览器</p>
         </div>
     </div>
 
@@ -408,147 +433,50 @@
     <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
     
     <script>
-        // 修复后的合约ABI（确保无乱码）
-        const CONTRACT_ADDRESS = "0x7D77EC291bfFA9dc9f650F8c594Fa1459288Ae76";
+        // 合约ABI（根据您提供的截图内容）
         const CONTRACT_ABI = [
-            {
-                "inputs": [
-                    {"internalType":"address","name":"_rewardToken","type":"address"},
-                    {"internalType":"address","name":"_admin","type":"address"},
-                    {"internalType":"address","name":"_treasury","type":"address"},
-                    {"internalType":"uint256","name":"_baseReward","type":"uint256"}
-                ],
-                "stateMutability":"nonpayable",
-                "type":"constructor"
-            },
-            {
-                "inputs":[],
-                "name":"ADMIN",
-                "outputs":[{"internalType":"address","name":"","type":"address"}],
-                "stateMutability":"view",
-                "type":"function"
-            },
-            {
-                "inputs":[],
-                "name":"DECREMENT_BLOCKS",
-                "outputs":[{"internalType":"uint256","name":"","type":"uint256"}],
-                "stateMutability":"view",
-                "type":"function"
-            },
-            {
-                "inputs":[],
-                "name":"DECREMENT_RATE",
-                "outputs":[{"internalType":"uint256","name":"","type":"uint256"}],
-                "stateMutability":"view",
-                "type":"function"
-            },
-            {
-                "inputs":[],
-                "name":"INITIAL_MACHINE_PRICE_BNB",
-                "outputs":[{"internalType":"uint256","name":"","type":"uint256"}],
-                "stateMutability":"view",
-                "type":"function"
-            },
-            {
-                "inputs":[],
-                "name":"REWARD_TOKEN",
-                "outputs":[{"internalType":"address","name":"","type":"address"}],
-                "stateMutability":"view",
-                "type":"function"
-            },
-            {
-                "inputs":[],
-                "name":"TREASURY",
-                "outputs":[{"internalType":"address","name":"","type":"address"}],
-                "stateMutability":"view",
-                "type":"function"
-            },
-            {
-                "inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],
-                "name":"addRewardTokens",
-                "outputs":[],
-                "stateMutability":"nonpayable",
-                "type":"function"
-            },
-            {
-                "inputs":[],
-                "name":"additionalMachinePriceToken",
-                "outputs":[{"internalType":"uint256","name":"","type":"uint256"}],
-                "stateMutability":"view",
-                "type":"function"
-            },
-            {
-                "inputs":[],
-                "name":"baseRewardPerBlockPerMachine",
-                "outputs":[{"internalType":"uint256","name":"","type":"uint256"}],
-                "stateMutability":"view",
-                "type":"function"
-            },
-            {
-                "inputs":[{"internalType":"uint256","name":"count","type":"uint256"}],
-                "name":"buyAdditionalMachine",
-                "outputs":[],
-                "stateMutability":"nonpayable",
-                "type":"function"
-            },
-            {
-                "inputs":[],
-                "name":"buyInitialMachine",
-                "outputs":[],
-                "stateMutability":"payable",
-                "type":"function"
-            },
-            {
-                "inputs":[],
-                "name":"claimRewards",
-                "outputs":[],
-                "stateMutability":"nonpayable",
-                "type":"function"
-            },
-            {
-                "inputs":[],
-                "name":"currentRewardPerBlock",
-                "outputs":[{"internalType":"uint256","name":"","type":"uint256"}],
-                "stateMutability":"view",
-                "type":"function"
-            },
-            {
-                "inputs":[{"internalType":"address","name":"","type":"address"}],
-                "name":"lastRewardClaimBlock",
-                "outputs":[{"internalType":"uint256","name":"","type":"uint256"}],
-                "stateMutability":"view",
-                "type":"function"
-            },
-            {
-                "inputs":[{"internalType":"address","name":"","type":"address"}],
-                "name":"machineCount",
-                "outputs":[{"internalType":"uint256","name":"","type":"uint256"}],
-                "stateMutability":"view",
-                "type":"function"
-            },
-            {
-                "inputs":[],
-                "name":"startBlock",
-                "outputs":[{"internalType":"uint256","name":"","type":"uint256"}],
-                "stateMutability":"view",
-                "type":"function"
-            },
-            {
-                "inputs":[],
-                "name":"totalMachines",
-                "outputs":[{"internalType":"uint256","name":"","type":"uint256"}],
-                "stateMutability":"view",
-                "type":"function"
-            }
+            // 状态变量
+            { name: "DECREMENT_BLOCKS", type: "function", constant: true },
+            { name: "DECREMENT_RATE", type: "function", constant: true },
+            { name: "INITIAL_MACHINE_PRICE_BNB", type: "function", constant: true },
+            { name: "MAX_PHASES", type: "function", constant: true },
+            { name: "REWARD_TOKEN", type: "function", constant: true },
+            { name: "TEST_MACHINE_PRICE_BNB", type: "function", constant: true },
+            { name: "TREASURY", type: "function", constant: true },
+            
+            // 用户操作
+            { name: "addRewardTokens", type: "function", inputs: [{ name: "amount", type: "uint256" }] },
+            { name: "additionalMachinePriceToken", type: "function", constant: true },
+            { name: "adminBuyTestMachine", type: "function", payable: true },
+            { name: "baseRewardPerBlockPerMachine", type: "function", constant: true },
+            { name: "buyAdditionalMachine", type: "function", inputs: [{ name: "count", type: "uint256" }] },
+            { name: "buyInitialMachine", type: "function", payable: true },
+            { name: "claimRewards", type: "function" },
+            { name: "currentRewardPerBlock", type: "function", constant: true },
+            { name: "emergencyWithdraw", type: "function" },
+            { name: "getContractTokenBalance", type: "function", constant: true },
+            { name: "getMachineCount", type: "function", inputs: [{ name: "user", type: "address" }], constant: true },
+            
+            // 所有权管理
+            { name: "owner", type: "function", constant: true },
+            { name: "renounceOwnership", type: "function" },
+            { name: "startBlock", type: "function", constant: true },
+            { name: "totalMachines", type: "function", constant: true },
+            { name: "transferOwnership", type: "function", inputs: [{ name: "newOwner", type: "address" }] },
+            { name: "updateAdditionalMachinePrice", type: "function", inputs: [{ name: "newPrice", type: "uint256" }] },
+            { name: "userInfo", type: "function", inputs: [{ name: "", type: "address" }], constant: true },
+            { name: "withdrawBNB", type: "function" },
+            { name: "withdrawTokens", type: "function", inputs: [{ name: "amount", type: "uint256" }] }
         ];
         
         // 全局变量
         let web3;
         let contract;
         let userAddress;
+        let currentFunction;
         
         // 添加状态消息
-        function addStatusMessage(message) {
+        function addStatusMessage(message, type = 'info') {
             const now = new Date();
             const hours = now.getHours().toString().padStart(2, '0');
             const minutes = now.getMinutes().toString().padStart(2, '0');
@@ -556,90 +484,199 @@
             const time = `${hours}:${minutes}:${seconds}`;
             
             const statusContent = document.getElementById('statusContent');
-            statusContent.innerHTML += `\n[${time}] ${message}`;
+            
+            let cls = 'status-message';
+            if (type === 'success') cls = 'success-message';
+            else if (type === 'error') cls = 'error-message';
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'status-item';
+            messageDiv.innerHTML = `<span class="status-time">[${time}]</span> <span class="${cls}">${message}</span>`;
+            
+            statusContent.appendChild(messageDiv);
             statusContent.scrollTop = statusContent.scrollHeight;
         }
         
-        // 显示错误信息
-        function showError(message) {
-            const errorAlert = document.getElementById('errorAlert');
-            const errorText = document.getElementById('errorText');
+        // 初始化函数列表
+        function initFunctionList() {
+            const functionList = document.getElementById('functionList');
+            functionList.innerHTML = '';
             
-            errorText.textContent = message;
-            errorAlert.style.display = 'block';
+            // 分组函数
+            const functionGroups = {
+                '状态变量': [],
+                '用户操作': [],
+                '管理员操作': [],
+                '所有权管理': []
+            };
             
-            // 5秒后自动隐藏
-            setTimeout(() => {
-                errorAlert.style.display = 'none';
-            }, 5000);
+            // 将函数分配到不同分组
+            CONTRACT_ABI.forEach(func => {
+                if (func.constant) {
+                    if (func.name === 'owner' || func.name === 'startBlock' || func.name === 'totalMachines') {
+                        functionGroups['所有权管理'].push(func);
+                    } else {
+                        functionGroups['状态变量'].push(func);
+                    }
+                } else {
+                    if (func.name === 'adminBuyTestMachine' || func.name === 'withdrawBNB' || func.name === 'withdrawTokens') {
+                        functionGroups['管理员操作'].push(func);
+                    } else if (func.name === 'renounceOwnership' || func.name === 'transferOwnership' || func.name === 'updateAdditionalMachinePrice') {
+                        functionGroups['所有权管理'].push(func);
+                    } else {
+                        functionGroups['用户操作'].push(func);
+                    }
+                }
+            });
             
-            addStatusMessage(message);
-        }
-        
-        // 更新连接状态UI
-        function updateConnectionState(state) {
-            const connectionState = document.getElementById('connectionState');
-            const statusIndicator = document.getElementById('statusIndicator');
-            const walletStatus = document.getElementById('walletStatus');
-            const connectBtn = document.getElementById('mobileConnectBtn');
-            
-            switch(state) {
-                case 'connecting':
-                    connectionState.textContent = '连接中...';
-                    connectionState.style.background = 'rgba(59, 130, 246, 0.15)';
-                    statusIndicator.className = 'status-indicator connecting';
-                    walletStatus.textContent = '连接中';
-                    connectBtn.innerHTML = '<span class="loading"></span> 连接中...';
-                    connectBtn.disabled = true;
-                    break;
+            // 渲染函数列表
+            for (const [groupName, functions] of Object.entries(functionGroups)) {
+                if (functions.length === 0) continue;
+                
+                // 添加分组标题
+                const groupHeader = document.createElement('li');
+                groupHeader.className = 'function-item group-header';
+                groupHeader.innerHTML = `<strong>${groupName}</strong>`;
+                functionList.appendChild(groupHeader);
+                
+                // 添加函数项
+                functions.forEach(func => {
+                    const funcItem = document.createElement('li');
+                    funcItem.className = 'function-item';
+                    funcItem.dataset.function = func.name;
                     
-                case 'connected':
-                    connectionState.textContent = '已连接';
-                    connectionState.style.background = 'rgba(16, 185, 129, 0.15)';
-                    statusIndicator.className = 'status-indicator connected';
-                    walletStatus.textContent = '已连接';
-                    connectBtn.innerHTML = '<i class="fas fa-plug"></i> 已连接';
-                    connectBtn.disabled = false;
-                    break;
+                    let funcDisplay = func.name;
+                    if (func.inputs && func.inputs.length > 0) {
+                        funcDisplay += '(' + func.inputs.map(input => input.type).join(', ') + ')';
+                    } else {
+                        funcDisplay += '()';
+                    }
                     
-                case 'disconnected':
-                    connectionState.textContent = '已断开';
-                    connectionState.style.background = 'rgba(239, 68, 68, 0.15)';
-                    statusIndicator.className = 'status-indicator';
-                    walletStatus.textContent = '未连接';
-                    connectBtn.innerHTML = '<i class="fas fa-plug"></i> 点击连接钱包';
-                    connectBtn.disabled = false;
-                    break;
+                    funcItem.innerHTML = `
+                        <div class="function-name">${funcDisplay}</div>
+                        <div class="function-type">${func.constant ? 'view' : 'transaction'}</div>
+                    `;
                     
-                case 'error':
-                    connectionState.textContent = '错误';
-                    connectionState.style.background = 'rgba(239, 68, 68, 0.15)';
-                    statusIndicator.className = 'status-indicator';
-                    walletStatus.textContent = '连接失败';
-                    connectBtn.innerHTML = '<i class="fas fa-plug"></i> 重试连接';
-                    connectBtn.disabled = false;
-                    break;
+                    funcItem.addEventListener('click', () => selectFunction(func));
+                    functionList.appendChild(funcItem);
+                });
             }
         }
         
-        // 解决算术溢出问题的安全计算
-        function safeMultiply(a, b) {
+        // 选择函数
+        function selectFunction(func) {
+            currentFunction = func;
+            
+            // 更新选中状态
+            document.querySelectorAll('.function-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelector(`.function-item[data-function="${func.name}"]`).classList.add('active');
+            
+            // 更新函数描述
+            let description = '';
+            if (func.constant) {
+                description = `这是一个只读函数，不会改变合约状态。`;
+            } else {
+                description = `这是一个写入函数，执行将消耗Gas并改变合约状态。`;
+            }
+            
+            if (func.payable) {
+                description += ` 此函数需要支付BNB。`;
+            }
+            
+            document.getElementById('functionDescription').textContent = description;
+            
+            // 生成函数表单
+            const functionForm = document.getElementById('functionForm');
+            functionForm.innerHTML = '';
+            
+            if (func.inputs && func.inputs.length > 0) {
+                func.inputs.forEach((input, index) => {
+                    const inputGroup = document.createElement('div');
+                    inputGroup.className = 'input-group';
+                    
+                    inputGroup.innerHTML = `
+                        <label for="input-${index}">${input.name} (${input.type})</label>
+                        <input type="text" id="input-${index}" placeholder="输入 ${input.type} 值">
+                    `;
+                    
+                    functionForm.appendChild(inputGroup);
+                });
+            }
+            
+            // 添加执行按钮
+            const actionButton = document.createElement('button');
+            actionButton.className = 'action-button';
+            actionButton.id = 'executeBtn';
+            
+            if (func.constant) {
+                actionButton.innerHTML = '<i class="fas fa-search"></i> 查询';
+            } else {
+                actionButton.innerHTML = '<i class="fas fa-paper-plane"></i> 执行';
+            }
+            
+            actionButton.addEventListener('click', executeFunction);
+            functionForm.appendChild(actionButton);
+        }
+        
+        // 执行函数
+        async function executeFunction() {
+            if (!contract || !userAddress) {
+                addStatusMessage('错误: 请先连接钱包', 'error');
+                return;
+            }
+            
+            const executeBtn = document.getElementById('executeBtn');
+            const originalHTML = executeBtn.innerHTML;
+            executeBtn.innerHTML = '<span class="loading"></span> 处理中...';
+            executeBtn.disabled = true;
+            
             try {
-                // 处理大数乘法
-                const aBN = web3.utils.toBN(a);
-                const bBN = web3.utils.toBN(b);
-                return aBN.mul(bBN).toString();
+                let result;
+                const inputs = [];
+                
+                // 收集输入参数
+                if (currentFunction.inputs && currentFunction.inputs.length > 0) {
+                    for (let i = 0; i < currentFunction.inputs.length; i++) {
+                        const inputValue = document.getElementById(`input-${i}`).value;
+                        if (!inputValue) {
+                            throw new Error(`请输入参数: ${currentFunction.inputs[i].name}`);
+                        }
+                        inputs.push(inputValue);
+                    }
+                }
+                
+                if (currentFunction.constant) {
+                    // 只读函数调用
+                    result = await contract.methods[currentFunction.name](...inputs).call({ from: userAddress });
+                    addStatusMessage(`查询成功: ${JSON.stringify(result)}`, 'success');
+                } else {
+                    // 写入函数调用
+                    const tx = await contract.methods[currentFunction.name](...inputs).send({ from: userAddress });
+                    addStatusMessage(`交易成功! 交易哈希: ${tx.transactionHash}`, 'success');
+                }
             } catch (error) {
-                showError('安全计算错误: ' + error.message);
-                return '0'; // 返回安全的默认值
+                console.error('执行失败:', error);
+                addStatusMessage(`执行失败: ${error.message}`, 'error');
+            } finally {
+                executeBtn.innerHTML = originalHTML;
+                executeBtn.disabled = false;
             }
         }
         
-        // TP钱包专用连接方法
-        async function connectTPWallet() {
+        // 连接钱包
+        async function connectWallet() {
             try {
                 // 更新状态为连接中
-                updateConnectionState('connecting');
+                const statusIndicator = document.getElementById('statusIndicator');
+                const walletStatus = document.getElementById('walletStatus');
+                const connectBtn = document.getElementById('connectBtn');
+                
+                statusIndicator.className = 'status-indicator connecting';
+                walletStatus.textContent = '连接中...';
+                connectBtn.innerHTML = '<span class="loading"></span> 连接中...';
+                connectBtn.disabled = true;
                 
                 // 检查是否在钱包内置浏览器中
                 if (typeof ethereum === 'undefined') {
@@ -658,216 +695,44 @@
                 // 使用钱包的provider
                 web3 = new Web3(ethereum);
                 
-                // 创建合约实例
-                contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
+                // 创建合约实例（合约地址在JS中配置，不在界面显示）
+                contract = new web3.eth.Contract(CONTRACT_ABI, "0x92a01fFD08613F5Bf8E1b2572B92adEFE45750d8");
                 
                 // 更新状态为已连接
-                updateConnectionState('connected');
-                addStatusMessage('钱包连接成功');
-                addStatusMessage('用户地址: ' + userAddress.substring(0, 6) + '...' + userAddress.substring(38));
+                statusIndicator.className = 'status-indicator connected';
+                walletStatus.textContent = `已连接: ${userAddress.substring(0, 6)}...${userAddress.substring(38)}`;
+                connectBtn.innerHTML = '<i class="fas fa-plug"></i> 已连接';
+                connectBtn.className = 'wallet-btn connected';
+                connectBtn.disabled = false;
                 
-                // 显示主内容区域
-                document.getElementById('mainContent').style.display = 'block';
+                addStatusMessage('钱包连接成功', 'success');
                 
-                // 加载用户数据
-                await loadUserData();
-                
-                // 添加钱包事件监听器
-                ethereum.on('accountsChanged', (accounts) => {
-                    if (accounts.length > 0) {
-                        userAddress = accounts[0];
-                        addStatusMessage('账户变更: ' + userAddress.substring(0, 6) + '...');
-                        loadUserData();
-                    } else {
-                        disconnectWallet();
-                    }
-                });
-                
-                ethereum.on('disconnect', () => {
-                    addStatusMessage('钱包连接已断开');
-                    disconnectWallet();
-                });
+                // 初始化函数列表
+                initFunctionList();
                 
             } catch (error) {
                 console.error('连接失败:', error);
-                showError('连接失败: ' + error.message);
-                updateConnectionState('error');
-            }
-        }
-        
-        // 断开连接
-        function disconnectWallet() {
-            const mainContent = document.getElementById('mainContent');
-            
-            updateConnectionState('disconnected');
-            
-            mainContent.style.display = 'none';
-            
-            document.getElementById('machineCount').textContent = '--';
-            document.getElementById('pendingRewards').textContent = '--';
-            document.getElementById('rewardPerBlock').textContent = '--';
-            document.getElementById('machinePrice').textContent = '--';
-            
-            addStatusMessage('钱包已断开连接');
-        }
-        
-        // 加载用户数据
-        async function loadUserData() {
-            try {
-                if (!contract || !userAddress) {
-                    addStatusMessage('合约未初始化');
-                    return;
-                }
+                addStatusMessage('连接失败: ' + error.message, 'error');
                 
-                // 获取用户矿机数量
-                const machineCount = await contract.methods.machineCount(userAddress).call();
-                document.getElementById('machineCount').textContent = machineCount;
+                const statusIndicator = document.getElementById('statusIndicator');
+                const walletStatus = document.getElementById('walletStatus');
+                const connectBtn = document.getElementById('connectBtn');
                 
-                // 获取额外矿机价格
-                const machinePrice = await contract.methods.additionalMachinePriceToken().call();
-                document.getElementById('machinePrice').textContent = web3.utils.fromWei(machinePrice, 'ether') + ' 代币';
-                document.getElementById('additionalPrice').textContent = web3.utils.fromWei(machinePrice, 'ether');
-                
-                // 获取当前区块奖励率
-                const rewardPerBlock = await contract.methods.currentRewardPerBlock().call();
-                document.getElementById('rewardPerBlock').textContent = web3.utils.fromWei(rewardPerBlock, 'ether') + ' 代币/区块';
-                
-                // 计算待领取奖励（使用安全计算解决算术溢出问题）
-                if (machineCount > 0) {
-                    const lastClaimBlock = await contract.methods.lastRewardClaimBlock(userAddress).call();
-                    const currentBlock = await web3.eth.getBlockNumber();
-                    
-                    if (lastClaimBlock > 0) {
-                        const blocksPassed = currentBlock - lastClaimBlock;
-                        
-                        // 使用安全计算方法解决溢出问题
-                        const rewards = safeMultiply(safeMultiply(machineCount, blocksPassed), rewardPerBlock);
-                        
-                        document.getElementById('pendingRewards').textContent = web3.utils.fromWei(rewards, 'ether') + ' 代币';
-                    }
-                }
-                
-            } catch (error) {
-                console.error('加载数据失败:', error);
-                showError('数据加载失败: ' + error.message);
-            }
-        }
-        
-        // 购买初始矿机
-        async function buyInitialMachine() {
-            try {
-                if (!contract || !userAddress) {
-                    throw new Error("请先连接钱包");
-                }
-                
-                const button = document.getElementById('buyInitialBtn');
-                button.innerHTML = '<span class="loading"></span> 处理中...';
-                button.disabled = true;
-                
-                const result = await contract.methods.buyInitialMachine().send({
-                    from: userAddress,
-                    value: web3.utils.toWei("0.01", "ether")
-                });
-                
-                addStatusMessage('交易成功: ' + result.transactionHash.substring(0, 16) + '...');
-                addStatusMessage('成功购买初始矿机');
-                
-                await loadUserData();
-                
-            } catch (error) {
-                console.error('购买失败:', error);
-                showError('购买失败: ' + error.message);
-            } finally {
-                const button = document.getElementById('buyInitialBtn');
-                button.innerHTML = '<i class="fas fa-shopping-bag"></i> 购买初始矿机';
-                button.disabled = false;
-            }
-        }
-        
-        // 购买额外矿机
-        async function buyAdditionalMachine() {
-            try {
-                if (!contract || !userAddress) {
-                    throw new Error("请先连接钱包");
-                }
-                
-                const button = document.getElementById('buyAdditionalBtn');
-                button.innerHTML = '<span class="loading"></span> 处理中...';
-                button.disabled = true;
-                
-                const count = 1;
-                const result = await contract.methods.buyAdditionalMachine(count).send({
-                    from: userAddress,
-                });
-                
-                addStatusMessage('交易成功: ' + result.transactionHash.substring(0, 16) + '...');
-                addStatusMessage(`成功购买 ${count} 台额外矿机`);
-                
-                await loadUserData();
-                
-            } catch (error) {
-                console.error('购买失败:', error);
-                showError('购买失败: ' + error.message);
-            } finally {
-                const button = document.getElementById('buyAdditionalBtn');
-                button.innerHTML = '<i class="fas fa-cart-plus"></i> 购买额外矿机';
-                button.disabled = false;
-            }
-        }
-        
-        // 领取奖励
-        async function claimRewards() {
-            try {
-                if (!contract || !userAddress) {
-                    throw new Error("请先连接钱包");
-                }
-                
-                const button = document.getElementById('claimRewardsBtn');
-                button.innerHTML = '<span class="loading"></span> 处理中...';
-                button.disabled = true;
-                
-                const result = await contract.methods.claimRewards().send({
-                    from: userAddress,
-                });
-                
-                addStatusMessage('交易成功: ' + result.transactionHash.substring(0, 16) + '...');
-                addStatusMessage('奖励领取成功');
-                
-                await loadUserData();
-                
-            } catch (error) {
-                console.error('领取失败:', error);
-                showError('领取失败: ' + error.message);
-            } finally {
-                const button = document.getElementById('claimRewardsBtn');
-                button.innerHTML = '<i class="fas fa-hand-holding-usd"></i> 立即领取';
-                button.disabled = false;
+                statusIndicator.className = 'status-indicator';
+                walletStatus.textContent = '连接失败';
+                connectBtn.innerHTML = '<i class="fas fa-plug"></i> 重试连接';
+                connectBtn.className = 'wallet-btn';
+                connectBtn.disabled = false;
             }
         }
         
         // 初始化页面
         document.addEventListener('DOMContentLoaded', function() {
             // 设置事件监听器
-            document.getElementById('mobileConnectBtn').addEventListener('click', connectTPWallet);
-            document.getElementById('buyInitialBtn').addEventListener('click', buyInitialMachine);
-            document.getElementById('buyAdditionalBtn').addEventListener('click', buyAdditionalMachine);
-            document.getElementById('claimRewardsBtn').addEventListener('click', claimRewards);
+            document.getElementById('connectBtn').addEventListener('click', connectWallet);
             
-            // 设置初始状态
-            addStatusMessage('系统已就绪');
-            addStatusMessage('点击"连接钱包"按钮开始');
-            addStatusMessage('问题修复: 图1钱包连接状态显示');
-            addStatusMessage('问题修复: 图2算术溢出/下溢错误');
-            
-            // 更新连接状态为未连接
-            updateConnectionState('disconnected');
-            
-            // 检查是否已连接
-            if (typeof ethereum !== 'undefined' && ethereum.isConnected()) {
-                setTimeout(() => {
-                    connectTPWallet();
-                }, 1000);
-            }
+            // 初始状态消息
+            addStatusMessage('系统就绪，请连接钱包');
         });
     </script>
 </body>
