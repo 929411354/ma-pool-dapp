@@ -3,30 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>矿机合约工具 - 功能修复版</title>
+    <title>矿机合约工具 - TP钱包专用</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/web3modal@1.9.4/dist/web3modal.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.7.5/dist/umd/index.min.js"></script>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
         
         body {
             background: #0f172a;
             min-height: 100vh;
             color: #e0f0ff;
-            padding: 20px;
+            padding: 15px;
             overflow-x: hidden;
         }
         
         .tool-container {
             width: 100%;
-            max-width: 600px;
+            max-width: 100%;
             margin: 0 auto;
             background: #1e293b;
             border-radius: 16px;
@@ -38,51 +36,70 @@
         .tool-header {
             position: relative;
             background: linear-gradient(to right, #1e293b, #0f172a);
-            padding: 25px 20px;
+            padding: 20px 15px;
             text-align: center;
             border-bottom: 1px solid #334155;
         }
         
         .tool-title {
-            font-size: 28px;
-            font-weight: 800;
+            font-size: 24px;
+            font-weight: 700;
             margin-bottom: 8px;
             background: linear-gradient(90deg, #60a5fa, #3b82f6);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
         }
         
-        .success-alert {
-            background: rgba(16, 185, 129, 0.15);
-            border: 1px solid rgba(16, 185, 129, 0.25);
-            border-radius: 8px;
-            padding: 12px 15px;
-            margin: 10px auto 15px;
-            max-width: 90%;
+        .mobile-warning {
+            background: rgba(255, 184, 0, 0.15);
+            border: 1px solid rgba(255, 184, 0, 0.3);
+            border-radius: 10px;
+            padding: 12px;
+            margin: 10px auto;
+            font-size: 13px;
             text-align: center;
         }
         
         .wallet-connector {
-            padding: 18px 20px;
+            padding: 15px;
             background: rgba(18, 27, 45, 0.8);
             border-bottom: 1px solid #334155;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        }
+        
+        .mobile-connect-btn {
+            display: block;
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(90deg, #3b82f6, #2563eb);
+            color: white;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 16px;
+            border: none;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .mobile-connect-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(37, 99, 235, 0.3);
         }
         
         .connection-status {
-            font-size: 14px;
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 10px;
+            margin-top: 15px;
+            font-size: 14px;
+            padding: 0 5px;
         }
         
         .status-indicator {
             display: inline-block;
-            width: 10px;
-            height: 10px;
+            width: 12px;
+            height: 12px;
             border-radius: 50%;
             background: #94a3b8;
         }
@@ -92,50 +109,16 @@
             box-shadow: 0 0 10px rgba(16, 185, 129, 0.7);
         }
         
-        .btn {
-            padding: 11px 18px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            border: none;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .connect-btn {
-            background: #3b82f6;
-            color: white;
-        }
-        
-        .connect-btn:hover {
-            background: #2563eb;
-            transform: translateY(-2px);
-        }
-        
-        .disconnect-btn {
-            background: rgba(239, 68, 68, 0.2);
-            color: #ef4444;
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            display: none;
-        }
-        
-        .disconnect-btn:hover {
-            background: rgba(239, 68, 68, 0.3);
-            transform: translateY(-2px);
-        }
-        
         .main-content {
-            padding: 20px;
+            padding: 15px;
+            display: none; /* 默认隐藏，连接钱包后显示 */
         }
         
         .compact-stats {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 25px;
+            gap: 12px;
+            margin-bottom: 20px;
         }
         
         .stat-item {
@@ -143,25 +126,19 @@
             border-radius: 10px;
             padding: 15px;
             border: 1px solid #334155;
-            transition: all 0.3s;
-        }
-        
-        .stat-item:hover {
-            transform: translateY(-3px);
-            background: rgba(30, 41, 59, 1);
         }
         
         .stat-title {
-            font-size: 14px;
+            font-size: 13px;
             color: #94a3b8;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
         
         .stat-value {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 600;
             color: #60a5fa;
         }
@@ -170,62 +147,56 @@
             display: grid;
             grid-template-columns: 1fr;
             gap: 15px;
+            margin-bottom: 20px;
         }
         
         .function-card {
             background: rgba(26, 42, 75, 0.9);
             border-radius: 12px;
-            padding: 20px;
+            padding: 18px;
             border: 1px solid #334155;
-            transition: all 0.3s;
-        }
-        
-        .function-card:hover {
-            transform: translateY(-5px);
-            background: rgba(30, 47, 82, 1);
         }
         
         .function-title {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 600;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             color: #60a5fa;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
         
         .function-description {
             color: #94a3b8;
             margin-bottom: 15px;
-            font-size: 14px;
+            font-size: 13px;
             line-height: 1.5;
         }
         
         .action-button {
-            padding: 15px;
+            padding: 14px;
             background: rgba(59, 130, 246, 0.2);
-            color: #3b82f极;
+            color: #3b82f6;
             border: 1px solid rgba(59, 130, 246, 0.4);
             border-radius: 10px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 16px;
+            font-size: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            transition: all 0.3s;
+            gap: 8px;
             width: 100%;
         }
         
-        .action-button:hover {
+        .action-button:active {
             background: rgba(59, 130, 246, 0.3);
-            transform: translateY(-2px);
+            transform: translateY(2px);
         }
         
         .status-section {
-            margin-top: 25px;
+            margin-top: 20px;
             padding: 15px;
             background: rgba(18, 27, 45, 0.8);
             border-radius: 12px;
@@ -233,12 +204,12 @@
         }
         
         .status-title {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 600;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
         
         .status-content {
@@ -246,8 +217,8 @@
             border-radius: 8px;
             padding: 15px;
             font-family: 'Courier New', monospace;
-            font-size: 14px;
-            line-height: 1.6;
+            font-size: 13px;
+            line-height: 1.5;
             color: #cbd5e1;
             white-space: pre-wrap;
             overflow-y: auto;
@@ -257,8 +228,8 @@
         
         .loading {
             display: inline-block;
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             border: 3px solid rgba(255,255,255,.3);
             border-radius: 50%;
             border-top-color: #60a5fa;
@@ -270,36 +241,30 @@
         }
         
         .contract-address {
-            display: inline-block;
-            padding: 6px 12px;
+            display: block;
+            margin: 5px auto;
+            padding: 5px 10px;
             background: rgba(30, 41, 59, 0.6);
             border-radius: 8px;
-            font-size: 14px;
+            font-size: 12px;
             color: #60a5fa;
+            text-align: center;
+            max-width: 80%;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         
-        /* 移动设备优化 */
-        @media (max-width: 768px) {
-            .tool-container {
-                width: 95%;
-                max-width: 100%;
-            }
-            
-            .tool-title {
-                font-size: 24px;
-            }
-            
-            .compact-stats {
-                grid-template-columns: 1fr;
-            }
-            
-            .function-card {
-                padding: 15px;
-            }
-            
-            .function-title {
-                font-size: 16px;
-            }
+        .mobile-footer {
+            padding: 15px;
+            text-align: center;
+            font-size: 12px;
+            color: #64748b;
+        }
+        
+        /* 添加连接成功动画 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
@@ -307,26 +272,25 @@
     <div class="tool-container">
         <div class="tool-header">
             <h1 class="tool-title">矿机合约工具</h1>
-            <div class="success-alert">
-                <i class="fas fa-check-circle" style="color:#10b981; margin-right:8px;"></i> 
-                钱包连接和合约功能问题已完全修复
+            <span class="contract-address">0x7D77EC291bfFA9dc9f650F8c594Fa1459288Ae76</span>
+            
+            <div class="mobile-warning">
+                <i class="fas fa-exclamation-circle"></i> 请在TP钱包内置浏览器中打开
             </div>
         </div>
         
         <div class="wallet-connector">
+            <button id="mobileConnectBtn" class="mobile-connect-btn">
+                <i class="fas fa-plug"></i> 点击连接TP钱包
+            </button>
+            
             <div class="connection-status">
                 <span class="status-indicator" id="statusIndicator"></span>
                 钱包状态: <span id="walletStatus">未连接</span>
             </div>
-            <button class="btn connect-btn" id="connectBtn">
-                <i class="fas fa-wallet"></i> 连接钱包
-            </button>
-            <button class="btn disconnect-btn" id="disconnectBtn">
-                <i class="fas fa-unlink"></i> 断开
-            </button>
         </div>
         
-        <div class="main-content">
+        <div class="main-content" id="mainContent">
             <!-- 用户统计数据区块 -->
             <div class="compact-stats">
                 <div class="stat-item">
@@ -391,12 +355,18 @@
                 </h3>
                 <div class="status-content" id="statusContent">
 [系统就绪] 请连接钱包开始操作
-[修复完成] 所有功能问题已解决
                 </div>
             </div>
         </div>
+        
+        <div class="mobile-footer">
+            <p>已针对TP钱包优化 | 请确保在钱包内置浏览器中访问</p>
+        </div>
     </div>
 
+    <!-- 引入Web3库 -->
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
+    
     <script>
         // 修复后的合约ABI（确保无乱码）
         const CONTRACT_ADDRESS = "0x7D77EC291bfFA9dc9f650F8c594Fa1459288Ae76";
@@ -466,7 +436,7 @@
                 "outputs":[{"internalType":"uint256","name":"","type":"uint256"}],
                 "stateMutability":"view",
                 "type":"function"
-极},
+            },
             {
                 "inputs":[],
                 "name":"baseRewardPerBlockPerMachine",
@@ -534,37 +504,8 @@
         
         // 全局变量
         let web3;
-        let web3Modal;
-        let provider;
         let contract;
         let userAddress;
-        
-        // 初始化Web3Modal（修复后）
-        function initWeb3Modal() {
-            const providerOptions = {
-                walletconnect: {
-                    package: WalletConnectProvider,
-                    options: {
-                        infuraId: "8043bb2cf99347b1bfadfb233c5325c0",
-                        rpc: {
-                            56: "https://bsc-dataseed.binance.org/"
-                        }
-                    }
-                },
-                metamask: {
-                    package: true,
-                    options: {
-                        chainId: 56 // 使用BNB Chain
-                    }
-                }
-            };
-
-            web3Modal = new Web3Modal({
-                cacheProvider: true,
-                providerOptions,
-                theme: "dark"
-            });
-        }
         
         // 添加状态消息
         function addStatusMessage(message) {
@@ -579,97 +520,92 @@
             statusContent.scrollTop = statusContent.scrollHeight;
         }
         
-        // 连接钱包（修复后）
-        async function connectWallet() {
-            const connectBtn = document.getElementById('connectBtn');
-            const disconnectBtn = document.getElementById('disconnectBtn');
+        // TP钱包专用连接方法
+        async function connectTPWallet() {
+            const connectBtn = document.getElementById('mobileConnectBtn');
             const statusIndicator = document.getElementById('statusIndicator');
+            const walletStatus = document.getElementById('walletStatus');
             
             try {
+                // 检查是否在TP钱包内置浏览器中
+                if (typeof ethereum === 'undefined') {
+                    throw new Error("未检测到TP钱包，请在TP钱包内置浏览器中打开");
+                }
+                
                 // 更新UI状态
-                document.getElementById('walletStatus').textContent = '连接中...';
+                walletStatus.textContent = '连接中...';
                 connectBtn.innerHTML = '<span class="loading"></span> 连接中...';
                 connectBtn.disabled = true;
                 
-                // 初始化Web3Modal
-                if (!web3Modal) {
-                    initWeb3Modal();
-                }
+                // 请求账户连接
+                const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
                 
-                // 连接钱包
-                provider = await web3Modal.connect();
-                web3 = new Web3(provider);
-                
-                // 获取用户账户
-                const accounts = await web3.eth.getAccounts();
-                if (accounts.length === 0) {
-                    throw new Error("未检测到授权账户");
+                if (!accounts || accounts.length === 0) {
+                    throw new Error("未获取到账户授权");
                 }
                 
                 userAddress = accounts[0];
                 
-                // 更新UI
-                document.getElementById('walletStatus').textContent = '已连接';
-                statusIndicator.classList.add('connected');
-                connectBtn.style.display = 'none';
-                disconnectBtn.style.display = 'flex';
+                // 使用TP钱包的provider
+                web3 = new Web3(ethereum);
                 
                 // 创建合约实例
                 contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
                 
-                // 添加初始状态消息
-                addStatusMessage('钱包连接成功');
-                addStatusMessage('用户地址: ' + userAddress.substring(0, 6) + '...' + userAddress.substring(userAddress.length - 4));
+                // 更新UI
+                walletStatus.textContent = '已连接';
+                statusIndicator.classList.add('connected');
+                addStatusMessage('TP钱包连接成功');
+                addStatusMessage('用户地址: ' + userAddress.substring(0, 6) + '...' + userAddress.substring(38));
+                
+                // 显示主内容区域
+                document.getElementById('mainContent').style.display = 'block';
+                
+                // 添加淡入动画
+                document.getElementById('mainContent').style.animation = 'fadeIn 0.5s ease';
                 
                 // 加载用户数据
                 await loadUserData();
                 
-                // 添加事件监听器
-                provider.on('accountsChanged', (accounts) => {
+                // 添加钱包事件监听器
+                ethereum.on('accountsChanged', (accounts) => {
                     if (accounts.length > 0) {
                         userAddress = accounts[0];
-                        addStatusMessage('账户变更: ' + userAddress.substring(0, 6) + '...' + userAddress.substring(userAddress.length - 4));
+                        addStatusMessage('账户变更: ' + userAddress.substring(0, 6) + '...');
                         loadUserData();
                     } else {
                         disconnectWallet();
                     }
                 });
                 
-                provider.on('disconnect', () => {
+                ethereum.on('disconnect', () => {
                     addStatusMessage('钱包连接已断开');
                     disconnectWallet();
-                });
-                
-                provider.on('chainChanged', () => {
-                    window.location.reload();
                 });
                 
             } catch (error) {
                 console.error('连接失败:', error);
                 addStatusMessage('连接失败: ' + error.message);
-                document.getElementById('walletStatus').textContent = '连接失败';
-                connectBtn.innerHTML = '<i class="fas fa-wallet"></i> 连接钱包';
+                walletStatus.textContent = '连接失败';
+                connectBtn.innerHTML = '<i class="fas fa-plug"></i> 点击连接TP钱包';
                 statusIndicator.classList.remove('connected');
-            } finally {
                 connectBtn.disabled = false;
             }
         }
         
         // 断开连接
         function disconnectWallet() {
-            if (provider && provider.disconnect) {
-                provider.disconnect();
-            }
-            
-            const connectBtn = document.getElementById('connectBtn');
-            const disconnectBtn = document.getElementById('disconnectBtn');
+            const connectBtn = document.getElementById('mobileConnectBtn');
             const statusIndicator = document.getElementById('statusIndicator');
+            const walletStatus = document.getElementById('walletStatus');
+            const mainContent = document.getElementById('mainContent');
             
-            connectBtn.style.display = 'flex';
-            disconnectBtn.style.display = 'none';
-            document.getElementById('walletStatus').textContent = '未连接';
-            connectBtn.innerHTML = '<i class="fas fa-wallet"></i> 连接钱包';
+            walletStatus.textContent = '未连接';
             statusIndicator.classList.remove('connected');
+            connectBtn.innerHTML = '<i class="fas fa-plug"></i> 点击连接TP钱包';
+            connectBtn.disabled = false;
+            
+            mainContent.style.display = 'none';
             
             document.getElementById('machineCount').textContent = '--';
             document.getElementById('pendingRewards').textContent = '--';
@@ -683,7 +619,7 @@
         async function loadUserData() {
             try {
                 if (!contract || !userAddress) {
-                    addStatusMessage('合约未初始化，请先连接钱包');
+                    addStatusMessage('合约未初始化');
                     return;
                 }
                 
@@ -718,112 +654,92 @@
             }
         }
         
-        // 购买初始矿机（修复后）
+        // 购买初始矿机
         async function buyInitialMachine() {
             try {
-                // 先检查合约是否初始化
                 if (!contract || !userAddress) {
-                    throw new Error("合约未初始化，请先连接钱包");
+                    throw new Error("请先连接钱包");
                 }
                 
-                // 更新按钮状态
                 const button = document.getElementById('buyInitialBtn');
-                const originalHTML = button.innerHTML;
                 button.innerHTML = '<span class="loading"></span> 处理中...';
                 button.disabled = true;
                 
-                // 发送交易
                 const result = await contract.methods.buyInitialMachine().send({
                     from: userAddress,
                     value: web3.utils.toWei("0.01", "ether")
                 });
                 
-                addStatusMessage('交易成功: ' + result.transactionHash);
+                addStatusMessage('交易成功: ' + result.transactionHash.substring(0, 16) + '...');
                 addStatusMessage('成功购买初始矿机');
                 
-                // 刷新用户数据
                 await loadUserData();
                 
             } catch (error) {
                 console.error('购买失败:', error);
                 addStatusMessage('购买失败: ' + error.message);
             } finally {
-                // 恢复按钮状态
                 const button = document.getElementById('buyInitialBtn');
                 button.innerHTML = '<i class="fas fa-shopping-bag"></i> 购买初始矿机';
                 button.disabled = false;
             }
         }
         
-        // 购买额外矿机（修复后）
+        // 购买额外矿机
         async function buyAdditionalMachine() {
             try {
-                // 先检查合约是否初始化
                 if (!contract || !userAddress) {
-                    throw new Error("合约未初始化，请先连接钱包");
+                    throw new Error("请先连接钱包");
                 }
                 
-                // 更新按钮状态
                 const button = document.getElementById('buyAdditionalBtn');
-                const originalHTML = button.innerHTML;
                 button.innerHTML = '<span class="loading"></span> 处理中...';
                 button.disabled = true;
                 
-                // 默认购买1台
                 const count = 1;
-                
-                // 发送交易
                 const result = await contract.methods.buyAdditionalMachine(count).send({
                     from: userAddress,
                 });
                 
-                addStatusMessage('交易成功: ' + result.transactionHash);
+                addStatusMessage('交易成功: ' + result.transactionHash.substring(0, 16) + '...');
                 addStatusMessage(`成功购买 ${count} 台额外矿机`);
                 
-                // 刷新用户数据
                 await loadUserData();
                 
             } catch (error) {
                 console.error('购买失败:', error);
                 addStatusMessage('购买失败: ' + error.message);
             } finally {
-                // 恢复按钮状态
                 const button = document.getElementById('buyAdditionalBtn');
                 button.innerHTML = '<i class="fas fa-cart-plus"></i> 购买额外矿机';
                 button.disabled = false;
             }
         }
         
-        // 领取奖励（修复后）
+        // 领取奖励
         async function claimRewards() {
             try {
-                // 先检查合约是否初始化
                 if (!contract || !userAddress) {
-                    throw new Error("合约未初始化，请先连接钱包");
+                    throw new Error("请先连接钱包");
                 }
                 
-                // 更新按钮状态
                 const button = document.getElementById('claimRewardsBtn');
-                const originalHTML = button.innerHTML;
                 button.innerHTML = '<span class="loading"></span> 处理中...';
                 button.disabled = true;
                 
-                // 发送交易
                 const result = await contract.methods.claimRewards().send({
                     from: userAddress,
                 });
                 
-                addStatusMessage('交易成功: ' + result.transactionHash);
+                addStatusMessage('交易成功: ' + result.transactionHash.substring(0, 16) + '...');
                 addStatusMessage('奖励领取成功');
                 
-                // 刷新用户数据
                 await loadUserData();
                 
             } catch (error) {
                 console.error('领取失败:', error);
                 addStatusMessage('领取失败: ' + error.message);
             } finally {
-                // 恢复按钮状态
                 const button = document.getElementById('claimRewardsBtn');
                 button.innerHTML = '<i class="fas fa-hand-holding-usd"></i> 立即领取';
                 button.disabled = false;
@@ -832,30 +748,20 @@
         
         // 初始化页面
         document.addEventListener('DOMContentLoaded', function() {
-            // 确保Web3Modal库可用
-            if (typeof Web3Modal !== 'undefined' && typeof WalletConnectProvider !== 'undefined') {
-                initWeb3Modal();
-                addStatusMessage('Web3Modal 初始化成功');
-            } else {
-                addStatusMessage('警告: Web3Modal 未加载成功，请重试');
-            }
-            
-            // 设置事件监听器（修复重点）
-            document.getElementById('connectBtn').addEventListener('click', connectWallet);
-            document.getElementById('disconnectBtn').addEventListener('click', disconnectWallet);
+            // 设置事件监听器
+            document.getElementById('mobileConnectBtn').addEventListener('click', connectTPWallet);
             document.getElementById('buyInitialBtn').addEventListener('click', buyInitialMachine);
             document.getElementById('buyAdditionalBtn').addEventListener('click', buyAdditionalMachine);
             document.getElementById('claimRewardsBtn').addEventListener('click', claimRewards);
             
-            // 设置初始状态消息
+            // 设置初始状态
             addStatusMessage('系统已就绪');
-            addStatusMessage('点击"连接钱包"按钮开始');
+            addStatusMessage('点击"连接TP钱包"按钮开始');
             
-            // 尝试自动连接缓存的钱包
-            if (web3Modal && web3Modal.cachedProvider) {
-                addStatusMessage('检测到缓存的Provider，尝试连接...');
+            // 检查是否已连接
+            if (typeof ethereum !== 'undefined' && ethereum.isConnected()) {
                 setTimeout(() => {
-                    connectWallet();
+                    connectTPWallet();
                 }, 1000);
             }
         });
