@@ -31,12 +31,13 @@
             border-radius: 16px;
             overflow: hidden;
             border: 1px solid #334155;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
         
         .tool-header {
             position: relative;
-            background: #1e293b;
-            padding: 20px 30px;
+            background: linear-gradient(to right, #1e293b, #0f172a);
+            padding: 20px;
             text-align: center;
             border-bottom: 1px solid #334155;
         }
@@ -61,6 +62,28 @@
         
         .connection-status {
             font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #94a3b8;
+        }
+        
+        .status-indicator.connected {
+            background: #10b981;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.7; }
+            50% { opacity: 1; }
+            100% { opacity: 0.7; }
         }
         
         .btn {
@@ -83,6 +106,7 @@
         
         .connect-btn:hover {
             background: #2563eb;
+            transform: translateY(-2px);
         }
         
         .disconnect-btn {
@@ -94,6 +118,7 @@
         
         .disconnect-btn:hover {
             background: rgba(239, 68, 68, 0.3);
+            transform: translateY(-2px);
         }
         
         .main-content {
@@ -104,26 +129,31 @@
             display: flex;
             flex-wrap: wrap;
             gap: 15px;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
         
         .stat-item {
             flex: 1;
             min-width: 45%;
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 10px;
+            padding: 15px;
+            border: 1px solid #334155;
         }
         
         .stat-title {
             font-size: 14px;
             color: #94a3b8;
             margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
         .stat-value {
-            font-size: 16px;
-            font-weight: 500;
+            font-size: 18px;
+            font-weight: 600;
             color: #60a5fa;
-            padding-bottom: 8px;
-            border-bottom: 1px solid #334155;
             min-height: 24px;
         }
         
@@ -136,50 +166,57 @@
         .function-card {
             background: rgba(26, 42, 75, 0.9);
             border-radius: 12px;
-            padding: 15px;
+            padding: 20px;
             border: 1px solid #334155;
+            transition: transform 0.3s ease;
+        }
+        
+        .function-card:hover {
+            transform: translateY(-3px);
+            background: rgba(30, 47, 82, 0.95);
         }
         
         .function-title {
-            font-size: 16px;
+            font-size: 18px;
             font-weight: 600;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             color: #60a5fa;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
         
         .function-description {
             color: #94a3b8;
             margin-bottom: 15px;
-            font-size: 13px;
+            font-size: 14px;
             line-height: 1.5;
         }
         
         .action-button {
-            padding: 12px;
+            padding: 15px;
             background: rgba(59, 130, 246, 0.2);
             color: #3b82f6;
             border: 1px solid rgba(59, 130, 246, 0.4);
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 14px;
+            font-size: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 10px;
             transition: all 0.3s ease;
             width: 100%;
         }
         
         .action-button:hover {
             background: rgba(59, 130, 246, 0.3);
+            transform: translateY(-2px);
         }
         
         .status-section {
-            margin-top: 20px;
+            margin-top: 25px;
             padding: 15px;
             background: rgba(18, 27, 45, 0.8);
             border-radius: 12px;
@@ -187,12 +224,12 @@
         }
         
         .status-title {
-            font-size: 16px;
+            font-size: 18px;
             font-weight: 600;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
         
         .status-content {
@@ -200,19 +237,19 @@
             border-radius: 8px;
             padding: 15px;
             font-family: 'Courier New', monospace;
-            font-size: 13px;
+            font-size: 14px;
             line-height: 1.6;
             color: #cbd5e1;
             white-space: pre-wrap;
             overflow-y: auto;
-            max-height: 150px;
+            max-height: 200px;
             border: 1px solid #334155;
         }
         
         .loading {
             display: inline-block;
-            width: 18px;
-            height: 18px;
+            width: 20px;
+            height: 20px;
             border: 3px solid rgba(255,255,255,.3);
             border-radius: 50%;
             border-top-color: #60a5fa;
@@ -223,12 +260,14 @@
             to { transform: rotate(360deg); }
         }
         
-        .error-message {
-            color: #ef4444;
-            font-size: 13px;
-            margin-top: 8px;
-            text-align: center;
-            min-height: 18px;
+        .contract-address {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 6px 12px;
+            background: rgba(30, 41, 59, 0.6);
+            border-radius: 8px;
+            font-size: 14px;
+            color: #60a5fa;
         }
         
         /* 移动设备优化 */
@@ -249,6 +288,14 @@
             .stat-item {
                 min-width: 100%;
             }
+            
+            .function-card {
+                padding: 15px;
+            }
+            
+            .function-title {
+                font-size: 16px;
+            }
         }
     </style>
 </head>
@@ -256,10 +303,12 @@
     <div class="tool-container">
         <div class="tool-header">
             <h1 class="tool-title">矿机合约工具</h1>
+            <span class="contract-address">0x7D77EC291bfFA9dc9f650F8c594Fa1459288Ae76</span>
         </div>
         
         <div class="wallet-connector">
             <div class="connection-status">
+                <span class="status-indicator" id="statusIndicator"></span>
                 钱包状态: <span id="walletStatus">未连接</span>
             </div>
             <button class="btn connect-btn" id="connectBtn">
@@ -271,22 +320,22 @@
         </div>
         
         <div class="main-content">
-            <!-- 用户统计数据区块 - 保留显示 -->
+            <!-- 用户统计数据区块 -->
             <div class="compact-stats">
                 <div class="stat-item">
-                    <div class="stat-title">您的矿机数量</div>
+                    <div class="stat-title"><i class="fas fa-microchip"></i> 您的矿机数量</div>
                     <div class="stat-value" id="machineCount">--</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-title">可领取奖励</div>
+                    <div class="stat-title"><i class="fas fa-coins"></i> 可领取奖励</div>
                     <div class="stat-value" id="pendingRewards">--</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-title">当前奖励率</div>
+                    <div class="stat-title"><i class="fas fa-tachometer-alt"></i> 当前奖励率</div>
                     <div class="stat-value" id="rewardPerBlock">--</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-title">额外矿机价格</div>
+                    <div class="stat-title"><i class="fas fa-tag"></i> 额外矿机价格</div>
                     <div class="stat-value" id="machinePrice">--</div>
                 </div>
             </div>
@@ -297,7 +346,7 @@
                         <i class="fas fa-shopping-cart"></i> 购买初始矿机
                     </h3>
                     <p class="function-description">
-                        使用BNB购买第一台矿机 (价格: 0.01 BNB)
+                        使用0.01 BNB购买您的第一台矿机
                     </p>
                     <button class="action-button" id="buyInitialBtn">
                         <i class="fas fa-shopping-bag"></i> 购买初始矿机
@@ -321,10 +370,10 @@
                         <i class="fas fa-gift"></i> 领取奖励
                     </h3>
                     <p class="function-description">
-                        领取您的挖矿奖励
+                        领取您的挖矿奖励代币
                     </p>
                     <button class="action-button" id="claimRewardsBtn">
-                        <i class="fas fa-hand-holding-usd"></i> 立即领取
+                        <i class="fas fa-hand-holding-usd"></极> 立即领取
                     </button>
                 </div>
             </div>
@@ -341,9 +390,139 @@
     </div>
 
     <script>
-        // 合约地址和ABI
+        // 修正后的合约ABI - 已修复乱码问题
         const CONTRACT_ADDRESS = "0x7D77EC291bfFA9dc9f650F8c594Fa1459288Ae76";
-        const CONTRACT_ABI = [{"inputs":[{"internalType":"address","name":"_rewardToken","type":"address"},{"internalType":"address","name":"_admin","type":"address"},{"internalType":"address","name":"_treasury","type":"address"},{"internalType":"uint256","name":"_baseReward","type":"uint256"}],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[],"name":"ADMIN","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"DECREMENT_BLOCKS","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":",name":"DECREMENT_RATE","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"INITIAL_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"REWARD_TOKEN","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TREASURY","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"addRewardTokens","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"additionalMachinePriceToken","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"baseRewardPerBlockPerMachine","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"count","type":"uint256"}],"name":"buyAdditionalMachine","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"buyInitialMachine","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"claimRewards","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"currentRewardPerBlock","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"lastRewardClaimBlock","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"machineCount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":],"name":"startBlock","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalMachines","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}];
+        const CONTRACT_ABI = [
+            {
+                "inputs": [
+                    {"internalType":"address","name":"_rewardToken","type":"address"},
+                    {"internalType":"address","name":"_admin","type":"address"},
+                    {"internalType":"address","name":"_treasury","type":"address"},
+                    {"internalType":"uint256","name":"_base极ward","type":"uint256"}
+                ],
+                "stateMutability":"nonpayable",
+                "type":"constructor"
+            },
+            {
+                "inputs":[],
+                "name":"ADMIN",
+                "outputs":[{"internalType":"address","name":"","type":"address"}],
+                "stateMutability":"view",
+                "type":"function"
+            },
+            {
+                "inputs":[],
+                "name":"DECREMENT_BLOCKS",
+                "outputs":[{"internalType":"uint256","name":"","type":"uint256"}],
+                "stateMutability":"view",
+                "type":"function"
+            },
+            {
+                "inputs":[],
+                "name":"DECREMENT_RATE",
+                "outputs":[{"internalType":"uint256","name":"","type":"uint256"}],
+                "stateMutability":"view",
+                "type":"function"
+            },
+            {
+                "inputs":[],
+                "name":"INITIAL_MACHINE_PRICE_BNB",
+                "outputs":[{"internalType":"uint256","name":"","type":"uint256"}],
+                "stateMutability":"view",
+                "type":"function"
+            },
+            {
+                "inputs":[],
+                "name":"REWARD_TOKEN",
+                "outputs":[{"internalType":"address","name":"","type":"address"}],
+                "stateMutability":"view",
+                "type":"function"
+            },
+            {
+                "inputs":[],
+                "name":"TREASURY",
+                "outputs":[{"internalType":"address","name":"","type":"address"}],
+                "stateMutability":"view",
+                "type":"function"
+            },
+            {
+                "inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],
+                "name":"addRewardTokens",
+                "outputs":[],
+                "stateMutability":"nonpayable",
+                "type":"function"
+            },
+            {
+                "inputs":[],
+                "name":"additionalMachinePriceToken",
+                "outputs":[{"internalType":"uint256","name":"","type":"uint256"}],
+                "stateMutability":"view",
+                "type":"function"
+            },
+            {
+                "inputs":[],
+                "name":"baseRewardPerBlockPerMachine",
+                "outputs":[{"internalType":"uint256","name":"","type":"uint256"}],
+                "stateMutability":"view",
+                "type":"function"
+            },
+            {
+                "inputs":[{"internalType":"uint256","name":"count","type":"uint256"}],
+                "name":"buyAdditionalMachine",
+                "outputs":[],
+                "stateMutability":"nonpayable",
+                "type":"function"
+            },
+            {
+                "inputs":[],
+                "name":"buyInitialMachine",
+                "outputs":[],
+                "stateMutability":"payable",  // 此处已修正乱码
+                "type":"function"
+            },
+            {
+                "inputs":[],
+                "name":"claimRewards",
+                "outputs":[],
+                "stateMutability":"nonpayable",
+                "type":"function"
+            },
+            {
+                "inputs":[],
+                "name":"currentRewardPerBlock",
+                "outputs":[{"internalType":"uint256","name":"","type":"uint256"}],
+                "stateMutability":"view",
+                "type":"function"
+            },
+            {
+                "inputs":[{"internalType":"address","name":"","type":"address"}],
+                "name":"lastRewardClaimBlock",
+                "outputs":[{"internalType":"uint256","name":"","type":"uint256"}],
+                "stateMutability":"view",
+                "type":"function"
+            },
+            {
+                "inputs":[{"internalType":"address","name":"","type":"address"}],
+                "name":"machineCount",
+                "outputs":[{"internalType":"uint256","name":"","type":"uint256"}],
+                "stateMutability":"view",
+                "type":"function"
+            },
+            {
+                "inputs":[],
+                "name":"startBlock",
+                "outputs":[{"internalType":"uint256","name":"","type":"uint256"}],
+                "stateMutability":"view",
+                "type":"function"
+            },
+            {
+                "inputs":[],
+                "name":"totalMachines",
+                "outputs":[{"internalType":"uint256","name":"","type":"uint256"}],
+                "stateMutability":"view",
+                "type":"function"
+            }
+        ];
         
         // 全局变量
         let web3;
@@ -356,7 +535,7 @@
         async function initWeb3Modal() {
             const providerOptions = {
                 walletconnect: {
-                    package: WalletConnectProvider.default,
+                    package: WalletConnectProvider,
                     options: {
                         infuraId: "8043bb2cf99347b1bfadfb233c5325c0",
                         rpc: {
@@ -366,7 +545,7 @@
                 }
             };
 
-            web3Modal = new Web3Modal.default({
+            web3Modal = new Web3Modal({
                 cacheProvider: true,
                 providerOptions,
                 theme: "dark"
@@ -386,26 +565,15 @@
             statusContent.scrollTop = statusContent.scrollHeight;
         }
         
-        // 显示错误信息
-        function showError(message) {
-            const errorElement = document.getElementById('errorMessage');
-            if (errorElement) {
-                errorElement.textContent = message;
-                
-                setTimeout(() => {
-                    errorElement.textContent = '';
-                }, 5000);
-            }
-        }
-        
         // 连接钱包
         async function connectWallet() {
             const connectBtn = document.getElementById('connectBtn');
             const disconnectBtn = document.getElementById('disconnectBtn');
+            const statusIndicator = document.getElementById('statusIndicator');
             
             try {
                 // 更新UI状态
-                document.getElementById('walletStatus').innerHTML = '连接中...';
+                document.getElementById('walletStatus').textContent = '连接中...';
                 connectBtn.innerHTML = '<span class="loading"></span> 连接中...';
                 
                 // 初始化Web3Modal（如果需要）
@@ -426,7 +594,8 @@
                 userAddress = accounts[0];
                 
                 // 更新UI
-                document.getElementById('walletStatus').innerHTML = '已连接';
+                document.getElementById('walletStatus').textContent = '已连接';
+                statusIndicator.classList.add('connected');
                 connectBtn.style.display = 'none';
                 disconnectBtn.style.display = 'flex';
                 
@@ -459,9 +628,10 @@
                 
             } catch (error) {
                 console.error('连接失败:', error);
-                showError('连接失败: ' + error.message);
-                document.getElementById('walletStatus').innerHTML = '连接失败';
+                addStatusMessage('连接失败: ' + error.message);
+                document.getElementById('walletStatus').textContent = '连接失败';
                 connectBtn.innerHTML = '<i class="fas fa-wallet"></i> 连接钱包';
+                statusIndicator.classList.remove('connected');
             }
         }
         
@@ -473,11 +643,13 @@
             
             const connectBtn = document.getElementById('connectBtn');
             const disconnectBtn = document.getElementById('disconnectBtn');
+            const statusIndicator = document.getElementById('statusIndicator');
             
             connectBtn.style.display = 'flex';
             disconnectBtn.style.display = 'none';
-            document.getElementById('walletStatus').innerHTML = '未连接';
+            document.getElementById('walletStatus').textContent = '未连接';
             connectBtn.innerHTML = '<i class="fas fa-wallet"></i> 连接钱包';
+            statusIndicator.classList.remove('connected');
             
             document.getElementById('machineCount').textContent = '--';
             document.getElementById('pendingRewards').textContent = '--';
@@ -503,7 +675,7 @@
                 
                 // 获取当前区块奖励率
                 const rewardPerBlock = await contract.methods.currentRewardPerBlock().call();
-                document.getElementById('rewardPerBlock').textContent = web3.utils.fromWei(rewardPerBlock, 'ether') + ' 代币';
+                document.getElementById('rewardPerBlock').textContent = web3.utils.fromWei(rewardPerBlock, 'ether') + ' 代币/区块';
                 
                 // 计算待领取奖励
                 if (machineCount > 0) {
@@ -519,7 +691,7 @@
                 
             } catch (error) {
                 console.error('加载数据失败:', error);
-                showError('数据加载失败: ' + error.message);
+                addStatusMessage('数据加载失败: ' + error.message);
             }
         }
         
@@ -528,6 +700,7 @@
             try {
                 // 更新按钮状态
                 const button = document.getElementById('buyInitialBtn');
+                const originalHTML = button.innerHTML;
                 button.innerHTML = '<span class="loading"></span> 处理中...';
                 button.disabled = true;
                 
@@ -545,12 +718,11 @@
                 
             } catch (error) {
                 console.error('购买失败:', error);
-                showError('购买失败: ' + error.message);
-                addStatusMessage('交易失败: ' + error.message);
+                addStatusMessage('购买失败: ' + error.message);
             } finally {
                 // 恢复按钮状态
                 const button = document.getElementById('buyInitialBtn');
-                button.innerHTML = '<i class="fas fa-shopping-bag"></i> 购买初始矿机';
+                button.innerHTML = originalHTML;
                 button.disabled = false;
             }
         }
@@ -560,35 +732,31 @@
             try {
                 // 更新按钮状态
                 const button = document.getElementById('buyAdditionalBtn');
+                const originalHTML = button.innerHTML;
                 button.innerHTML = '<span class="loading"></span> 处理中...';
                 button.disabled = true;
                 
                 // 默认购买1台
                 const count = 1;
                 
-                // 获取矿机价格
-                const pricePerMachine = await contract.methods.additionalMachinePriceToken().call();
-                const totalPrice = web3.utils.toBN(pricePerMachine).mul(web3.utils.toBN(count));
-                
                 // 发送交易
                 const result = await contract.methods.buyAdditionalMachine(count).send({
                     from: userAddress,
                 });
                 
-                addStatusMessage('交易成功: '极result.transactionHash);
+                addStatusMessage('交易成功: ' + result.transactionHash);
                 addStatusMessage(`成功购买 ${count} 台额外矿机`);
                 
                 // 刷新用户数据
-                await load极Data();
+                await loadUserData();
                 
             } catch (error) {
                 console.error('购买失败:', error);
-                showError('购买失败: ' + error.message);
-                addStatusMessage('交易失败: ' + error.message);
+                addStatusMessage('购买失败: ' + error.message);
             } finally {
                 // 恢复按钮状态
                 const button = document.getElementById('buyAdditionalBtn');
-                button.innerHTML = '<i class="fas fa-cart-plus"></i> 购买额外矿机';
+                button.innerHTML = originalHTML;
                 button.disabled = false;
             }
         }
@@ -598,6 +766,7 @@
             try {
                 // 更新按钮状态
                 const button = document.getElementById('claimRewardsBtn');
+                const originalHTML = button.innerHTML;
                 button.innerHTML = '<span class="loading"></span> 处理中...';
                 button.disabled = true;
                 
@@ -614,12 +783,11 @@
                 
             } catch (error) {
                 console.error('领取失败:', error);
-                showError('领取失败: ' + error.message);
-                addStatusMessage('交易失败: ' + error.message);
+                addStatusMessage('领取失败: ' + error.message);
             } finally {
                 // 恢复按钮状态
                 const button = document.getElementById('claimRewardsBtn');
-                button.innerHTML = '<i class="fas fa-hand-holding-usd"></i> 立即领取';
+                button.innerHTML = originalHTML;
                 button.disabled = false;
             }
         }
@@ -641,7 +809,7 @@
             try {
                 await initWeb3Modal();
                 if (web3Modal.cachedProvider) {
-                    connectWallet();
+                    await connectWallet();
                 }
             } catch (error) {
                 console.error('自动连接失败:', error);
