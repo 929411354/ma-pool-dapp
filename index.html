@@ -218,7 +218,7 @@
         
         .metric-card:hover {
             transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(59, 130, 246, 极.3);
+            box-shadow: 0 5px 15极 rgba(59, 130, 246, 0.3);
         }
         
         .metric-label {
@@ -425,6 +425,40 @@
             border-radius: 4px;
             width: 30%;
         }
+        
+        /* 推荐系统样式 */
+        .referral-section {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 16px;
+            padding: 25px;
+            margin-top: 20px;
+            border: 1px solid rgba(83, 113, 255, 0.3);
+            box-shadow: 
+                0 5px 15px rgba(0, 0, 20, 0.3),
+                0 0 30px rgba(59, 130, 246, 0.1) inset;
+        }
+        
+        .referral-info {
+            margin-bottom: 20px;
+        }
+        
+        .referral-link-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .referral-link {
+            flex: 1;
+            padding: 12px;
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid rgba(83, 113, 255, 0.3);
+            border-radius: 12px;
+            color: #e2e8f0;
+            font-size: 14px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
     </style>
 </head>
 <body>
@@ -447,7 +481,7 @@
         <div class="main-content">
             <div class="tab-container">
                 <div class="tab active" data-tab="dashboard">矿机仪表盘</div>
-                <div class="tab" data-tab="rewards">领取奖励</div>
+                <div class极="tab" data-tab="rewards">领取奖励</div>
                 <div class="tab" data-tab="purchase">购买矿机</div>
             </div>
             
@@ -464,7 +498,7 @@
                     <div class="metric-card">
                         <div class="metric-label">待领取奖励</div>
                         <div class="metric-value" id="rewardOverview">0.0000</div>
-                        <span class="metric-unit">Mα</span>
+                        <span class="metric-unit">α</span>
                     </div>
                     
                     <div style="display: flex; gap: 15px; margin-bottom: 20px;">
@@ -479,14 +513,20 @@
                         </div>
                     </div>
                     
+                    <div class="metric-card">
+                        <div class="metric-label">推荐奖励</div>
+                        <div class="metric-value" id="referralRewards">0.0000</div>
+                        <span class="metric-unit">α</span>
+                    </div>
+                    
                     <div class="balance-display">
                         <div class="balance-row">
                             <span class="balance-label">奖励池余额</span>
-                            <span class="balance-value" id="rewardPool">0.0000 Mα</span>
+                            <span class="balance-value" id="rewardPool">0.0000 α</span>
                         </div>
                         <div class="balance-row">
                             <span class="balance-label">当前区块奖励</span>
-                            <span class="balance-value" id="rewardPerBlock">0.0000 Mα</span>
+                            <span class="balance-value" id="rewardPerBlock">0.0000 α</span>
                         </div>
                         <div class="balance-row">
                             <span class="balance-label">区块高度</span>
@@ -503,13 +543,39 @@
                     </button>
                 </div>
                 
-                <div class="status-panel">
-                    <div class="status-header">
-                        <i class="fas fa-info-circle status-icon"></i>
-                        <h3 class="status-title">操作日志</h3>
+                <!-- 推荐系统卡片 -->
+                <div class="referral-section">
+                    <div class="section-header">
+                        <div class="section-icon">
+                            <i class="fas fa-user-plus"></i>
+                        </div>
+                        <h2 class="section-title">推荐系统</h2>
                     </div>
-                    <div class="status-content" id="dashboardStatus">
-[系统] 连接钱包后显示矿机数据
+                    
+                    <div class="referral-info" id="referralInfo">
+                        <!-- 推荐信息将动态填充 -->
+                    </div>
+                    
+                    <div class="input-group" id="referralInputGroup">
+                        <label class="input-label">设置推荐人地址</label>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="text" id="referrerAddress" class="input-field" placeholder="0x...">
+                            <button class="action-button" id="setReferrerBtn" style="width: auto; padding: 0 20px;">
+                                <i class="fas fa-user-plus"></i> 设置
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="referral-link-container" id="referralLinkContainer" style="display: none;">
+                        <input type="text" id="referralLink" class="referral-link" readonly>
+                        <button class="action-button" id="copyLinkBtn" style="width: auto; padding: 0 20px;">
+                            <i class="fas fa-copy"></i> 复制
+                        </button>
+                    </div>
+                    
+                    <div class="info-message">
+                        <i class="fas fa-info-circle"></i> 
+                        成功推荐新用户可获得其矿机产出的10%作为奖励
                     </div>
                 </div>
             </div>
@@ -527,7 +593,7 @@
                     <div class="metric-card">
                         <div class="metric-label">可领取奖励</div>
                         <div class="metric-value" id="rewardAmount">0.0000</div>
-                        <span class="metric-unit">Mα</span>
+                        <span class="metric-unit">α</span>
                     </div>
                     
                     <div class="balance-display">
@@ -548,16 +614,6 @@
                     <button class="action-button" id="claimBtn">
                         <i class="fas fa-download"></i> 领取所有奖励
                     </button>
-                </div>
-                
-                <div class="status-panel">
-                    <div class="status-header">
-                        <i class="fas fa-clipboard-list status-icon"></i>
-                        <h3 class="status-title">交易日志</h3>
-                    </div>
-                    <div class="status-content" id="rewardsStatus">
-[系统] 奖励领取日志将显示在这里
-                    </div>
                 </div>
             </div>
             
@@ -586,7 +642,7 @@
                         </div>
                         <div class="balance-row">
                             <span class="balance-label">高级矿机价格</span>
-                            <span class="balance-value" id="advancedPrice">100 Mα</span>
+                            <span class="balance-value" id="advancedPrice">100 α</span>
                         </div>
                         <div class="balance-row">
                             <span class="balance-label">预计 Gas 费用</span>
@@ -621,15 +677,16 @@
                         </div>
                     </div>
                 </div>
-                
-                <div class="status-panel">
-                    <div class="status-header">
-                        <i class="fas fa-tasks status-icon"></i>
-                        <h3 class="status-title">操作日志</h3>
-                    </div>
-                    <div class="status-content" id="purchaseStatus">
-[系统] 矿机购买日志将显示在这里
-                    </div>
+            </div>
+            
+            <!-- 统一的操作日志面板 -->
+            <div class="status-panel">
+                <div class="status-header">
+                    <i class="fas fa-info-circle status-icon"></i>
+                    <h3 class="status-title">操作日志</h3>
+                </div>
+                <div class="status-content" id="systemStatus">
+[系统] 连接钱包后显示矿机数据
                 </div>
             </div>
         </div>
@@ -644,86 +701,8 @@
     
     <script>
         // 合约配置
-        const CONTRACT_ADDRESS = "0x92a01fFD08613F5Bf8E1b2572B92adEFE45750d8";
-        const CONTRACT_ABI = [
-            {
-                "constant": true,
-                "inputs": [{"internalType": "address","name": "user","type": "address"}],
-                "name": "userInfo",
-                "outputs": [
-                    {"internalType": "uint256","name": "normalMachineCount","type": "uint256"},
-                    {"internalType": "uint256","name": "testMachineCount","type": "uint256"},
-                    {"internalType": "uint256","name": "lastRewardClaimBlock","type": "uint256"}
-                ],
-                "payable": false,
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "constant": true,
-                "inputs": [],
-                "name": "currentRewardPerBlock",
-                "outputs": [{"internalType": "uint256","name": "","type": "uint256"}],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "constant": false,
-                "inputs": [],
-                "name": "claimRewards",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "constant": true,
-                "inputs": [],
-                "name": "getContractTokenBalance",
-                "outputs": [{"internalType": "uint256","name": "","type": "uint256"}],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "constant": true,
-                "inputs": [],
-                "name": "startBlock",
-                "outputs": [{"internalType": "uint256","name": "","type": "uint256"}],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "constant": false,
-                "inputs": [],
-                "name": "buyInitialMachine",
-                "outputs": [],
-                "stateMutability": "payable",
-                "type": "function"
-            },
-            {
-                "constant": true,
-                "inputs": [],
-                "name": "INITIAL_MACHINE_PRICE_BNB",
-                "outputs": [{"internalType": "uint256","name": "","type": "uint256"}],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "constant": true,
-                "inputs": [],
-                "name": "additionalMachinePriceToken",
-                "outputs": [{"internalType": "uint256","name": "","type": "uint256"}],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "constant": false,
-                "inputs": [{"internalType": "uint256","name": "count","type": "uint256"}],
-                "name": "buyAdditionalMachine",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            }
-        ];
+        const CONTRACT_ADDRESS = "0xf2F65d4f0F5A83a3d12e6b63635426D7aF89b8d0";
+        const CONTRACT_ABI = [{"inputs":[{"internalType":"address","name":"_rewardToken","type":"address"},{"internalType":"address","name":"_treasury","type":"address"},{"internalType":"uint256","name":"_baseReward","type":"uint256"}],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[{"internalType":"address","name":"owner","type":"address"}],"name":"OwnableInvalidOwner","type":"error"},{"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"OwnableUnauthorizedAccount","type":"error"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"count","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"totalPrice","type":"uint256"}],"name":"AdditionalMachinePurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"receiver","type":"address"},{"indexed":false,"internalType":"极uint256","name":"amount","type":"uint256"}],"name":"BNBWithdrawn","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"price","type":"uint256"}],"name":"InitialMachinePurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"newPrice","type":"uint256"}],"name":"MachinePriceUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"referrer","type":"address"},{"indexed":true,"internalType":"address","name":"referee","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"ReferralRewardPaid","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":true,"internalType":"address","name":"referrer","type":"address"}],"name":"ReferrerSet","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"claimer","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"RewardsClaimed","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"price","type":"uint256"}],"name":"TestMachinePurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"adder","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"TokensAdded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"receiver","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"TokensWithdrawn","type":"event"},{"inputs":[],"name":"DECREMENT_BLOCKS","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"DECREMENT_RATE","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"INITIAL_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_PHASES","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TEST_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TREASURY","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"addRewardTokens","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"additionalMachinePriceToken","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"adminBuyTestMachine","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"baseRewardPerBlockPerMachine","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"count","type":"uint256"}],"name":"buyAdditionalMachine","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"buyInitialMachine","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"userAddress","type":"address"}],"name":"calculateRewards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"claimRewards","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"currentRewardPerBlock","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"emergencyWithdraw","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"getContractTokenBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getMachineCount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getUserReferralRewards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"renounceOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"rewardToken","outputs":[{"internalType":"contract IERC20","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"referrer","type":"address"}],"name":"setReferrer","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"startBlock","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalMachines","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"newPrice","type":"uint256"}],"name":"updateAdditionalMachinePrice","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"userInfo","outputs":[{"internalType":"uint256","name":"normalMachineCount","type":"uint256"},{"internalType":"uint256","name":"testMachineCount","type":"uint256"},{"internalType":"uint256","name":"lastRewardClaimBlock","type":"uint256"},{"internalType":"address","name":"referrer","type":"address"},{"internalType":"uint256","name":"referralRewards","type":"uint256"},{"internalType":"bool","name":"hasBoughtInitial","type":"bool"},{"internalType":"uint256","name":"lastActivity","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"withdrawBNB","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdrawTokens","outputs":[],"stateMutability":"nonpayable","type":"function"}];
         
         // 全局变量
         let web3;
@@ -731,14 +710,14 @@
         let userAddress;
         
         // 添加状态消息
-        function addStatusMessage(message, panelId, type = "info") {
+        function addStatusMessage(message, type = "info") {
             const now = new Date();
             const hours = now.getHours().toString().padStart(2, '0');
             const minutes = now.getMinutes().toString().padStart(2, '0');
             const seconds = now.getSeconds().toString().padStart(2, '0');
             const time = `${hours}:${minutes}:${seconds}`;
             
-            const statusContent = document.getElementById(panelId);
+            const statusContent = document.getElementById('systemStatus');
             const messageDiv = document.createElement('div');
             messageDiv.className = 'status-item';
             
@@ -774,7 +753,7 @@
                 connectBtn.innerHTML = '<span class="loading"></span> 连接中...';
                 connectBtn.disabled = true;
                 
-                addStatusMessage('正在连接钱包...', 'dashboardStatus');
+                addStatusMessage('正在连接钱包...');
                 
                 // 检查钱包环境
                 if (typeof ethereum === 'undefined') {
@@ -803,14 +782,14 @@
                 connectBtn.className = 'wallet-btn connected';
                 connectBtn.disabled = false;
                 
-                addStatusMessage('钱包连接成功', 'dashboardStatus');
+                addStatusMessage('钱包连接成功', 'success');
                 
                 // 加载用户数据
                 await loadUserData();
                 
             } catch (error) {
                 console.error('连接失败:', error);
-                addStatusMessage('连接失败: ' + error.message, 'dashboardStatus', 'error');
+                addStatusMessage('连接失败: ' + error.message, 'error');
                 
                 const statusIndicator = document.getElementById('statusIndicator');
                 const walletStatus = document.getElementById('walletStatus');
@@ -824,33 +803,150 @@
             }
         }
         
-        // 加载用户数据 - 修复userInfo调用错误
+        // 加载推荐系统信息
+        async function loadReferralInfo() {
+            try {
+                if (!contract || !userAddress) return;
+                
+                const referralInfoContainer = document.getElementById('referralInfo');
+                const referralLinkContainer = document.getElementById('referralLinkContainer');
+                const referralLinkInput = document.getElementById('referralLink');
+                const referralInputGroup = document.getElementById('referralInputGroup');
+                
+                // 获取用户推荐信息
+                const userInfo = await contract.methods.userInfo(userAddress).call();
+                const referralRewards = await contract.methods.getUserReferralRewards(userAddress).call();
+                
+                // 更新推荐奖励显示
+                document.getElementById('referralRewards').textContent = formatTokenAmount(referralRewards);
+                
+                // 格式化推荐人地址（如果存在）
+                if (userInfo.referrer && userInfo.referrer !== "0x0000000000000000000000000000000000000000") {
+                    const truncatedReferrer = `${userInfo.referrer.substring(0, 6)}...${userInfo.referrer.substring(38)}`;
+                    
+                    referralInfoContainer.innerHTML = `
+                        <div class="balance-display">
+                            <div class="balance-row">
+                                <span class="balance-label">当前推荐人</span>
+                                <span class="balance-value">${truncatedReferrer}</span>
+                            </div>
+                            <div class="balance-row">
+                                <span class="balance-label">已获得奖励</span>
+                                <span class="balance-value">${formatTokenAmount(referralRewards)} α</span>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // 显示推荐链接
+                    referralLinkContainer.style.display = 'flex';
+                    referralLinkInput.value = `${window.location.href.split('?')[0]}?ref=${userAddress}`;
+                    
+                    // 隐藏输入框
+                    referralInputGroup.style.display = 'none';
+                } else {
+                    referralInfoContainer.innerHTML = `
+                        <div class="info-message">
+                            <i class="fas fa-exclamation-triangle"></i> 您尚未设置推荐人
+                        </div>
+                    `;
+                    referralLinkContainer.style.display = 'none';
+                }
+                
+            } catch (error) {
+                console.error('加载推荐信息失败:', error);
+                addStatusMessage('推荐信息加载失败: ' + error.message, 'error');
+            }
+        }
+        
+        // 设置推荐人
+        async function setReferrer() {
+            try {
+                const button = document.getElementById('setReferrerBtn');
+                const referrerAddressInput = document.getElementById('referrerAddress');
+                const referrerAddress = referrerAddressInput.value.trim();
+                
+                if (!contract || !userAddress) {
+                    addStatusMessage('请先连接钱包', 'error');
+                    return;
+                }
+                
+                if (!web3.utils.isAddress(referrerAddress)) {
+                    addStatusMessage('无效的以太坊地址', 'error');
+                    return;
+                }
+                
+                if (referrerAddress.toLowerCase() === userAddress.toLowerCase()) {
+                    addStatusMessage('不能设置自己为推荐人', 'error');
+                    return;
+                }
+                
+                button.innerHTML = '<span class="loading"></span> 处理中...';
+                button.disabled = true;
+                
+                addStatusMessage(`正在设置推荐人: ${referrerAddress}`);
+                
+                // 执行设置推荐人的交易
+                const gasEstimate = await contract.methods.setReferrer(referrerAddress).estimateGas({ from: userAddress });
+                
+                const result = await contract.methods.setReferrer(referrerAddress).send({
+                    from: userAddress,
+                    gas: Math.floor(gasEstimate * 1.5)
+                });
+                
+                addStatusMessage('推荐人设置成功', 'success');
+                addStatusMessage(`交易哈希: ${result.transactionHash}`);
+                
+                // 刷新推荐信息
+                await loadReferralInfo();
+                
+            } catch (error) {
+                console.error('设置推荐人失败:', error);
+                addStatusMessage('设置推荐人失败: ' + error.message, 'error');
+            } finally {
+                const button = document.getElementById('setReferrerBtn');
+                if (button) {
+                    button.innerHTML = '<i class="fas fa-user-plus"></i> 设置';
+                    button.disabled = false;
+                }
+            }
+        }
+        
+        // 复制推荐链接
+        function copyReferralLink() {
+            const referralLink = document.getElementById('referralLink');
+            referralLink.select();
+            document.execCommand('copy');
+            
+            // 显示复制成功消息
+            const copyButton = document.getElementById('copyLinkBtn');
+            if (copyButton) {
+                const originalHtml = copyButton.innerHTML;
+                copyButton.innerHTML = '<i class="fas fa-check"></i> 已复制';
+                
+                setTimeout(() => {
+                    copyButton.innerHTML = originalHtml;
+                }, 2000);
+            }
+            
+            addStatusMessage('推荐链接已复制到剪贴板', 'success');
+        }
+        
+        // 加载用户数据
         async function loadUserData() {
             try {
                 if (!contract || !userAddress) return;
                 
-                addStatusMessage('开始加载矿机数据...', 'dashboardStatus');
+                addStatusMessage('开始加载矿机数据...');
                 
-                // 获取用户信息 - 修复userInfo调用
+                // 获取用户信息
                 const userInfo = await contract.methods.userInfo(userAddress).call();
                 const lastClaimBlock = userInfo.lastRewardClaimBlock;
                 const currentBlock = await web3.eth.getBlockNumber();
                 
-                // 获取奖励率
-                const rewardPerBlock = await contract.methods.currentRewardPerBlock().call();
-                
                 // 计算待领取奖励
                 let pendingRewards = 0;
-                if (lastClaimBlock > 0 && currentBlock > lastClaimBlock) {
-                    const blocksPassed = currentBlock - lastClaimBlock;
-                    
-                    // 正常矿机奖励
-                    const normalReward = userInfo.normalMachineCount * blocksPassed * rewardPerBlock;
-                    
-                    // 测试矿机奖励（除以20）
-                    const testReward = userInfo.testMachineCount * blocksPassed * (rewardPerBlock / 20);
-                    
-                    pendingRewards = normalReward + testReward;
+                if (lastClaimBlock > 0) {
+                    pendingRewards = await contract.methods.calculateRewards(userAddress).call();
                 }
                 
                 // 获取奖励池余额
@@ -859,23 +955,26 @@
                 // 获取钱包余额
                 const balance = await web3.eth.getBalance(userAddress);
                 
+                // 获取当前区块奖励
+                const rewardPerBlock = await contract.methods.currentRewardPerBlock().call();
+                
                 // 更新UI
                 document.getElementById('rewardOverview').textContent = formatTokenAmount(pendingRewards);
                 document.getElementById('rewardAmount').textContent = formatTokenAmount(pendingRewards);
                 document.getElementById('basicMachines').textContent = userInfo.normalMachineCount;
                 document.getElementById('advancedMachines').textContent = userInfo.testMachineCount;
-                document.getElementById('rewardPool').textContent = formatTokenAmount(rewardPool) + " Mα";
-                document.getElementById('rewardPerBlock').textContent = formatTokenAmount(rewardPerBlock) + " Mα";
+                document.getElementById('rewardPool').textContent = formatTokenAmount(rewardPool) + " α";
+                document.getElementById('rewardPerBlock').textContent = formatTokenAmount(rewardPerBlock) + " α";
                 document.getElementById('currentBlock').textContent = currentBlock;
                 document.getElementById('rewardsBlock').textContent = currentBlock;
                 document.getElementById('lastClaimBlock').textContent = lastClaimBlock;
-                document.getElementById('blocksPassed').textContent = currentBlock - lastClaimBlock;
+                document.getElementById('blocksPassed').textContent = lastClaimBlock ? (currentBlock - lastClaimBlock) : 0;
                 document.getElementById('walletBalance').textContent = web3.utils.fromWei(balance, 'ether').substring(0, 6) + " BNB";
                 document.getElementById('basicPrice').textContent = "0.0100 BNB";
-                document.getElementById('advancedPrice').textContent = "100 Mα";
+                document.getElementById('advancedPrice').textContent = "100 α";
                 
                 // 更新基础矿机按钮状态
-                if (userInfo.normalMachineCount > 0) {
+                if (userInfo.hasBoughtInitial) {
                     const buyBtn = document.getElementById('buyBasicBtn');
                     buyBtn.disabled = true;
                     buyBtn.innerHTML = '<i class="fas fa-check"></i> 基础矿机已购买';
@@ -885,16 +984,14 @@
                 // 更新进度条
                 document.getElementById('progressFill').style.width = '30%';
                 
-                addStatusMessage('矿机数据加载完成', 'dashboardStatus', 'success');
+                // 加载推荐系统信息
+                await loadReferralInfo();
+                
+                addStatusMessage('矿机数据加载完成', 'success');
                 
             } catch (error) {
                 console.error('加载数据失败:', error);
-                addStatusMessage('数据加载失败: ' + error.message, 'dashboardStatus', 'error');
-                
-                // 特殊处理userInfo错误
-                if (error.message.includes('userInfo')) {
-                    addStatusMessage('错误原因: 合约ABI配置不正确', 'dashboardStatus', 'error');
-                }
+                addStatusMessage('数据加载失败: ' + error.message, 'error');
             }
         }
         
@@ -906,21 +1003,21 @@
             
             try {
                 if (!contract || !userAddress) {
-                    addStatusMessage('请先连接钱包', 'purchaseStatus', 'error');
+                    addStatusMessage('请先连接钱包', 'error');
                     return;
                 }
                 
                 // 检查是否已购买基础矿机
                 const userInfo = await contract.methods.userInfo(userAddress).call();
-                if (userInfo.normalMachineCount > 0) {
-                    addStatusMessage('每个地址只能购买一次基础矿机', 'purchaseStatus', 'warning');
+                if (userInfo.hasBoughtInitial) {
+                    addStatusMessage('每个地址只能购买一次基础矿机', 'warning');
                     return;
                 }
                 
                 button.innerHTML = '<span class="loading"></span> 处理中...';
                 button.disabled = true;
                 
-                addStatusMessage('开始购买基础矿机...', 'purchaseStatus');
+                addStatusMessage('开始购买基础矿机...');
                 
                 // 获取基础矿机价格
                 const basicPrice = await contract.methods.INITIAL_MACHINE_PRICE_BNB().call();
@@ -948,11 +1045,11 @@
                     document.getElementById('warningMessage').textContent = `您的钱包余额不足，还需要约 ${missingAmount} BNB`;
                     fundsWarning.style.display = 'block';
                     
-                    addStatusMessage('购买失败: 钱包余额不足', 'purchaseStatus', 'error');
+                    addStatusMessage('购买失败: 钱包余额不足', 'error');
                     throw new Error("钱包余额不足");
                 }
                 
-                addStatusMessage('资金充足，正在进行购买...', 'purchaseStatus', 'success');
+                addStatusMessage('资金充足，正在进行购买...', 'success');
                 
                 // 执行真实合约调用
                 const result = await contract.methods.buyInitialMachine().send({
@@ -961,22 +1058,22 @@
                     gas: Math.floor(gasEstimate * 1.5)
                 });
                 
-                addStatusMessage('基础矿机购买成功', 'purchaseStatus', 'success');
-                addStatusMessage(`交易哈希: ${result.transactionHash}`, 'purchaseStatus');
+                addStatusMessage('基础矿机购买成功', 'success');
+                addStatusMessage(`交易哈希: ${result.transactionHash}`);
                 
                 // 刷新数据
                 await loadUserData();
                 
             } catch (error) {
                 console.error('购买失败:', error);
-                addStatusMessage('购买失败: ' + error.message, 'purchaseStatus', 'error');
+                addStatusMessage('购买失败: ' + error.message, 'error');
             } finally {
                 button.innerHTML = '<i class="fas fa-server"></i> 购买基础矿机 (0.01 BNB)';
                 button.disabled = false;
             }
         }
         
-        // 购买高级矿机 - 修复功能
+        // 购买高级矿机
         async function purchaseAdvancedMachine() {
             const button = document.getElementById('buyAdvancedBtn');
             const countInput = document.getElementById('advancedCount');
@@ -984,19 +1081,19 @@
             
             try {
                 if (!contract || !userAddress) {
-                    addStatusMessage('请先连接钱包', 'purchaseStatus', 'error');
+                    addStatusMessage('请先连接钱包', 'error');
                     return;
                 }
                 
                 if (count < 1) {
-                    addStatusMessage('购买数量必须大于0', 'purchaseStatus', 'error');
+                    addStatusMessage('购买数量必须大于0', 'error');
                     return;
                 }
                 
                 button.innerHTML = '<span class="loading"></span> 处理中...';
                 button.disabled = true;
                 
-                addStatusMessage(`开始购买 ${count} 台高级矿机...`, 'purchaseStatus');
+                addStatusMessage(`开始购买 ${count} 台高级矿机...`);
                 
                 // 获取高级矿机价格
                 const advancedPrice = await contract.methods.additionalMachinePriceToken().call();
@@ -1010,15 +1107,15 @@
                     gas: Math.floor(gasEstimate * 1.5)
                 });
                 
-                addStatusMessage(`成功购买 ${count} 台高级矿机`, 'purchaseStatus', 'success');
-                addStatusMessage(`交易哈希: ${result.transactionHash}`, 'purchaseStatus');
+                addStatusMessage(`成功购买 ${count} 台高级矿机`, 'success');
+                addStatusMessage(`交易哈希: ${result.transactionHash}`);
                 
                 // 刷新数据
                 await loadUserData();
                 
             } catch (error) {
                 console.error('购买失败:', error);
-                addStatusMessage('购买失败: ' + error.message, 'purchaseStatus', 'error');
+                addStatusMessage('购买失败: ' + error.message, 'error');
             } finally {
                 button.innerHTML = '<i class="fas fa-shopping-cart"></i> 购买';
                 button.disabled = false;
@@ -1031,14 +1128,14 @@
             
             try {
                 if (!contract || !userAddress) {
-                    addStatusMessage('请先连接钱包', 'rewardsStatus', 'error');
+                    addStatusMessage('请先连接钱包', 'error');
                     return;
                 }
                 
                 button.innerHTML = '<span class="loading"></span> 处理中...';
                 button.disabled = true;
                 
-                addStatusMessage('开始领取奖励...', 'rewardsStatus');
+                addStatusMessage('开始领取奖励...');
                 
                 // 执行真实合约调用
                 const gasEstimate = await contract.methods.claimRewards().estimateGas({ from: userAddress });
@@ -1048,15 +1145,15 @@
                     gas: Math.floor(gasEstimate * 1.5)
                 });
                 
-                addStatusMessage('奖励领取成功', 'rewardsStatus', 'success');
-                addStatusMessage(`交易哈希: ${result.transactionHash}`, 'rewardsStatus');
+                addStatusMessage('奖励领取成功', 'success');
+                addStatusMessage(`交易哈希: ${result.transactionHash}`);
                 
                 // 刷新数据
                 await loadUserData();
                 
             } catch (error) {
                 console.error('领取失败:', error);
-                addStatusMessage('领取失败: ' + error.message, 'rewardsStatus', 'error');
+                addStatusMessage('领取失败: ' + error.message, 'error');
             } finally {
                 button.innerHTML = '<i class="fas fa-download"></i> 领取所有奖励';
                 button.disabled = false;
@@ -1065,7 +1162,7 @@
         
         // 初始化页面
         document.addEventListener('DOMContentLoaded', function() {
-            // 设置标签切换 - 修复切换问题
+            // 设置标签切换
             document.querySelectorAll('.tab').forEach(tab => {
                 tab.addEventListener('click', function() {
                     // 移除所有活动标签
@@ -1089,6 +1186,8 @@
             document.getElementById('buyBasicBtn').addEventListener('click', purchaseBasicMachine);
             document.getElementById('buyAdvancedBtn').addEventListener('click', purchaseAdvancedMachine);
             document.getElementById('claimBtn').addEventListener('click', claimRewards);
+            document.getElementById('setReferrerBtn').addEventListener('click', setReferrer);
+            document.getElementById('copyLinkBtn').addEventListener('click', copyReferralLink);
             document.getElementById('refreshBtn').addEventListener('click', async () => {
                 const refreshBtn = document.getElementById('refreshBtn');
                 refreshBtn.innerHTML = '<span class="loading"></span> 刷新中...';
@@ -1096,8 +1195,19 @@
                 await loadUserData();
                 refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> 刷新数据';
                 refreshBtn.disabled = false;
-                addStatusMessage('数据已刷新', 'dashboardStatus', 'success');
+                addStatusMessage('数据已刷新', 'success');
             });
+            
+            // 自动填充推荐人地址（如果URL中有ref参数）
+            const urlParams = new URLSearchParams(window.location.search);
+            const refAddress = urlParams.get('ref');
+            
+            if (refAddress && web3 && web3.utils.isAddress(refAddress)) {
+                const referrerInput = document.getElementById('referrerAddress');
+                if (referrerInput) {
+                    referrerInput.value = refAddress;
+                }
+            }
         });
     </script>
 </body>
