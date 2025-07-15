@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>矿机合约管理工具</title>
+    <title>矿机合约管理工具 | Mining Contract Manager</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.ethers.io/lib/ethers-5.7.umd.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -20,7 +21,7 @@
             padding: 20px;
             background-image: 
                 radial-gradient(circle at top right, rgba(37, 99, 235, 0.1), transparent 50%),
-                radial-gradient(circle at bottom left, rgba(59, 130, 246, 0.1), transparent 60%);
+                radial极-gradient(circle at bottom left, rgba(59, 130, 246, 0.1), transparent 60%);
         }
         
         .tool-container {
@@ -36,14 +37,15 @@
         }
         
         .tool-header {
-            padding: 25px;
+            padding: 20px 70px 20px 25px;
             background: rgba(15, 22, 38, 0.8);
             text-align: center;
             border-bottom: 1px solid rgba(83, 113, 255, 0.3);
+            position: relative;
         }
         
         .tool-title {
-            font-size: 26px;
+            font-size: 22px;
             font-weight: 700;
             background: linear-gradient(90deg, #3b82f6, #60a5fa);
             -webkit-background-clip: text;
@@ -51,8 +53,27 @@
             letter-spacing: 0.5px;
         }
         
+        .lang-switch {
+            position: absolute;
+            top: 18px;
+            right: 15px;
+            background: rgba(83, 113, 255, 0.2);
+            color: #93c5fd;
+            border: 1px solid rgba(83, 113, 255, 0.3);
+            padding: 6px 10px;
+            border-radius: 10px;
+            font-size: 13px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .lang-switch:hover {
+            background: rgba(83, 113, 255, 0.3);
+        }
+        
         .wallet-section {
-            padding: 20px;
+            padding: 15px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -60,13 +81,13 @@
         
         .wallet-btn {
             width: 100%;
-            max-width: 300px;
-            padding: 18px;
+            max-width: 280px;
+            padding: 16px;
             background: white;
             color: #3b82f6;
-            border-radius: 15px;
+            border-radius: 14px;
             font-weight: 600;
-            font-size: 18px;
+            font-size: 16px;
             border: none;
             cursor: pointer;
             transition: all 0.3s;
@@ -80,7 +101,7 @@
         
         .wallet-btn:hover {
             transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.6);
+            box-shadow: 0 7px 18px rgba(37, 99, 235, 0.6);
         }
         
         .wallet-btn.connected {
@@ -90,7 +111,7 @@
         }
         
         .connection-status {
-            margin-top: 15px;
+            margin-top极: 15px;
             font-size: 14px;
             color: #93c5fd;
             display: flex;
@@ -108,7 +129,7 @@
         
         .status-indicator.connected {
             background: #10b981;
-            box-shadow: 0 0 12px rgba(16, 185, 129, 0.8);
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.8);
         }
         
         .status-indicator.connecting {
@@ -130,27 +151,31 @@
             display: flex;
             border-bottom: 1px solid rgba(83, 113, 255, 0.3);
             margin-bottom: 20px;
+            background: rgba(15, 22, 38, 0.4);
+            border-radius: 10px;
+            padding: 5px;
         }
         
         .tab {
             flex: 1;
-            padding: 15px;
+            padding: 12px;
             text-align: center;
             cursor: pointer;
             font-weight: 500;
             transition: all 0.3s;
-            border-bottom: 3px solid transparent;
-            color: #64748b;
-            font-size: 14px;
+            border-radius: 8px;
+            color: #93c5fd;
+            font-size: 13px;
         }
         
         .tab.active {
-            color: #60a5fa;
-            border-bottom: 3px solid #3b82f6;
+            color: white;
+            background: rgba(59, 130, 246, 0.3);
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
         }
         
         .tab:hover {
-            color: #93c5fd;
+            background: rgba(59, 130, 246, 0.2);
         }
         
         .tab-content {
@@ -170,12 +195,12 @@
         .section-card {
             background: rgba(15, 23, 42, 0.6);
             border-radius: 16px;
-            padding: 25px;
-            margin-bottom: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
             border: 1px solid rgba(83, 113, 255, 0.3);
             box-shadow: 
                 0 5px 15px rgba(0, 0, 20, 0.3),
-                0 0 30px rgba(59, 130, 246, 0.1) inset;
+                0 0 25px rgba(59, 130, 246, 0.1) inset;
         }
         
         .section-header {
@@ -183,52 +208,50 @@
             align-items: center;
             gap: 15px;
             margin-bottom: 20px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid rgba(83, 113, 255, 0.3);
         }
         
         .section-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 12px;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
+            font-size: 18px;
             background: rgba(59, 130, 246, 0.2);
             color: #3b82f6;
-            box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+            box-shadow: 0 0 12px rgba(59, 130, 246, 0.3);
         }
         
         .section-title {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 600;
             color: #e2e8f0;
         }
         
         .metric-card {
             background: rgba(12, 19, 35, 0.7);
-            border-radius: 14px;
-            padding: 20px;
+            border-radius: 12px;
+            padding: 18px;
             text-align: center;
             border: 1px solid rgba(83, 113, 255, 0.3);
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             transition: transform 0.3s;
         }
         
         .metric-card:hover {
             transform: translateY(-3px);
-            box-shadow: 0 5px 15极 rgba(59, 130, 246, 0.3);
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
         }
         
         .metric-label {
             font-size: 14px;
             color: #93c5fd;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
         
         .metric-value {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 700;
             color: #60a5fa;
             font-family: monospace;
@@ -236,53 +259,60 @@
         
         .metric-unit {
             color: #7dd3fc;
-            margin-left: 5px;
-            font-size: 16px;
+            margin-left: 4px;
+            font-size: 14px;
         }
         
         .action-button {
             width: 100%;
-            padding: 16px;
+            padding: 14px;
             background: linear-gradient(90deg, rgba(59, 130, 246, 0.7), rgba(37, 99, 235, 0.7));
             color: white;
             border: none;
-            border-radius: 14px;
+            border-radius: 12px;
             font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            font-size: 17px;
+            gap: 8px;
+            font-size: 15px;
             transition: all 0.3s;
             margin: 10px 0;
-            box-shadow: 0 5px 15px rgba(37, 99, 235, 0.4);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
         }
         
         .action-button:hover {
             transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.6);
+            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.6);
             background: linear-gradient(90deg, rgba(59, 130, 246, 0.9), rgba(37, 99, 235, 0.9));
         }
         
+        .action-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);
+        }
+        
         .status-panel {
-            background: rgba(15, 23, 42, 0.8);
+            background: rgba(15, 23, 42, 0.6);
             border-radius: 14px;
             padding: 15px;
-            margin-top: 10px;
+            margin-top: 15px;
             border: 1px solid rgba(83, 113, 255, 0.3);
         }
         
         .status-header {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             margin-bottom: 10px;
         }
         
         .status-icon {
-            font-size: 18px;
-            color: #3b82f6;
+            font-size: 16px;
+            color: #3b82f极6;
         }
         
         .status-title {
@@ -295,19 +325,38 @@
             background: rgba(12, 19, 35, 0.7);
             border-radius: 10px;
             padding: 12px;
-            font-size: 14px;
+            font-size: 13px;
             line-height: 1.5;
             color: #9ca3af;
             min-height: 60px;
             max-height: 150px;
             overflow-y: auto;
             border: 1px solid rgba(83, 113, 255, 0.3);
+            font-family: monospace;
         }
         
         .status-item {
             margin-bottom: 8px;
-            padding-left: 10px;
+            padding-left: 8px;
             border-left: 2px solid rgba(83, 113, 255, 0.5);
+            padding-bottom: 6px;
+            font-size: 12px;
+        }
+        
+        .status-item.success {
+            color: #34d399;
+        }
+        
+        .status-item.error {
+            color: #f87171;
+        }
+        
+        .status-item.info {
+            color: #93c5fd;
+        }
+        
+        .status-item.warning {
+            color: #fdba74;
         }
         
         .footer {
@@ -320,9 +369,9 @@
         
         .loading {
             display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(147, 197, 253, 0.3);
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(147, 197, 253, 0.3);
             border-radius: 50%;
             border-top-color: #60a5fa;
             animation: spin 1s linear infinite;
@@ -333,34 +382,34 @@
         }
         
         .input-group {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         
         .input-label {
             display: block;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             font-weight: 500;
             color: #93c5fd;
         }
         
         .input-field {
             width: 100%;
-            padding: 14px;
+            padding: 12px;
             background: rgba(15, 23, 42, 0.5);
             border: 1px solid rgba(83, 113, 255, 0.3);
-            border-radius: 12px;
+            border-radius: 10px;
             color: #e2e8f0;
-            font-size: 16px;
+            font-size: 14px;
         }
         
         .info-message {
             background: rgba(15, 23, 42, 0.5);
-            border-radius: 10px;
+            border-radius: 8px;
             padding: 12px;
             margin: 15px 0;
             border: 1px solid rgba(83, 113, 255, 0.3);
             color: #93c5fd;
-            font-size: 14px;
+            font-size: 12px;
             display: flex;
             align-items: center;
             gap: 10px;
@@ -372,23 +421,26 @@
             color: #fdba74;
         }
         
-        .error {
-            background: rgba(180, 40, 60, 0.2);
-            border-color: rgba(220, 38, 38, 0.5);
-            color: #f87171;
+        .purchase-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
         }
         
-        .success {
-            background: rgba(6, 78, 59, 0.2);
-            border-color: rgba(5, 150, 105, 0.5);
-            color: #34d399;
+        .purchase-section {
+            flex: 1;
+            background: rgba(12, 19, 35, 0.7);
+            border-radius: 14px;
+            padding: 16px;
+            text-align: center;
+            border: 1px solid rgba(83, 113, 255, 0.3);
         }
         
         .balance-display {
             background: rgba(30, 30, 50, 0.7);
             border-radius: 12px;
-            padding: 18px;
-            margin: 20px 0;
+            padding: 15px;
+            margin: 15px 0;
             border: 1px solid rgba(83, 113, 255, 0.3);
         }
         
@@ -400,12 +452,12 @@
         }
         
         .balance-label {
-            font-size: 14px;
+            font-size: 13px;
             color: #93c5fd;
         }
         
         .balance-value {
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 600;
             color: #60a5fa;
             font-family: monospace;
@@ -426,63 +478,65 @@
             width: 30%;
         }
         
-        /* 推荐系统样式 */
-        .referral-section {
-            background: rgba(15, 23, 42, 0.6);
-            border-radius: 16px;
-            padding: 25px;
-            margin-top: 20px;
-            border: 1px solid rgba(83, 113, 255, 0.3);
-            box-shadow: 
-                0 5px 15px rgba(0, 0, 20, 0.3),
-                0 0 30px rgba(59, 130, 246, 0.1) inset;
-        }
-        
-        .referral-info {
-            margin-bottom: 20px;
-        }
-        
-        .referral-link-container {
+        .referral-input {
             display: flex;
             gap: 10px;
-            margin-top: 15px;
+            margin: 15px 0;
         }
         
-        .referral-link {
+        .referral-input input {
             flex: 1;
-            padding: 12px;
-            background: rgba(15, 23, 42, 0.5);
+            padding: 10px;
+            border-radius: 8px;
             border: 1px solid rgba(83, 113, 255, 0.3);
-            border-radius: 12px;
-            color: #e2e8f0;
-            font-size: 14px;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            background: rgba(15, 23, 42, 0.5);
+            color: white;
+            font-size: 13px;
+        }
+        
+        .network-warning {
+            background: rgba(180, 83, 9, 0.2);
+            border-radius: 8px;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid rgba(217, 119, 6, 0.5);
+            color: #fdba74;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
     </style>
 </head>
 <body>
     <div class="tool-container">
         <div class="tool-header">
-            <h1 class="tool-title">矿机合约管理工具</h1>
+            <h1 class="tool-title" id="mainTitle">矿机合约管理工具</h1>
+            <div class="lang-switch" id="langSwitch">English</div>
         </div>
         
         <div class="wallet-section">
             <button id="connectBtn" class="wallet-btn">
-                <i class="fas fa-plug"></i> 连接钱包
+                <i class="fas fa-plug"></i> <span id="connectText">连接钱包</span>
             </button>
             
             <div class="connection-status">
                 <span class="status-indicator" id="statusIndicator"></span>
                 <span id="walletStatus">未连接</span>
             </div>
+            
+            <div class="network-warning" id="networkWarning" style="display: none;">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span id="networkMessage">您当前未连接到BSC主网，请切换到BSC主网</span>
+            </div>
         </div>
         
         <div class="main-content">
             <div class="tab-container">
-                <div class="tab active" data-tab="dashboard">矿机仪表盘</div>
-                <div class极="tab" data-tab="rewards">领取奖励</div>
-                <div class="tab" data-tab="purchase">购买矿机</div>
+                <div class="tab active" data-tab="dashboard" id="dashboardTabBtn">矿机仪表盘</div>
+                <div class="tab" data-tab="rewards" id="rewardsTabBtn">领取奖励</div>
+                <div class="tab" data-tab="purchase" id="purchaseTabBtn">购买矿机</div>
+                <div class="tab" data-tab="logs" id="logsTabBtn">操作日志</div>
             </div>
             
             <!-- 矿机仪表盘面板 -->
@@ -492,90 +546,65 @@
                         <div class="section-icon">
                             <i class="fas fa-chart-line"></i>
                         </div>
-                        <h2 class="section-title">矿机状态概览</h2>
+                        <h2 class="section-title" id="dashboardTitle">矿机状态概览</h2>
                     </div>
                     
                     <div class="metric-card">
-                        <div class="metric-label">待领取奖励</div>
+                        <div class="metric-label" id="pendingRewardLabel">待领取奖励</div>
                         <div class="metric-value" id="rewardOverview">0.0000</div>
                         <span class="metric-unit">α</span>
                     </div>
                     
                     <div style="display: flex; gap: 15px; margin-bottom: 20px;">
                         <div class="metric-card" style="flex: 1;">
-                            <div class="metric-label">基础矿机</div>
+                            <div class="metric-label" id="basicMinerLabel">基础矿机</div>
                             <div class="metric-value" id="basicMachines">0</div>
                         </div>
                         
                         <div class="metric-card" style="flex: 1;">
-                            <div class="metric-label">高级矿机</div>
+                            <div class="metric-label" id="advancedMinerLabel">高级矿机</div>
                             <div class="metric-value" id="advancedMachines">0</div>
                         </div>
                     </div>
                     
                     <div class="metric-card">
-                        <div class="metric-label">推荐奖励</div>
+                        <div class="metric-label" id="referralLabel">推荐奖励</div>
                         <div class="metric-value" id="referralRewards">0.0000</div>
                         <span class="metric-unit">α</span>
                     </div>
                     
                     <div class="balance-display">
                         <div class="balance-row">
-                            <span class="balance-label">奖励池余额</span>
+                            <span class="balance-label" id="rewardPoolLabel">奖励池余额</span>
                             <span class="balance-value" id="rewardPool">0.0000 α</span>
                         </div>
                         <div class="balance-row">
-                            <span class="balance-label">当前区块奖励</span>
+                            <span class="balance-label" id="rewardPerBlockLabel">当前区块奖励</span>
                             <span class="balance-value" id="rewardPerBlock">0.0000 α</span>
                         </div>
                         <div class="balance-row">
-                            <span class="balance-label">区块高度</span>
+                            <span class="balance-label" id="currentBlockLabel">区块高度</span>
                             <span class="balance-value" id="currentBlock">0</span>
                         </div>
                     </div>
                     
                     <div class="progress-bar">
-                        <div class="progress-fill" id="progressFill"></div>
+                        <div class="progress-fill" id="progressFill" style="width: 30%"></div>
                     </div>
                     
                     <button class="action-button" id="refreshBtn">
-                        <i class="fas fa-sync-alt"></i> 刷新数据
+                        <i class="fas fa-sync-alt"></i> <span id="refreshText">刷新数据</span>
                     </button>
-                </div>
-                
-                <!-- 推荐系统卡片 -->
-                <div class="referral-section">
-                    <div class="section-header">
-                        <div class="section-icon">
-                            <i class="fas fa-user-plus"></i>
+                    
+                    <!-- 仪表盘操作日志 -->
+                    <div class="status-panel">
+                        <div class="status-header">
+                            <i class="fas fa-info-circle status-icon"></i>
+                            <h3 class="status-title" id="dashboardLogTitle">操作日志</h3>
                         </div>
-                        <h2 class="section-title">推荐系统</h2>
-                    </div>
-                    
-                    <div class="referral-info" id="referralInfo">
-                        <!-- 推荐信息将动态填充 -->
-                    </div>
-                    
-                    <div class="input-group" id="referralInputGroup">
-                        <label class="input-label">设置推荐人地址</label>
-                        <div style="display: flex; gap: 10px;">
-                            <input type="text" id="referrerAddress" class="input-field" placeholder="0x...">
-                            <button class="action-button" id="setReferrerBtn" style="width: auto; padding: 0 20px;">
-                                <i class="fas fa-user-plus"></i> 设置
-                            </button>
+                        <div class="status-content" id="dashboardLog">
+                            <div class="status-item info">[系统] 连接钱包后显示矿机数据</div>
                         </div>
-                    </div>
-                    
-                    <div class="referral-link-container" id="referralLinkContainer" style="display: none;">
-                        <input type="text" id="referralLink" class="referral-link" readonly>
-                        <button class="action-button" id="copyLinkBtn" style="width: auto; padding: 0 20px;">
-                            <i class="fas fa-copy"></i> 复制
-                        </button>
-                    </div>
-                    
-                    <div class="info-message">
-                        <i class="fas fa-info-circle"></i> 
-                        成功推荐新用户可获得其矿机产出的10%作为奖励
                     </div>
                 </div>
             </div>
@@ -587,33 +616,44 @@
                         <div class="section-icon">
                             <i class="fas fa-hand-holding-usd"></i>
                         </div>
-                        <h2 class="section-title">领取奖励</h2>
+                        <h2 class="section-title" id="rewardsTitle">领取奖励</h2>
                     </div>
                     
                     <div class="metric-card">
-                        <div class="metric-label">可领取奖励</div>
+                        <div class="metric-label" id="claimableLabel">可领取奖励</div>
                         <div class="metric-value" id="rewardAmount">0.0000</div>
                         <span class="metric-unit">α</span>
                     </div>
                     
                     <div class="balance-display">
                         <div class="balance-row">
-                            <span class="balance-label">上次领取区块</span>
+                            <span class="balance-label" id="lastClaimLabel">上次领取区块</span>
                             <span class="balance-value" id="lastClaimBlock">0</span>
                         </div>
                         <div class="balance-row">
-                            <span class="balance-label">当前区块高度</span>
+                            <span class="balance-label" id="currentBlockLabel2">当前区块高度</span>
                             <span class="balance-value" id="rewardsBlock">0</span>
                         </div>
                         <div class="balance-row">
-                            <span class="balance-label">经过区块数</span>
+                            <span class="balance-label" id="blocksPassedLabel">经过区块数</span>
                             <span class="balance-value" id="blocksPassed">0</span>
                         </div>
                     </div>
                     
                     <button class="action-button" id="claimBtn">
-                        <i class="fas fa-download"></i> 领取所有奖励
+                        <i class="fas fa-download"></i> <span id="claimText">领取所有奖励</span>
                     </button>
+                    
+                    <!-- 领取奖励操作日志 -->
+                    <div class="status-panel">
+                        <div class="status-header">
+                            <i class="fas fa-clipboard-list status-icon"></i>
+                            <h3 class="status-title" id="rewardsLogTitle">操作日志</h3>
+                        </div>
+                        <div class="status-content" id="rewardsLog">
+                            <div class="status-item info">[系统] 奖励数据加载后将显示在这里</div>
+                        </div>
+                    </div>
                 </div>
             </div>
             
@@ -624,33 +664,25 @@
                         <div class="section-icon">
                             <i class="fas fa-shopping-cart"></i>
                         </div>
-                        <h2 class="section-title">矿机购买</h2>
+                        <h2 class="section-title" id="purchaseTitle">矿机购买</h2>
                     </div>
                     
                     <div class="info-message">
-                        <i class="fas fa-info-circle"></i> 基础矿机每个地址只能购买一次
+                        <i class="fas fa-info-circle"></i> <span id="basicMachineInfo">基础矿机每个地址只能购买一次</span>
                     </div>
                     
                     <div class="balance-display">
                         <div class="balance-row">
-                            <span class="balance-label">钱包余额</span>
+                            <span class="balance-label" id="walletBalanceLabel">钱包余额</span>
                             <span class="balance-value" id="walletBalance">0.0000 BNB</span>
                         </div>
                         <div class="balance-row">
-                            <span class="balance-label">基础矿机价格</span>
+                            <span class="balance-label" id="basicPriceLabel">基础矿机价格</span>
                             <span class="balance-value" id="basicPrice">0.0100 BNB</span>
                         </div>
                         <div class="balance-row">
-                            <span class="balance-label">高级矿机价格</span>
+                            <span class="balance-label" id="advancedPriceLabel">高级矿机价格</span>
                             <span class="balance-value" id="advancedPrice">100 α</span>
-                        </div>
-                        <div class="balance-row">
-                            <span class="balance-label">预计 Gas 费用</span>
-                            <span class="balance-value" id="gasEstimate">0.0012 BNB</span>
-                        </div>
-                        <div class="balance-row">
-                            <span class="balance-label">所需总资金</span>
-                            <span class="balance-value" id="totalCost">0.0112 BNB</span>
                         </div>
                     </div>
                     
@@ -659,276 +691,398 @@
                         <span id="warningMessage">您的钱包余额不足，无法完成此次交易</span>
                     </div>
                     
-                    <!-- 基础矿机购买 -->
-                    <div class="input-group">
-                        <button class="action-button" id="buyBasicBtn">
-                            <i class="fas fa-server"></i> 购买基础矿机 (0.01 BNB)
-                        </button>
+                    <div class="purchase-container">
+                        <!-- 基础矿机购买 -->
+                        <div class="purchase-section">
+                            <div class="metric-label" id="basicMachineLabel">购买基础矿机</div>
+                            <button class="action-button" id="buyBasicBtn">
+                                <i class="fas fa-server"></i> <span id="buyBasicText">0.01 BNB</span>
+                            </button>
+                        </div>
+                        
+                        <!-- 高级矿机购买 -->
+                        <div class="purchase-section">
+                            <div class="metric-label" id="advancedMachineLabel">购买高级矿机</div>
+                            <div class="input-group">
+                                <input type="number" id="advancedCount" min="1" value="1" class="input-field" placeholder="数量">
+                                <button class="action-button" id="buyAdvancedBtn">
+                                    <i class="fas fa-shopping-cart"></i> <span id="buyAdvancedText">购买</span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                     
-                    <!-- 高级矿机购买 -->
-                    <div class="input-group">
-                        <label class="input-label">购买高级矿机</label>
-                        <div style="display: flex; gap: 15px;">
-                            <input type="number" id="advancedCount" min="1" value="1" class="input-field" placeholder="购买数量">
-                            <button class="action-button" id="buyAdvancedBtn" style="width: auto; padding: 0 20px;">
-                                <i class="fas fa-shopping-cart"></i> 购买
-                            </button>
+                    <!-- 购买操作日志 -->
+                    <div class="status-panel">
+                        <div class="status-header">
+                            <i class="fas fa-clipboard-list status-icon"></i>
+                            <h3 class="status-title" id="purchaseLogTitle">操作日志</h3>
+                        </div>
+                        <div class="status-content" id="purchaseLog">
+                            <div class="status-item info">[系统] 矿机购买日志将显示在这里</div>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <!-- 统一的操作日志面板 -->
-            <div class="status-panel">
-                <div class="status-header">
-                    <i class="fas fa-info-circle status-icon"></i>
-                    <h3 class="status-title">操作日志</h3>
-                </div>
-                <div class="status-content" id="systemStatus">
-[系统] 连接钱包后显示矿机数据
+            <!-- 操作日志面板 -->
+            <div class="tab-content" id="logsTab">
+                <div class="section-card">
+                    <div class="section-header">
+                        <div class="section-icon">
+                            <i class="fas fa-history"></i>
+                        </div>
+                        <h2 class="section-title" id="logsTitle">操作日志</h2>
+                    </div>
+                    
+                    <div class="status-panel">
+                        <div class="status-header">
+                            <i class="fas fa-clipboard status-icon"></i>
+                            <h3 class="status-title" id="fullLogTitle">完整操作日志</h3>
+                        </div>
+                        <div class="status-content" id="fullLog">
+                            <div class="status-item info">[系统] 矿机合约管理工具已启动</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
         
         <div class="footer">
-            <p>矿机合约管理工具</p>
+            <p id="footerText">矿机合约管理工具</p>
         </div>
     </div>
 
-    <!-- 引入Web3库 -->
-    <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
-    
     <script>
         // 合约配置
         const CONTRACT_ADDRESS = "0xf2F65d4f0F5A83a3d12e6b63635426D7aF89b8d0";
-        const CONTRACT_ABI = [{"inputs":[{"internalType":"address","name":"_rewardToken","type":"address"},{"internalType":"address","name":"_treasury","type":"address"},{"internalType":"uint256","name":"_baseReward","type":"uint256"}],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[{"internalType":"address","name":"owner","type":"address"}],"name":"OwnableInvalidOwner","type":"error"},{"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"OwnableUnauthorizedAccount","type":"error"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"count","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"totalPrice","type":"uint256"}],"name":"AdditionalMachinePurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"receiver","type":"address"},{"indexed":false,"internalType":"极uint256","name":"amount","type":"uint256"}],"name":"BNBWithdrawn","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"price","type":"uint256"}],"name":"InitialMachinePurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"newPrice","type":"uint256"}],"name":"MachinePriceUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"referrer","type":"address"},{"indexed":true,"internalType":"address","name":"referee","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"ReferralRewardPaid","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":true,"internalType":"address","name":"referrer","type":"address"}],"name":"ReferrerSet","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"claimer","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"RewardsClaimed","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"price","type":"uint256"}],"name":"TestMachinePurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"adder","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"TokensAdded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"receiver","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"TokensWithdrawn","type":"event"},{"inputs":[],"name":"DECREMENT_BLOCKS","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"DECREMENT_RATE","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"INITIAL_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_PHASES","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TEST_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TREASURY","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"addRewardTokens","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"additionalMachinePriceToken","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"adminBuyTestMachine","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"baseRewardPerBlockPerMachine","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"count","type":"uint256"}],"name":"buyAdditionalMachine","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"buyInitialMachine","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"userAddress","type":"address"}],"name":"calculateRewards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"claimRewards","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"currentRewardPerBlock","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"emergencyWithdraw","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"getContractTokenBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getMachineCount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getUserReferralRewards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"renounceOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"rewardToken","outputs":[{"internalType":"contract IERC20","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"referrer","type":"address"}],"name":"setReferrer","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"startBlock","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalMachines","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"newPrice","type":"uint256"}],"name":"updateAdditionalMachinePrice","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"userInfo","outputs":[{"internalType":"uint256","name":"normalMachineCount","type":"uint256"},{"internalType":"uint256","name":"testMachineCount","type":"uint256"},{"internalType":"uint256","name":"lastRewardClaimBlock","type":"uint256"},{"internalType":"address","name":"referrer","type":"address"},{"internalType":"uint256","name":"referralRewards","type":"uint256"},{"internalType":"bool","name":"hasBoughtInitial","type":"bool"},{"internalType":"uint256","name":"lastActivity","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"withdrawBNB","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdrawTokens","outputs":[],"stateMutability":"nonpayable","type":"function"}];
+        const CONTRACT_ABI = [{"inputs":[{"internalType":"address","name":"_rewardToken","type":"address"},{"internalType":"address","name":"_treasury","type":"address"},{"internalType":"uint256","name":"_baseReward","type":"uint256"}],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[{"internalType":"address","name":"owner","type":"address"}],"name":"OwnableInvalidOwner","type":"error"},{"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"OwnableUnauthorizedAccount","type":"error"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"count","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"totalPrice","type":"uint256"}],"name":"AdditionalMachinePurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"receiver","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"BNBWithdrawn","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"price","type":"uint256"}],"name":"InitialMachinePurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"newPrice","type":"uint256"}],"name":"MachinePriceUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"referrer","type":"address"},{"indexed":true,"internalType":"address","name":"referee","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"ReferralRewardPaid","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":true,"internalType":"address","name":"referrer","type":"address"}],"name":"ReferrerSet","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"claimer","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"RewardsClaimed","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"price","type":"uint256"}],"name":"TestMachinePurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"adder","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"TokensAdded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"receiver","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"TokensWithdrawn","type":"event"},{"inputs":[],"name":"DECREMENT_BLOCKS","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"DECREMENT_RATE","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"INITIAL_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_PHASES","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TEST_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TREASURY","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"addRewardTokens","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"additionalMachinePriceToken","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"adminBuyTestMachine","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"baseRewardPerBlockPerMachine","outputs":[{"internalType":"极uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"count","极type":"uint256"}],"name":"buyAdditionalMachine","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"buyInitialMachine","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"userAddress","type":"address"}],"name":"calculateRewards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"claimRewards","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"currentRewardPerBlock","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"emergencyWithdraw","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"getContractTokenBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getMachineCount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getUserReferralRewards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"renounceOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"rewardToken","outputs":[{"internalType":"contract IERC20","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"referrer","type":"address"}],"name":"setReferrer","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"startBlock","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalMachines","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"newPrice","type":"uint256"}],"name":"updateAdditionalMachinePrice","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"userInfo","outputs":[{"internalType":"uint256","name":"normalMachineCount","type":"uint256"},{"internalType":"uint256","name":"testMachineCount","type":"uint256"},{"internalType":"uint256","name":"lastRewardClaimBlock","type":"uint256"},{"internalType":"address","name":"referrer","type":"address"},{"internalType":"uint256","name":"referralRewards","type":"uint256"},{"internalType":"bool","name":"hasBoughtInitial","type":"bool"},{"internalType":"uint256","name":"lastActivity","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"withdrawBNB","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdrawTokens","outputs":[],"stateMutability":"nonpayable","type":"function"}];
+        
+        // BSC主网配置
+        const BSC_MAINNET_CHAIN_ID = "0x38"; // 56的十六进制
+        const BSC_MAINNET_RPC = "https://bsc-dataseed.binance.org/";
         
         // 全局变量
         let web3;
         let contract;
         let userAddress;
+        let currentLanguage = "zh";
+        let provider;
         
-        // 添加状态消息
-        function addStatusMessage(message, type = "info") {
+        // 语言包
+        const languagePack = {
+            zh: {
+                mainTitle: "矿机合约管理工具",
+                connectText: "连接钱包",
+                walletStatus: {
+                    notConnected: "未连接",
+                    connecting: "连接中...",
+                    connected: "已连接",
+                    failed: "连接失败"
+                },
+                dashboardTitle: "矿机状态概览",
+                rewardsTitle: "领取奖励",
+                purchaseTitle: "矿机购买",
+                logsTitle: "操作日志",
+                pendingRewardLabel: "待领取奖励",
+                basicMinerLabel: "基础矿机",
+                advancedMinerLabel: "高级矿机",
+                referralLabel: "推荐奖励",
+                rewardPoolLabel: "奖励池余额",
+                rewardPerBlockLabel: "当前区块奖励",
+                currentBlockLabel: "区块高度",
+                refreshText: "刷新数据",
+                claimableLabel: "可领取奖励",
+                lastClaimLabel: "上次领取区块",
+                currentBlockLabel2: "当前区块高度",
+                blocksPassedLabel: "经过区块数",
+                claimText: "领取所有奖励",
+                basicMachineInfo: "基础矿机每个地址只能购买一次",
+                walletBalanceLabel: "钱包余额",
+                basicPriceLabel: "基础矿机价格",
+                advancedPriceLabel: "高级矿机价格",
+                basicMachineLabel: "购买基础矿机",
+                buyBasicText: "0.01 BNB",
+                advancedMachineLabel: "购买高级矿机",
+                buyAdvancedText: "购买",
+                referralBtnText: "设置推荐人",
+                warningMessage: "您的钱包余额不足，无法完成此次交易",
+                networkMessage: "您当前未连接到BSC主网，请切换到BSC主网",
+                footerText: "矿机合约管理工具",
+                dashboardTabBtn: "矿机仪表盘",
+                rewardsTabBtn: "领取奖励",
+                purchaseTabBtn: "购买矿机",
+                logsTabBtn: "操作日志",
+                dashboardLogTitle: "操作日志",
+                rewardsLogTitle: "操作日志",
+                purchaseLogTitle: "操作日志",
+                fullLogTitle: "完整操作日志",
+                // 日志消息
+                systemStart: "矿机合约管理工具已启动",
+                connectWalletMessage: "连接钱包后显示矿机数据",
+                walletConnecting: "正在连接钱包...",
+                walletConnected: "钱包连接成功",
+                refreshingData: "正在刷新矿机数据...",
+                dataRefreshed: "矿机数据刷新完成",
+                purchasingBasic: "正在购买基础矿机...",
+                basicPurchased: "基础矿机购买成功",
+                purchasingAdvanced: "正在购买高级矿机...",
+                advancedPurchased: "高级矿机购买成功",
+                claimingRewards: "开始领取奖励...",
+                rewardsClaimed: "奖励领取成功",
+                dataLoadComplete: "矿机数据加载完成"
+            },
+            en: {
+                mainTitle: "Mining Contract Manager",
+                connectText: "Connect Wallet",
+                walletStatus: {
+                    notConnected: "Not Connected",
+                    connecting: "Connecting...",
+                    connected: "Connected",
+                    failed: "Connection Failed"
+                },
+                dashboardTitle: "Mining Dashboard",
+                rewardsTitle: "Claim Rewards",
+                purchaseTitle: "Machine Purchase",
+                logsTitle: "Operation Logs",
+                pendingRewardLabel: "Pending Rewards",
+                basicMinerLabel: "Basic Miners",
+                advancedMinerLabel: "Advanced Miners",
+                referralLabel: "Referral Rewards",
+                rewardPoolLabel: "Reward Pool",
+                rewardPerBlockLabel: "Reward per Block",
+                currentBlockLabel: "Block Height",
+                refreshText: "Refresh Data",
+                claimableLabel: "Claimable Rewards",
+                lastClaimLabel: "Last Claim Block",
+                currentBlockLabel2: "Current Block",
+                blocksPassedLabel: "Blocks Passed",
+                claimText: "Claim All Rewards",
+                basicMachineInfo: "Each address can purchase basic machine only once",
+                walletBalanceLabel: "Wallet Balance",
+                basicPriceLabel: "Basic Miner Price",
+                advancedPriceLabel: "Advanced Miner Price",
+                basicMachineLabel: "Buy Basic Miner",
+                buyBasicText: "0.01 BNB",
+                advancedMachineLabel: "Buy Advanced Miner",
+                buyAdvancedText: "Buy",
+                referralBtnText: "Set Referrer",
+                warningMessage: "Your wallet balance is insufficient for this transaction",
+                networkMessage: "You are not connected to BSC Mainnet. Please switch networks.",
+                footerText: "Mining Contract Management Tool",
+                dashboardTabBtn: "Dashboard",
+                rewardsTabBtn: "Rewards",
+                purchaseTabBtn: "Purchase",
+                logsTabBtn: "Logs",
+                dashboardLogTitle: "Operation Log",
+                rewardsLogTitle: "Operation Log",
+                purchaseLogTitle: "Operation Log",
+                fullLogTitle: "Full Operation Log",
+                // 日志消息
+                systemStart: "Mining contract manager started",
+                connectWalletMessage: "Connect wallet to display mining data",
+                walletConnecting: "Connecting wallet...",
+                walletConnected: "Wallet connected successfully",
+                refreshingData: "Refreshing mining data...",
+                dataRefreshed: "Mining data refreshed",
+                purchasingBasic: "Purchasing basic miner...",
+                basicPurchased: "Basic miner purchased successfully",
+                purchasingAdvanced: "Purchasing advanced miner...",
+                advancedPurchased: "Advanced miner purchased successfully",
+                claimingRewards: "Starting to claim rewards...",
+                rewardsClaimed: "Rewards claimed successfully",
+                dataLoadComplete: "Mining data loading complete"
+            }
+        };
+        
+        // 添加日志函数
+        function addLog(message, panelId, type = "info") {
             const now = new Date();
             const hours = now.getHours().toString().padStart(2, '0');
             const minutes = now.getMinutes().toString().padStart(2, '0');
             const seconds = now.getSeconds().toString().padStart(2, '0');
             const time = `${hours}:${minutes}:${seconds}`;
             
-            const statusContent = document.getElementById('systemStatus');
-            const messageDiv = document.createElement('div');
-            messageDiv.className = 'status-item';
+            const logPanel = document.getElementById(panelId);
+            const logEntry = document.createElement('div');
+            logEntry.className = 'status-item';
             
             if (type === "error") {
-                messageDiv.style.color = "#f87171";
+                logEntry.className += ' error';
             } else if (type === "success") {
-                messageDiv.style.color = "#34d399";
+                logEntry.className += ' success';
             } else if (type === "warning") {
-                messageDiv.style.color = "#fdba74";
+                logEntry.className += ' warning';
+            } else {
+                logEntry.className += ' info';
             }
             
-            messageDiv.textContent = `[${time}] ${message}`;
+            logEntry.textContent = `[${time}] ${message}`;
             
-            statusContent.appendChild(messageDiv);
-            statusContent.scrollTop = statusContent.scrollHeight;
+            logPanel.appendChild(logEntry);
+            logPanel.scrollTop = logPanel.scrollHeight;
+            
+            // 同时添加到完整日志面板
+            if (panelId !== 'fullLog') {
+                const fullLog = document.getElementById('fullLog');
+                const fullEntry = logEntry.cloneNode(true);
+                fullLog.appendChild(fullEntry);
+                fullLog.scrollTop = fullLog.scrollHeight;
+            }
         }
         
-        // 格式代币数量
-        function formatTokenAmount(amount) {
-            return (parseInt(amount) / 1e18).toFixed(4);
+        // 更新界面语言
+        function updateLanguage() {
+            const langData = languagePack[currentLanguage];
+            for (const [key, value] of Object.entries(langData)) {
+                if (typeof value === "string") {
+                    const element = document.getElementById(key);
+                    if (element) element.textContent = value;
+                } else if (typeof value === "object") {
+                    for (const [subKey, subValue] of Object.entries(value)) {
+                        const element = document.getElementById(subKey);
+                        if (element) element.textContent = subValue;
+                    }
+                }
+            }
+            
+            // 特殊处理输入框placeholder
+            document.getElementById('advancedCount').placeholder = 
+                currentLanguage === "zh" ? "数量" : "Quantity";
+        }
+        
+        // 切换语言
+        function switchLanguage() {
+            // 记录日志（使用当前语言）
+            if (currentLanguage === "zh") {
+                addLog('语言已切换为英文', 'fullLog', 'info');
+            } else {
+                addLog('Language switched to Chinese', 'fullLog', 'info');
+            }
+            
+            // 切换语言
+            currentLanguage = currentLanguage === "zh" ? "en" : "zh";
+            document.getElementById("langSwitch").textContent = 
+                currentLanguage === "zh" ? "English" : "中文";
+            
+            // 更新所有界面文本
+            updateLanguage();
+        }
+        
+        // 检查BSC主网
+        async function checkBscNetwork() {
+            if (!window.ethereum) return false;
+            
+            try {
+                const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+                const isBsc = chainId === BSC_MAINNET_CHAIN_ID;
+                
+                document.getElementById('networkWarning').style.display = isBsc ? 'none' : 'flex';
+                return isBsc;
+            } catch (error) {
+                console.error('检查网络失败:', error);
+                return false;
+            }
+        }
+        
+        // 添加BSC主网
+        async function addBscNetwork() {
+            try {
+                await window.ethereum.request({
+                    method: 'wallet_addEthereumChain',
+                    params: [{
+                        chainId: BSC_MAINNET_CHAIN_ID,
+                        chainName: 'Binance Smart Chain Mainnet',
+                        nativeCurrency: {
+                            name: 'BNB',
+                            symbol: 'bnb',
+                            decimals: 18
+                        },
+                        rpcUrls: [BSC_MAINNET_RPC],
+                        blockExplorerUrls: ['https://bscscan.com']
+                    }]
+                });
+                return true;
+            } catch (error) {
+                console.error('添加BSC网络失败:', error);
+                return false;
+            }
         }
         
         // 连接钱包
         async function connectWallet() {
             try {
+                const btn = document.getElementById('connectBtn');
                 const statusIndicator = document.getElementById('statusIndicator');
                 const walletStatus = document.getElementById('walletStatus');
-                const connectBtn = document.getElementById('connectBtn');
+                
+                // 检查是否安装了钱包
+                if (typeof ethereum === 'undefined') {
+                    addLog('未检测到钱包，请在TP钱包中打开', 'fullLog', 'error');
+                    walletStatus.textContent = languagePack[currentLanguage].walletStatus.failed;
+                    return;
+                }
                 
                 // 更新状态为连接中
                 statusIndicator.className = 'status-indicator connecting';
-                walletStatus.textContent = '连接中...';
-                connectBtn.innerHTML = '<span class="loading"></span> 连接中...';
-                connectBtn.disabled = true;
+                walletStatus.textContent = languagePack[currentLanguage].walletStatus.connecting;
+                btn.innerHTML = '<span class="loading"></span> ' + languagePack[currentLanguage].walletStatus.connecting;
+                btn.disabled = true;
                 
-                addStatusMessage('正在连接钱包...');
-                
-                // 检查钱包环境
-                if (typeof ethereum === 'undefined') {
-                    throw new Error("未检测到钱包，请在TP钱包中打开");
-                }
+                addLog(languagePack[currentLanguage].walletConnecting, 'fullLog');
                 
                 // 请求账户连接
                 const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
                 
                 if (!accounts || accounts.length === 0) {
-                    throw new Error("未获取到账户授权");
+                    throw new Error("Failed to get account authorization");
                 }
                 
                 userAddress = accounts[0];
                 
+                // 检查BSC主网
+                const isBsc = await checkBscNetwork();
+                if (!isBsc) {
+                    const added = await addBscNetwork();
+                    if (!added) {
+                        throw new Error("请切换到BSC主网");
+                    }
+                }
+                
                 // 使用钱包的provider
+                provider = new ethers.providers.Web3Provider(ethereum);
                 web3 = new Web3(ethereum);
                 
                 // 创建合约实例
-                contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
+                contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, provider.getSigner());
                 
                 // 更新状态为已连接
                 statusIndicator.className = 'status-indicator connected';
-                walletStatus.textContent = `已连接: ${userAddress.substring(0, 6)}...${userAddress.substring(38)}`;
-                connectBtn.innerHTML = '<i class="fas fa-plug"></i> 已连接';
-                connectBtn.className = 'wallet-btn connected';
-                connectBtn.disabled = false;
+                const truncatedAddress = `${userAddress.substring(0, 6)}...${userAddress.substring(38)}`;
+                walletStatus.textContent = languagePack[currentLanguage].walletStatus.connected + ": " + truncatedAddress;
+                btn.innerHTML = '<i class="fas fa-plug"></i> ' + languagePack[currentLanguage].walletStatus.connected;
+                btn.className = 'wallet-btn connected';
+                btn.disabled = false;
                 
-                addStatusMessage('钱包连接成功', 'success');
+                addLog(languagePack[currentLanguage].walletConnected, 'fullLog', 'success');
                 
                 // 加载用户数据
                 await loadUserData();
                 
             } catch (error) {
                 console.error('连接失败:', error);
-                addStatusMessage('连接失败: ' + error.message, 'error');
+                addLog('连接失败: ' + error.message, 'fullLog', 'error');
                 
                 const statusIndicator = document.getElementById('statusIndicator');
                 const walletStatus = document.getElementById('walletStatus');
-                const connectBtn = document.getElementById('connectBtn');
+                const btn = document.getElementById('connectBtn');
                 
                 statusIndicator.className = 'status-indicator';
-                walletStatus.textContent = '连接失败';
-                connectBtn.innerHTML = '<i class="fas fa-plug"></i> 重试连接';
-                connectBtn.className = 'wallet-btn';
-                connectBtn.disabled = false;
+                walletStatus.textContent = languagePack[currentLanguage].walletStatus.failed;
+                btn.innerHTML = '<i class="fas fa-plug"></i> ' + languagePack[currentLanguage].connectText;
+                btn.className = 'wallet-btn';
+                btn.disabled = false;
             }
-        }
-        
-        // 加载推荐系统信息
-        async function loadReferralInfo() {
-            try {
-                if (!contract || !userAddress) return;
-                
-                const referralInfoContainer = document.getElementById('referralInfo');
-                const referralLinkContainer = document.getElementById('referralLinkContainer');
-                const referralLinkInput = document.getElementById('referralLink');
-                const referralInputGroup = document.getElementById('referralInputGroup');
-                
-                // 获取用户推荐信息
-                const userInfo = await contract.methods.userInfo(userAddress).call();
-                const referralRewards = await contract.methods.getUserReferralRewards(userAddress).call();
-                
-                // 更新推荐奖励显示
-                document.getElementById('referralRewards').textContent = formatTokenAmount(referralRewards);
-                
-                // 格式化推荐人地址（如果存在）
-                if (userInfo.referrer && userInfo.referrer !== "0x0000000000000000000000000000000000000000") {
-                    const truncatedReferrer = `${userInfo.referrer.substring(0, 6)}...${userInfo.referrer.substring(38)}`;
-                    
-                    referralInfoContainer.innerHTML = `
-                        <div class="balance-display">
-                            <div class="balance-row">
-                                <span class="balance-label">当前推荐人</span>
-                                <span class="balance-value">${truncatedReferrer}</span>
-                            </div>
-                            <div class="balance-row">
-                                <span class="balance-label">已获得奖励</span>
-                                <span class="balance-value">${formatTokenAmount(referralRewards)} α</span>
-                            </div>
-                        </div>
-                    `;
-                    
-                    // 显示推荐链接
-                    referralLinkContainer.style.display = 'flex';
-                    referralLinkInput.value = `${window.location.href.split('?')[0]}?ref=${userAddress}`;
-                    
-                    // 隐藏输入框
-                    referralInputGroup.style.display = 'none';
-                } else {
-                    referralInfoContainer.innerHTML = `
-                        <div class="info-message">
-                            <i class="fas fa-exclamation-triangle"></i> 您尚未设置推荐人
-                        </div>
-                    `;
-                    referralLinkContainer.style.display = 'none';
-                }
-                
-            } catch (error) {
-                console.error('加载推荐信息失败:', error);
-                addStatusMessage('推荐信息加载失败: ' + error.message, 'error');
-            }
-        }
-        
-        // 设置推荐人
-        async function setReferrer() {
-            try {
-                const button = document.getElementById('setReferrerBtn');
-                const referrerAddressInput = document.getElementById('referrerAddress');
-                const referrerAddress = referrerAddressInput.value.trim();
-                
-                if (!contract || !userAddress) {
-                    addStatusMessage('请先连接钱包', 'error');
-                    return;
-                }
-                
-                if (!web3.utils.isAddress(referrerAddress)) {
-                    addStatusMessage('无效的以太坊地址', 'error');
-                    return;
-                }
-                
-                if (referrerAddress.toLowerCase() === userAddress.toLowerCase()) {
-                    addStatusMessage('不能设置自己为推荐人', 'error');
-                    return;
-                }
-                
-                button.innerHTML = '<span class="loading"></span> 处理中...';
-                button.disabled = true;
-                
-                addStatusMessage(`正在设置推荐人: ${referrerAddress}`);
-                
-                // 执行设置推荐人的交易
-                const gasEstimate = await contract.methods.setReferrer(referrerAddress).estimateGas({ from: userAddress });
-                
-                const result = await contract.methods.setReferrer(referrerAddress).send({
-                    from: userAddress,
-                    gas: Math.floor(gasEstimate * 1.5)
-                });
-                
-                addStatusMessage('推荐人设置成功', 'success');
-                addStatusMessage(`交易哈希: ${result.transactionHash}`);
-                
-                // 刷新推荐信息
-                await loadReferralInfo();
-                
-            } catch (error) {
-                console.error('设置推荐人失败:', error);
-                addStatusMessage('设置推荐人失败: ' + error.message, 'error');
-            } finally {
-                const button = document.getElementById('setReferrerBtn');
-                if (button) {
-                    button.innerHTML = '<i class="fas fa-user-plus"></i> 设置';
-                    button.disabled = false;
-                }
-            }
-        }
-        
-        // 复制推荐链接
-        function copyReferralLink() {
-            const referralLink = document.getElementById('referralLink');
-            referralLink.select();
-            document.execCommand('copy');
-            
-            // 显示复制成功消息
-            const copyButton = document.getElementById('copyLinkBtn');
-            if (copyButton) {
-                const originalHtml = copyButton.innerHTML;
-                copyButton.innerHTML = '<i class="fas fa-check"></i> 已复制';
-                
-                setTimeout(() => {
-                    copyButton.innerHTML = originalHtml;
-                }, 2000);
-            }
-            
-            addStatusMessage('推荐链接已复制到剪贴板', 'success');
         }
         
         // 加载用户数据
@@ -936,7 +1090,7 @@
             try {
                 if (!contract || !userAddress) return;
                 
-                addStatusMessage('开始加载矿机数据...');
+                addLog(languagePack[currentLanguage].refreshingData, 'dashboardLog');
                 
                 // 获取用户信息
                 const userInfo = await contract.methods.userInfo(userAddress).call();
@@ -963,6 +1117,7 @@
                 document.getElementById('rewardAmount').textContent = formatTokenAmount(pendingRewards);
                 document.getElementById('basicMachines').textContent = userInfo.normalMachineCount;
                 document.getElementById('advancedMachines').textContent = userInfo.testMachineCount;
+                document.getElementById('referralRewards').textContent = formatTokenAmount(userInfo.referralRewards);
                 document.getElementById('rewardPool').textContent = formatTokenAmount(rewardPool) + " α";
                 document.getElementById('rewardPerBlock').textContent = formatTokenAmount(rewardPerBlock) + " α";
                 document.getElementById('currentBlock').textContent = currentBlock;
@@ -970,54 +1125,52 @@
                 document.getElementById('lastClaimBlock').textContent = lastClaimBlock;
                 document.getElementById('blocksPassed').textContent = lastClaimBlock ? (currentBlock - lastClaimBlock) : 0;
                 document.getElementById('walletBalance').textContent = web3.utils.fromWei(balance, 'ether').substring(0, 6) + " BNB";
-                document.getElementById('basicPrice').textContent = "0.0100 BNB";
-                document.getElementById('advancedPrice').textContent = "100 α";
+                document.getElementById('progressFill').style.width = '30%';
                 
                 // 更新基础矿机按钮状态
                 if (userInfo.hasBoughtInitial) {
                     const buyBtn = document.getElementById('buyBasicBtn');
                     buyBtn.disabled = true;
-                    buyBtn.innerHTML = '<i class="fas fa-check"></i> 基础矿机已购买';
+                    buyBtn.innerHTML = '<i class="fas fa-check"></i> ' + (currentLanguage === "zh" ? "已购买" : "Purchased");
                     buyBtn.style.background = 'linear-gradient(90deg, #10b981, #22c55e)';
                 }
                 
-                // 更新进度条
-                document.getElementById('progressFill').style.width = '30%';
-                
-                // 加载推荐系统信息
-                await loadReferralInfo();
-                
-                addStatusMessage('矿机数据加载完成', 'success');
+                addLog(languagePack[currentLanguage].dataRefreshed, 'dashboardLog', 'success');
                 
             } catch (error) {
                 console.error('加载数据失败:', error);
-                addStatusMessage('数据加载失败: ' + error.message, 'error');
+                addLog('数据加载失败: ' + error.message, 'dashboardLog', 'error');
             }
+        }
+        
+        // 格式代币数量
+        function formatTokenAmount(amount) {
+            return (parseInt(amount) / 1e18).toFixed(4);
         }
         
         // 购买基础矿机
         async function purchaseBasicMachine() {
-            const button = document.getElementById('buyBasicBtn');
+            const btn = document.getElementById('buyBasicBtn');
             const fundsWarning = document.getElementById('fundsWarning');
             fundsWarning.style.display = 'none';
             
             try {
                 if (!contract || !userAddress) {
-                    addStatusMessage('请先连接钱包', 'error');
+                    addLog('请先连接钱包', 'purchaseLog', 'error');
                     return;
                 }
                 
                 // 检查是否已购买基础矿机
                 const userInfo = await contract.methods.userInfo(userAddress).call();
                 if (userInfo.hasBoughtInitial) {
-                    addStatusMessage('每个地址只能购买一次基础矿机', 'warning');
+                    addLog('每个地址只能购买一次基础矿机', 'purchaseLog', 'warning');
                     return;
                 }
                 
-                button.innerHTML = '<span class="loading"></span> 处理中...';
-                button.disabled = true;
+                btn.innerHTML = '<span class="loading"></span> ' + (currentLanguage === "zh" ? "处理中..." : "Processing...");
+                btn.disabled = true;
                 
-                addStatusMessage('开始购买基础矿机...');
+                addLog('正在购买基础矿机...', 'purchaseLog');
                 
                 // 获取基础矿机价格
                 const basicPrice = await contract.methods.INITIAL_MACHINE_PRICE_BNB().call();
@@ -1035,21 +1188,18 @@
                 const gasPrice = await web3.eth.getGasPrice();
                 const gasCost = gasEstimate * gasPrice;
                 
-                // 更新UI显示费用信息
-                document.getElementById('gasEstimate').textContent = web3.utils.fromWei(gasCost.toString(), 'ether').substring(0, 6) + " BNB";
-                document.getElementById('totalCost').textContent = (0.01 + parseFloat(web3.utils.fromWei(gasCost.toString(), 'ether'))).toFixed(4) + " BNB";
-                
                 // 检查余额是否足够
                 if (BigInt(balance) < BigInt(basicValue) + BigInt(gasCost)) {
                     const missingAmount = (parseFloat(web3.utils.fromWei(BigInt(basicValue) + BigInt(gasCost) - BigInt(balance), 'ether'))).toFixed(6);
-                    document.getElementById('warningMessage').textContent = `您的钱包余额不足，还需要约 ${missingAmount} BNB`;
+                    document.getElementById('warningMessage').textContent = 
+                        languagePack[currentLanguage].warningMessage + (currentLanguage === "zh" ? `，还需要约 ${missingAmount} BNB` : `, need about ${missingAmount} BNB`);
                     fundsWarning.style.display = 'block';
                     
-                    addStatusMessage('购买失败: 钱包余额不足', 'error');
+                    addLog('购买失败: 钱包余额不足', 'purchaseLog', 'error');
                     throw new Error("钱包余额不足");
                 }
                 
-                addStatusMessage('资金充足，正在进行购买...', 'success');
+                addLog('资金充足，正在进行购买...', 'purchaseLog', 'success');
                 
                 // 执行真实合约调用
                 const result = await contract.methods.buyInitialMachine().send({
@@ -1058,46 +1208,70 @@
                     gas: Math.floor(gasEstimate * 1.5)
                 });
                 
-                addStatusMessage('基础矿机购买成功', 'success');
-                addStatusMessage(`交易哈希: ${result.transactionHash}`);
+                addLog('基础矿机购买成功', 'purchaseLog', 'success');
+                addLog(`交易哈希: ${result.transactionHash}`, 'purchaseLog');
                 
                 // 刷新数据
                 await loadUserData();
                 
             } catch (error) {
                 console.error('购买失败:', error);
-                addStatusMessage('购买失败: ' + error.message, 'error');
+                btn.innerHTML = '<i class="fas fa-server"></i> ' + languagePack[currentLanguage].buyBasicText;
+                addLog('购买失败: ' + error.message, 'purchaseLog', 'error');
             } finally {
-                button.innerHTML = '<i class="fas fa-server"></i> 购买基础矿机 (0.01 BNB)';
-                button.disabled = false;
+                btn.disabled = false;
             }
         }
         
         // 购买高级矿机
         async function purchaseAdvancedMachine() {
-            const button = document.getElementById('buyAdvancedBtn');
+            const btn = document.getElementById('buyAdvancedBtn');
             const countInput = document.getElementById('advancedCount');
             const count = parseInt(countInput.value) || 1;
             
             try {
-                if (!contract || !userAddress) {
-                    addStatusMessage('请先连接钱包', 'error');
-                    return;
-                }
-                
                 if (count < 1) {
-                    addStatusMessage('购买数量必须大于0', 'error');
+                    addLog('购买数量必须大于0', 'purchaseLog', 'error');
                     return;
                 }
                 
-                button.innerHTML = '<span class="loading"></span> 处理中...';
-                button.disabled = true;
+                if (!contract || !userAddress) {
+                    addLog('请先连接钱包', 'purchaseLog', 'error');
+                    return;
+                }
                 
-                addStatusMessage(`开始购买 ${count} 台高级矿机...`);
+                btn.innerHTML = '<span class="loading"></span> ' + (currentLanguage === "zh" ? "处理中..." : "Processing...");
+                btn.disabled = true;
+                
+                addLog(`正在购买 ${count} 台高级矿机...`, 'purchaseLog');
                 
                 // 获取高级矿机价格
                 const advancedPrice = await contract.methods.additionalMachinePriceToken().call();
                 const totalPrice = advancedPrice * count;
+                
+                // 检查用户授权
+                const tokenAddress = await contract.methods.rewardToken().call();
+                const tokenContract = new web3.eth.Contract([
+                    {
+                        constant: true,
+                        inputs: [
+                            {name: "_owner", type: "address"},
+                            {name: "_spender", type: "address"}
+                        ],
+                        name: "allowance",
+                        outputs: [{name: "", type: "uint256"}],
+                        payable: false,
+                        stateMutability: "view",
+                        type: "function"
+                    }
+                ], tokenAddress);
+                
+                const allowance = await tokenContract.methods.allowance(userAddress, CONTRACT_ADDRESS).call();
+                
+                if (BigInt(allowance) < BigInt(totalPrice)) {
+                    addLog('请先授权合约使用您的代币', 'purchaseLog', 'warning');
+                    return;
+                }
                 
                 // 执行真实合约调用
                 const gasEstimate = await contract.methods.buyAdditionalMachine(count).estimateGas({ from: userAddress });
@@ -1107,61 +1281,84 @@
                     gas: Math.floor(gasEstimate * 1.5)
                 });
                 
-                addStatusMessage(`成功购买 ${count} 台高级矿机`, 'success');
-                addStatusMessage(`交易哈希: ${result.transactionHash}`);
+                addLog(`成功购买 ${count} 台高级矿机`, 'purchaseLog', 'success');
+                addLog(`交易哈希: ${result.transactionHash}`, 'purchaseLog');
                 
                 // 刷新数据
                 await loadUserData();
                 
             } catch (error) {
                 console.error('购买失败:', error);
-                addStatusMessage('购买失败: ' + error.message, 'error');
+                btn.innerHTML = '<i class="fas fa-shopping-cart"></i> ' + languagePack[currentLanguage].buyAdvancedText;
+                addLog('购买失败: ' + error.message, 'purchaseLog', 'error');
             } finally {
-                button.innerHTML = '<i class="fas fa-shopping-cart"></i> 购买';
-                button.disabled = false;
+                btn.disabled = false;
             }
         }
         
         // 领取奖励
         async function claimRewards() {
-            const button = document.getElementById('claimBtn');
+            const btn = document.getElementById('claimBtn');
             
             try {
                 if (!contract || !userAddress) {
-                    addStatusMessage('请先连接钱包', 'error');
+                    addLog('请先连接钱包', 'rewardsLog', 'error');
                     return;
                 }
                 
-                button.innerHTML = '<span class="loading"></span> 处理中...';
-                button.disabled = true;
+                btn.innerHTML = '<span class="loading"></span> ' + (currentLanguage === "zh" ? "处理中..." : "Processing...");
+                btn.disabled = true;
                 
-                addStatusMessage('开始领取奖励...');
+                addLog('开始领取奖励...', 'rewardsLog');
                 
                 // 执行真实合约调用
                 const gasEstimate = await contract.methods.claimRewards().estimateGas({ from: userAddress });
                 
                 const result = await contract.methods.claimRewards().send({
                     from: userAddress,
-                    gas: Math.floor(gasEstimate * 1.5)
+                    gas: Math.floor(gas极Estimate * 1.5)
                 });
                 
-                addStatusMessage('奖励领取成功', 'success');
-                addStatusMessage(`交易哈希: ${result.transactionHash}`);
+                addLog('奖励领取成功', 'rewardsLog', 'success');
+                addLog(`交易哈希: ${result.transactionHash}`, 'rewardsLog');
                 
                 // 刷新数据
                 await loadUserData();
                 
             } catch (error) {
                 console.error('领取失败:', error);
-                addStatusMessage('领取失败: ' + error.message, 'error');
+                btn.innerHTML = '<i class="fas fa-download"></i> ' + languagePack[currentLanguage].claimText;
+                addLog('领取失败: ' + error.message, 'rewardsLog', 'error');
             } finally {
-                button.innerHTML = '<i class="fas fa-download"></i> 领取所有奖励';
-                button.disabled = false;
+                btn.disabled = false;
+            }
+        }
+        
+        // 刷新数据
+        async function refreshData() {
+            const btn = document.getElementById('refreshBtn');
+            btn.innerHTML = '<span class="loading"></span> ' + (currentLanguage === "zh" ? "刷新中..." : "Refreshing...");
+            btn.disabled = true;
+            
+            addLog('正在刷新矿机数据...', 'dashboardLog');
+            
+            try {
+                await loadUserData();
+                addLog('矿机数据刷新完成', 'dashboardLog', 'success');
+            } catch (error) {
+                console.error('刷新失败:', error);
+                addLog('刷新失败: ' + error.message, 'dashboardLog', 'error');
+            } finally {
+                btn.innerHTML = '<i class="fas fa-sync-alt"></i> ' + languagePack[currentLanguage].refreshText;
+                btn.disabled = false;
             }
         }
         
         // 初始化页面
         document.addEventListener('DOMContentLoaded', function() {
+            // 设置语言切换
+            document.getElementById('langSwitch').addEventListener('click', switchLanguage);
+            
             // 设置标签切换
             document.querySelectorAll('.tab').forEach(tab => {
                 tab.addEventListener('click', function() {
@@ -1186,28 +1383,13 @@
             document.getElementById('buyBasicBtn').addEventListener('click', purchaseBasicMachine);
             document.getElementById('buyAdvancedBtn').addEventListener('click', purchaseAdvancedMachine);
             document.getElementById('claimBtn').addEventListener('click', claimRewards);
-            document.getElementById('setReferrerBtn').addEventListener('click', setReferrer);
-            document.getElementById('copyLinkBtn').addEventListener('click', copyReferralLink);
-            document.getElementById('refreshBtn').addEventListener('click', async () => {
-                const refreshBtn = document.getElementById('refreshBtn');
-                refreshBtn.innerHTML = '<span class="loading"></span> 刷新中...';
-                refreshBtn.disabled = true;
-                await loadUserData();
-                refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> 刷新数据';
-                refreshBtn.disabled = false;
-                addStatusMessage('数据已刷新', 'success');
-            });
+            document.getElementById('refreshBtn').addEventListener('click', refreshData);
             
-            // 自动填充推荐人地址（如果URL中有ref参数）
-            const urlParams = new URLSearchParams(window.location.search);
-            const refAddress = urlParams.get('ref');
+            // 初始化语言
+            updateLanguage();
             
-            if (refAddress && web3 && web3.utils.isAddress(refAddress)) {
-                const referrerInput = document.getElementById('referrerAddress');
-                if (referrerInput) {
-                    referrerInput.value = refAddress;
-                }
-            }
+            // 添加初始日志
+            addLog(languagePack[currentLanguage].systemStart, 'fullLog', 'info');
         });
     </script>
 </body>
