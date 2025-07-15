@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8"/>
-<title>Mining Pro (修复版)</title>
+<title>Mining Pro</title>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <style>
 :root{
@@ -17,7 +17,8 @@
 }
 *{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
 body{background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);color:var(--text);display:flex;justify-content:center;padding:20px}
-.container{max-width:480px;width:100%}
+.container{max-width:480px;width:100%;position:relative}
+.lang-switch{position:absolute;top:10px;right:10px;background:#334155;border:none;border-radius:8px;padding:4px 8px;font-size:12px;color:#fff;cursor:pointer}
 h2{text-align:center;background:linear-gradient(90deg,#60a5fa,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin:20px 0;font-size:26px}
 .card{background:var(--card);border-radius:var(--radius);padding:20px;margin-bottom:20px;border:1px solid #334155;backdrop-filter:blur(8px)}
 h3{display:flex;align-items:center;gap:8px;margin-bottom:12px;font-size:18px}
@@ -37,78 +38,77 @@ input[type=number],input[type=text]{width:100%;padding:12px;border-radius:var(--
 </head>
 <body>
 <div class="container">
-  <h2 id="title">Mining Pro</h2>
+  <button id="langBtn" class="lang-switch">EN</button>
+  <h2 id="titleTxt">Mining Pro</h2>
 
   <!-- 标签栏 -->
   <div class="tab">
-    <button class="tab-btn active" data-tab="dashboard">仪表盘</button>
-    <button class="tab-btn" data-tab="buy">购买</button>
-    <button class="tab-btn" data-tab="claim">领取</button>
-    <button class="tab-btn" data-tab="refer">推荐</button>
+    <button class="tab-btn active" data-tab="dashboard" id="tabDashboard">仪表盘</button>
+    <button class="tab-btn" data-tab="buy" id="tabBuy">购买</button>
+    <button class="tab-btn" data-tab="claim" id="tabClaim">领取</button>
+    <button class="tab-btn" data-tab="refer" id="tabRefer">推荐</button>
     <button class="tab-btn" data-tab="admin" id="adminTabBtn" style="display:none">管理</button>
   </div>
 
   <!-- 仪表盘 -->
   <div id="dashboard" class="tab-content active">
     <div class="card">
-      <h3>仪表盘</h3>
-      <p>基础矿机：<strong id="basicCount">-</strong></p>
-      <p>高级矿机：<strong id="testCount">-</strong></p>
-      <p>待领奖励：<strong id="pendingReward">- α</strong></p>
-      <p>推荐奖励：<strong id="referralReward">- α</strong></p>
-      <button class="btn primary" onclick="refresh()">刷新</button>
+      <h3 id="dashboardTitle">仪表盘</h3>
+      <p><span id="lblDawn">曙光矿机</span>：<strong id="dawnCount">-</strong></p>
+      <p><span id="lblStarCore">星核矿机</span>：<strong id="starCoreCount">-</strong></p>
+      <p><span id="lblPending">待领奖励</span>：<strong id="pendingReward">- α</strong></p>
+      <p><span id="lblReferral">推荐奖励</span>：<strong id="referralReward">- α</strong></p>
+      <button class="btn primary" onclick="refresh()" id="btnRefresh">刷新</button>
     </div>
   </div>
 
   <!-- 购买矿机 -->
   <div id="buy" class="tab-content">
     <div class="card">
-      <h3>购买矿机</h3>
-      <button class="btn primary" onclick="buyBasic()">基础矿机 (0.01 BNB)</button>
-      <input type="number" id="advancedCount" placeholder="数量" min="1" max="100" value="1">
-      <button class="btn primary" onclick="buyAdvanced()">高级矿机 (100 α/台)</button>
+      <h3 id="buyTitle">购买矿机</h3>
+      <button class="btn primary" onclick="buyStarCore()" id="btnBuyStarCore">星核矿机 (0.01 BNB)</button>
+      <input type="number" id="dawnCountInput" placeholder="数量" min="1" max="100" value="1">
+      <button class="btn primary" onclick="buyDawn()" id="btnBuyDawn">曙光矿机 (100 α/台)</button>
     </div>
   </div>
 
   <!-- 领取奖励 -->
   <div id="claim" class="tab-content">
     <div class="card">
-      <h3>领取奖励</h3>
-      <button class="btn success" onclick="claimRewards()">领取所有奖励</button>
+      <h3 id="claimTitle">领取奖励</h3>
+      <button class="btn success" onclick="claimRewards()" id="btnClaim">领取所有奖励</button>
     </div>
   </div>
 
   <!-- 推荐人 -->
   <div id="refer" class="tab-content">
     <div class="card">
-      <h3>推荐人</h3>
+      <h3 id="referTitle">推荐人</h3>
       <input type="text" id="referralAddress" placeholder="推荐人地址">
-      <button class="btn primary" onclick="setReferrer()">设置推荐人</button>
+      <button class="btn primary" onclick="setReferrer()" id="btnSetReferrer">设置推荐人</button>
     </div>
   </div>
 
   <!-- 管理员 -->
   <div id="admin" class="tab-content">
     <div class="card">
-      <h3>管理员</h3>
-      <button class="btn success" onclick="withdrawBNB()">提取 BNB</button>
+      <h3 id="adminTitle">管理员</h3>
+      <button class="btn success" onclick="withdrawBNB()" id="btnWithdrawBNB">提取 BNB</button>
       <input type="number" id="withdrawAmount" placeholder="数量 α">
-      <button class="btn success" onclick="withdrawTokens()">提取代币</button>
+      <button class="btn success" onclick="withdrawTokens()" id="btnWithdrawTokens">提取代币</button>
     </div>
   </div>
 
   <!-- 日志 -->
   <div class="card">
-    <h3>操作日志</h3>
+    <h3 id="logTitle">操作日志</h3>
     <div class="log" id="log"></div>
   </div>
 
   <button id="connectBtn" class="btn primary">连接钱包</button>
 </div>
 
-<!-- ✅ 引入 Web3.js（参考代码方式） -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.10.0/web3.min.js"></script>
-
 <script>
 /* ===== 合约信息 ===== */
 const ABI = [
@@ -126,148 +126,244 @@ const ABI = [
   {"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"userInfo","outputs":[{"internalType":"uint256","name":"normalMachineCount","type":"uint256"},{"internalType":"uint256","name":"testMachineCount","type":"uint256"}],"stateMutability":"view","type":"function"}
 ];
 const ADDRESS = "0xf2F65d4f0F5A83a3d12e6b63635426D7aF89b8d0";
-const CHAIN_ID = "0x38"; // BSC
+const CHAIN_ID = "0x38";
 
-let web3, contract, userAddress;
+let web3, contract, userAddress, lang = "zh";
 
-/* ===== 工具 ===== */
-function log(msg, type = "info") {
-  const div = document.createElement("div");
-  div.className = type;
-  div.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
-  document.getElementById("log").appendChild(div);
-  document.getElementById("log").scrollTop = 1e9;
+const i18n = {
+  zh:{
+    title:"Mining Pro",
+    tabDashboard:"仪表盘",
+    tabBuy:"购买",
+    tabClaim:"领取",
+    tabRefer:"推荐",
+    dashboardTitle:"仪表盘",
+    lblDawn:"曙光矿机",
+    lblStarCore:"星核矿机",
+    lblPending:"待领奖励",
+    lblReferral:"推荐奖励",
+    btnRefresh:"刷新",
+    buyTitle:"购买矿机",
+    btnBuyStarCore:"星核矿机 (0.01 BNB)",
+    btnBuyDawn:"曙光矿机 (100 α/台)",
+    claimTitle:"领取奖励",
+    btnClaim:"领取所有奖励",
+    referTitle:"推荐人",
+    btnSetReferrer:"设置推荐人",
+    adminTitle:"管理员",
+    btnWithdrawBNB:"提取 BNB",
+    btnWithdrawTokens:"提取代币",
+    logTitle:"操作日志",
+    connect:"连接钱包",
+    connected:"已连接",
+    switchEN:"EN",
+    switchZH:"中",
+    logWaiting:"等待连接钱包...",
+    logConnected:"钱包已连接",
+    logRefresh:"刷新成功",
+    logBuyStarCore:"星核矿机购买成功",
+    logBuyDawn:"曙光矿机购买成功",
+    logClaim:"奖励领取成功",
+    logSetReferrer:"推荐人设置成功",
+    logWithdrawBNB:"BNB 提取成功",
+    logWithdrawTokens:"代币提取成功",
+    logError:"操作失败",
+    logSwitchChain:"请切换到 BSC 主网",
+    logInstallWallet:"请使用支持 BSC 的钱包浏览器"
+  },
+  en:{
+    title:"Mining Pro",
+    tabDashboard:"Dashboard",
+    tabBuy:"Buy",
+    tabClaim:"Claim",
+    tabRefer:"Refer",
+    dashboardTitle:"Dashboard",
+    lblDawn:"Dawn Miner",
+    lblStarCore:"StarCore Miner",
+    lblPending:"Pending",
+    lblReferral:"Referral",
+    btnRefresh:"Refresh",
+    buyTitle:"Buy Miners",
+    btnBuyStarCore:"StarCore Miner (0.01 BNB)",
+    btnBuyDawn:"Dawn Miner (100 α each)",
+    claimTitle:"Claim Rewards",
+    btnClaim:"Claim All Rewards",
+    referTitle:"Referrer",
+    btnSetReferrer:"Set Referrer",
+    adminTitle:"Admin",
+    btnWithdrawBNB:"Withdraw BNB",
+    btnWithdrawTokens:"Withdraw Tokens",
+    logTitle:"Logs",
+    connect:"Connect Wallet",
+    connected:"Connected",
+    switchEN:"EN",
+    switchZH:"中",
+    logWaiting:"Waiting for wallet connection...",
+    logConnected:"Wallet connected",
+    logRefresh:"Refreshed",
+    logBuyStarCore:"StarCore Miner purchased",
+    logBuyDawn:"Dawn Miner purchased",
+    logClaim:"Rewards claimed",
+    logSetReferrer:"Referrer set",
+    logWithdrawBNB:"BNB withdrawn",
+    logWithdrawTokens:"Tokens withdrawn",
+    logError:"Operation failed",
+    logSwitchChain:"Please switch to BSC Mainnet",
+    logInstallWallet:"Please use a BSC-compatible wallet"
+  }
+};
+
+function t(key){return i18n[lang][key]||key;}
+
+function applyLang(){
+  document.getElementById("titleTxt").textContent=t("title");
+  document.getElementById("langBtn").textContent=lang==="zh"?t("switchEN"):t("switchZH");
+  document.getElementById("tabDashboard").textContent=t("tabDashboard");
+  document.getElementById("tabBuy").textContent=t("tabBuy");
+  document.getElementById("tabClaim").textContent=t("tabClaim");
+  document.getElementById("tabRefer").textContent=t("tabRefer");
+  document.getElementById("dashboardTitle").textContent=t("dashboardTitle");
+  document.getElementById("lblDawn").textContent=t("lblDawn");
+  document.getElementById("lblStarCore").textContent=t("lblStarCore");
+  document.getElementById("lblPending").textContent=t("lblPending");
+  document.getElementById("lblReferral").textContent=t("lblReferral");
+  document.getElementById("btnRefresh").textContent=t("btnRefresh");
+  document.getElementById("buyTitle").textContent=t("buyTitle");
+  document.getElementById("btnBuyStarCore").textContent=t("btnBuyStarCore");
+  document.getElementById("btnBuyDawn").textContent=t("btnBuyDawn");
+  document.getElementById("claimTitle").textContent=t("claimTitle");
+  document.getElementById("btnClaim").textContent=t("btnClaim");
+  document.getElementById("referTitle").textContent=t("referTitle");
+  document.getElementById("btnSetReferrer").textContent=t("btnSetReferrer");
+  document.getElementById("adminTitle").textContent=t("adminTitle");
+  document.getElementById("btnWithdrawBNB").textContent=t("btnWithdrawBNB");
+  document.getElementById("btnWithdrawTokens").textContent=t("btnWithdrawTokens");
+  document.getElementById("logTitle").textContent=t("logTitle");
+  document.getElementById("connectBtn").textContent=userAddress?t("connected"):t("connect");
 }
 
-/* ===== 标签切换 ===== */
-document.addEventListener("DOMContentLoaded", () => {
-  document.querySelectorAll(".tab-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const tab = btn.dataset.tab;
-      document.querySelectorAll(".tab-content").forEach(x => x.classList.remove("active"));
-      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-      document.getElementById(tab).classList.add("active");
+function log(msg,type="info"){
+  const div=document.createElement("div");
+  div.className=type;
+  div.textContent=`[${new Date().toLocaleTimeString()}] ${msg}`;
+  document.getElementById("log").appendChild(div);
+  document.getElementById("log").scrollTop=1e9;
+}
+
+/* ===== 标签页切换修复 ===== */
+document.addEventListener("DOMContentLoaded",()=>{
+  document.querySelectorAll(".tab-btn").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      const target = btn.dataset.tab;
+      // 切换 tab active
+      document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
       btn.classList.add("active");
+      // 切换内容 active
+      document.querySelectorAll(".tab-content").forEach(c=>c.classList.remove("active"));
+      document.getElementById(target).classList.add("active");
     });
   });
 });
 
-/* ===== 钱包连接（参考代码方式） ===== */
-document.getElementById("connectBtn").addEventListener("click", async () => {
-  const providerObj = window.ethereum || window.tp || window.okexchain || window.bitkeep?.ethereum;
-  if (!providerObj) return log("请使用支持 BSC 的钱包浏览器", "error");
+document.getElementById("langBtn").addEventListener("click",()=>{
+  lang=lang==="zh"?"en":"zh";
+  applyLang();
+});
 
-  try {
-    await providerObj.request({ method: "eth_requestAccounts" });
-    const chainId = await providerObj.request({ method: "eth_chainId" });
-    if (chainId !== CHAIN_ID) return log("请切换到 BSC 主网", "error");
-
-    web3 = new Web3(providerObj);
-    contract = new web3.eth.Contract(ABI, ADDRESS);
-    userAddress = (await web3.eth.getAccounts())[0];
-
-    document.getElementById("connectBtn").innerText =
-      `✅ ${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`;
-    log("钱包已连接", "success");
+/* ===== 钱包连接 ===== */
+document.getElementById("connectBtn").addEventListener("click",async ()=>{
+  const p=window.ethereum||window.tp||window.okexchain||window.bitkeep?.ethereum;
+  if(!p)return log(t("logInstallWallet"),"error");
+  try{
+    await p.request({method:"eth_requestAccounts"});
+    const chain=await p.request({method:"eth_chainId"});
+    if(chain!==CHAIN_ID)return log(t("logSwitchChain"),"error");
+    web3=new Web3(p);
+    contract=new web3.eth.Contract(ABI,ADDRESS);
+    userAddress=(await web3.eth.getAccounts())[0];
+    document.getElementById("connectBtn").textContent=`✅ ${userAddress.slice(0,6)}...${userAddress.slice(-4)}`;
+    log(t("logConnected"),"success");
     await refresh();
-
-    const owner = await contract.methods.owner().call();
-    if (owner.toLowerCase() === userAddress.toLowerCase())
-      document.getElementById("adminTabBtn").style.display = "flex";
-  } catch (e) {
-    log("连接失败：" + e.message, "error");
+    const owner=await contract.methods.owner().call();
+    if(owner.toLowerCase()===userAddress.toLowerCase())document.getElementById("adminTabBtn").style.display="flex";
+  }catch(e){
+    log(t("logError")+": "+e.message,"error");
   }
 });
 
-/* ===== 业务函数 ===== */
-async function refresh() {
-  if (!contract) return log("请先连接钱包", "error");
-  try {
-    const user = await contract.methods.userInfo(userAddress).call();
-    const reward = await contract.methods.calculateRewards(userAddress).call();
-    const ref = await contract.methods.getUserReferralRewards(userAddress).call();
-    document.getElementById("basicCount").textContent = user.normalMachineCount;
-    document.getElementById("testCount").textContent = user.testMachineCount;
-    document.getElementById("pendingReward").textContent = (reward / 1e18).toFixed(4) + " α";
-    document.getElementById("referralReward").textContent = (ref / 1e18).toFixed(4) + " α";
-  } catch (e) {
-    log("刷新失败：" + e.message, "error");
+async function refresh(){
+  if(!contract)return log(t("logInstallWallet"),"error");
+  try{
+    const u=await contract.methods.userInfo(userAddress).call();
+    const r=await contract.methods.calculateRewards(userAddress).call();
+    const ref=await contract.methods.getUserReferralRewards(userAddress).call();
+    document.getElementById("dawnCount").textContent=u.testMachineCount;
+    document.getElementById("starCoreCount").textContent=u.normalMachineCount;
+    document.getElementById("pendingReward").textContent=(r/1e18).toFixed(4)+" α";
+    document.getElementById("referralReward").textContent=(ref/1e18).toFixed(4)+" α";
+    log(t("logRefresh"),"success");
+  }catch(e){
+    log(t("logError")+": "+e.message,"error");
   }
 }
 
-async function buyBasic() {
-  if (!contract) return log("请先连接钱包", "error");
-  try {
-    const tx = await contract.methods.buyInitialMachine().send({
-      from: userAddress,
-      value: web3.utils.toWei("0.01", "ether")
-    });
-    log("基础矿机购买成功", "success");
-    refresh();
-  } catch (e) {
-    log("购买失败：" + e.message, "error");
-  }
+async function buyStarCore(){
+  if(!contract)return log(t("logInstallWallet"),"error");
+  try{
+    await contract.methods.buyInitialMachine().send({from:userAddress,value:web3.utils.toWei("0.01","ether")});
+    log(t("logBuyStarCore"),"success");refresh();
+  }catch(e){log(t("logError")+": "+e.message,"error");}
 }
 
-async function buyAdvanced() {
-  if (!contract) return log("请先连接钱包", "error");
-  const cnt = parseInt(document.getElementById("advancedCount").value);
-  if (!cnt || cnt < 1 || cnt > 100) return log("数量 1-100", "error");
-  try {
-    const tx = await contract.methods.buyAdditionalMachine(cnt).send({ from: userAddress });
-    log(`高级矿机×${cnt} 购买成功`, "success");
-    refresh();
-  } catch (e) {
-    log("购买失败：" + e.message, "error");
-  }
+async function buyDawn(){
+  if(!contract)return log(t("logInstallWallet"),"error");
+  const c=parseInt(document.getElementById("dawnCountInput").value)||1;
+  try{
+    await contract.methods.buyAdditionalMachine(c).send({from:userAddress});
+    log(t("logBuyDawn")+` x${c}`,"success");refresh();
+  }catch(e){log(t("logError")+": "+e.message,"error");}
 }
 
-async function claimRewards() {
-  if (!contract) return log("请先连接钱包", "error");
-  try {
-    const tx = await contract.methods.claimRewards().send({ from: userAddress });
-    log("奖励领取成功", "success");
-    refresh();
-  } catch (e) {
-    log("领取失败：" + e.message, "error");
-  }
+async function claimRewards(){
+  if(!contract)return log(t("logInstallWallet"),"error");
+  try{
+    await contract.methods.claimRewards().send({from:userAddress});
+    log(t("logClaim"),"success");refresh();
+  }catch(e){log(t("logError")+": "+e.message,"error");}
 }
 
-async function setReferrer() {
-  const ref = document.getElementById("referralAddress").value;
-  if (!web3.utils.isAddress(ref)) return log("地址格式错误", "error");
-  if (!contract) return log("请先连接钱包", "error");
-  try {
-    const tx = await contract.methods.setReferrer(ref).send({ from: userAddress });
-    log("推荐人设置成功", "success");
-  } catch (e) {
-    log("设置失败：" + e.message, "error");
-  }
+async function setReferrer(){
+  const r=document.getElementById("referralAddress").value;
+  if(!web3.utils.isAddress(r))return log("地址格式错误 / Invalid address","error");
+  if(!contract)return log(t("logInstallWallet"),"error");
+  try{
+    await contract.methods.setReferrer(r).send({from:userAddress});
+    log(t("logSetReferrer"),"success");
+  }catch(e){log(t("logError")+": "+e.message,"error");}
 }
 
-async function withdrawBNB() {
-  if (!contract) return log("请先连接钱包", "error");
-  try {
-    const tx = await contract.methods.withdrawBNB().send({ from: userAddress });
-    log("BNB 提取成功", "success");
-  } catch (e) {
-    log("提取失败：" + e.message, "error");
-  }
+async function withdrawBNB(){
+  if(!contract)return log(t("logInstallWallet"),"error");
+  try{
+    await contract.methods.withdrawBNB().send({from:userAddress});
+    log(t("logWithdrawBNB"),"success");
+  }catch(e){log(t("logError")+": "+e.message,"error");}
 }
 
-async function withdrawTokens() {
-  const amt = document.getElementById("withdrawAmount").value;
-  if (!amt || isNaN(amt)) return log("请输入有效数量", "error");
-  if (!contract) return log("请先连接钱包", "error");
-  try {
-    const tx = await contract.methods.withdrawTokens(web3.utils.toWei(amt, "ether")).send({ from: userAddress });
-    log("代币提取成功", "success");
-  } catch (e) {
-    log("提取失败：" + e.message, "error");
-  }
+async function withdrawTokens(){
+  const a=document.getElementById("withdrawAmount").value;
+  if(!a||isNaN(a))return log("请输入有效数量 / Invalid amount","error");
+  try{
+    await contract.methods.withdrawTokens(web3.utils.toWei(a,"ether")).send({from:userAddress});
+    log(t("logWithdrawTokens"),"success");
+  }catch(e){log(t("logError")+": "+e.message,"error");}
 }
 
-log("等待连接钱包...");
+/* ===== 初始化 ===== */
+document.addEventListener("DOMContentLoaded",()=>{
+  applyLang();
+  log(t("logWaiting"));
+});
 </script>
 </body>
 </html>
