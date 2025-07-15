@@ -270,7 +270,7 @@ document.getElementById("langBtn").addEventListener("click",()=>{
   applyLang();
 });
 
-/* ===== 钱包连接 ===== */
+/* ===== 钱包连接（还原第一次版本） ===== */
 document.getElementById("connectBtn").addEventListener("click",async ()=>{
   const p=window.ethereum||window.tp||window.okexchain||window.bitkeep?.ethereum;
   if(!p)return log(t("logInstallWallet"),"error");
