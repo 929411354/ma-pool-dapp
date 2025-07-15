@@ -106,8 +106,8 @@ input[type=number],input[type=text]{width:100%;padding:12px;border-radius:var(--
   <button id="connectBtn" class="btn primary">连接钱包</button>
 </div>
 
-<!-- 1. 内联 ethers.js 5.7.2 -->
-<script src="https://cdn.ethers.io/lib/ethers-5.7.umd.min.js"></script>
+<!-- ✅ 引入 Web3.js（参考代码方式） -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.10.0/web3.min.js"></script>
 
 <script>
 /* ===== 合约信息 ===== */
@@ -126,9 +126,9 @@ const ABI = [
   {"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"userInfo","outputs":[{"internalType":"uint256","name":"normalMachineCount","type":"uint256"},{"internalType":"uint256","name":"testMachineCount","type":"uint256"}],"stateMutability":"view","type":"function"}
 ];
 const ADDRESS = "0xf2F65d4f0F5A83a3d12e6b63635426D7aF89b8d0";
-const CHAIN_ID  = "0x38"; // BSC
+const CHAIN_ID = "0x38"; // BSC
 
-let provider, signer, contract, userAddress;
+let web3, contract, userAddress;
 
 /* ===== 工具 ===== */
 function log(msg, type = "info") {
@@ -152,7 +152,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-/* ===== 钱包连接（支持 TP、MetaMask、OKX、BitKeep） ===== */
+/* ===== 钱包连接（参考代码方式） ===== */
 document.getElementById("connectBtn").addEventListener("click", async () => {
   const providerObj = window.ethereum || window.tp || window.okexchain || window.bitkeep?.ethereum;
   if (!providerObj) return log("请使用支持 BSC 的钱包浏览器", "error");
@@ -162,17 +162,16 @@ document.getElementById("connectBtn").addEventListener("click", async () => {
     const chainId = await providerObj.request({ method: "eth_chainId" });
     if (chainId !== CHAIN_ID) return log("请切换到 BSC 主网", "error");
 
-    provider = new ethers.providers.Web3Provider(providerObj);
-    signer   = provider.getSigner();
-    contract = new ethers.Contract(ADDRESS, ABI, signer);
-    userAddress = await signer.getAddress();
+    web3 = new Web3(providerObj);
+    contract = new web3.eth.Contract(ABI, ADDRESS);
+    userAddress = (await web3.eth.getAccounts())[0];
+
     document.getElementById("connectBtn").innerText =
       `✅ ${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`;
     log("钱包已连接", "success");
     await refresh();
 
-    // 显示管理员面板
-    const owner = await contract.owner();
+    const owner = await contract.methods.owner().call();
     if (owner.toLowerCase() === userAddress.toLowerCase())
       document.getElementById("adminTabBtn").style.display = "flex";
   } catch (e) {
@@ -184,81 +183,84 @@ document.getElementById("connectBtn").addEventListener("click", async () => {
 async function refresh() {
   if (!contract) return log("请先连接钱包", "error");
   try {
-    const user   = await contract.userInfo(userAddress);
-    const reward = await contract.calculateRewards(userAddress);
-    const ref    = await contract.getUserReferralRewards(userAddress);
-    document.getElementById("basicCount").textContent   = user.normalMachineCount.toString();
-    document.getElementById("testCount").textContent    = user.testMachineCount.toString();
-    document.getElementById("pendingReward").textContent = ethers.utils.formatEther(reward) + " α";
-    document.getElementById("referralReward").textContent = ethers.utils.formatEther(ref) + " α";
+    const user = await contract.methods.userInfo(userAddress).call();
+    const reward = await contract.methods.calculateRewards(userAddress).call();
+    const ref = await contract.methods.getUserReferralRewards(userAddress).call();
+    document.getElementById("basicCount").textContent = user.normalMachineCount;
+    document.getElementById("testCount").textContent = user.testMachineCount;
+    document.getElementById("pendingReward").textContent = (reward / 1e18).toFixed(4) + " α";
+    document.getElementById("referralReward").textContent = (ref / 1e18).toFixed(4) + " α";
   } catch (e) {
     log("刷新失败：" + e.message, "error");
   }
 }
+
 async function buyBasic() {
   if (!contract) return log("请先连接钱包", "error");
   try {
-    const tx = await contract.buyInitialMachine({ value: ethers.utils.parseEther("0.01") });
-    await tx.wait();
+    const tx = await contract.methods.buyInitialMachine().send({
+      from: userAddress,
+      value: web3.utils.toWei("0.01", "ether")
+    });
     log("基础矿机购买成功", "success");
     refresh();
   } catch (e) {
     log("购买失败：" + e.message, "error");
   }
 }
+
 async function buyAdvanced() {
   if (!contract) return log("请先连接钱包", "error");
   const cnt = parseInt(document.getElementById("advancedCount").value);
   if (!cnt || cnt < 1 || cnt > 100) return log("数量 1-100", "error");
   try {
-    const tx = await contract.buyAdditionalMachine(cnt);
-    await tx.wait();
+    const tx = await contract.methods.buyAdditionalMachine(cnt).send({ from: userAddress });
     log(`高级矿机×${cnt} 购买成功`, "success");
     refresh();
   } catch (e) {
     log("购买失败：" + e.message, "error");
   }
 }
+
 async function claimRewards() {
   if (!contract) return log("请先连接钱包", "error");
   try {
-    const tx = await contract.claimRewards();
-    await tx.wait();
+    const tx = await contract.methods.claimRewards().send({ from: userAddress });
     log("奖励领取成功", "success");
     refresh();
   } catch (e) {
     log("领取失败：" + e.message, "error");
   }
 }
+
 async function setReferrer() {
   const ref = document.getElementById("referralAddress").value;
-  if (!ethers.utils.isAddress(ref)) return log("地址格式错误", "error");
+  if (!web3.utils.isAddress(ref)) return log("地址格式错误", "error");
   if (!contract) return log("请先连接钱包", "error");
   try {
-    const tx = await contract.setReferrer(ref);
-    await tx.wait();
+    const tx = await contract.methods.setReferrer(ref).send({ from: userAddress });
     log("推荐人设置成功", "success");
   } catch (e) {
     log("设置失败：" + e.message, "error");
   }
 }
+
 async function withdrawBNB() {
   if (!contract) return log("请先连接钱包", "error");
   try {
-    const tx = await contract.withdrawBNB();
-    await tx.wait();
+    const tx = await contract.methods.withdrawBNB().send({ from: userAddress });
     log("BNB 提取成功", "success");
   } catch (e) {
     log("提取失败：" + e.message, "error");
   }
 }
+
 async function withdrawTokens() {
   const amt = document.getElementById("withdrawAmount").value;
   if (!amt || isNaN(amt)) return log("请输入有效数量", "error");
   if (!contract) return log("请先连接钱包", "error");
   try {
-    const tx = await contract.withdrawTokens(ethers.utils.parseEther(amt));
-    await tx.wait();
+    const tx = await contract.methods.withdrawTokens(web3.utils.toWei(amt, "ether")).send({ from: userAddress });
     log("代币提取成功", "success");
   } catch (e) {
     log("提取失败：" + e.message, "error");
