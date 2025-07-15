@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8"/>
-<title>Mining Pro (No History 修复版)</title>
+<title>Mining Pro (修复版)</title>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <style>
 :root{
@@ -106,19 +106,31 @@ input[type=number],input[type=text]{width:100%;padding:12px;border-radius:var(--
   <button id="connectBtn" class="btn primary">连接钱包</button>
 </div>
 
-<!-- ===== 修复 1：内联 ethers.js ===== -->
+<!-- 1. 内联 ethers.js 5.7.2 -->
 <script src="https://cdn.ethers.io/lib/ethers-5.7.umd.min.js"></script>
 
 <script>
-/* ===== 修复 2：合约信息 ===== */
-const ABI = [{"inputs":[],"name":"INITIAL_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"additionalMachinePriceToken","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"count","type":"uint256"}],"name":"buyAdditionalMachine","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"buyInitialMachine","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"userAddress","type":"address"}],"name":"calculateRewards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"claimRewards","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getUserReferralRewards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"referrer","type":"address"}],"name":"setReferrer","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"withdrawBNB","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdrawTokens","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"userInfo","outputs":[{"internalType":"uint256","name":"normalMachineCount","type":"uint256"},{"internalType":"uint256","name":"testMachineCount","type":"uint256"}],"stateMutability":"view","type":"function"}];
-
+/* ===== 合约信息 ===== */
+const ABI = [
+  {"inputs":[],"name":"INITIAL_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+  {"inputs":[],"name":"additionalMachinePriceToken","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+  {"inputs":[{"internalType":"uint256","name":"count","type":"uint256"}],"name":"buyAdditionalMachine","outputs":[],"stateMutability":"nonpayable","type":"function"},
+  {"inputs":[],"name":"buyInitialMachine","outputs":[],"stateMutability":"payable","type":"function"},
+  {"inputs":[{"internalType":"address","name":"userAddress","type":"address"}],"name":"calculateRewards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+  {"inputs":[],"name":"claimRewards","outputs":[],"stateMutability":"nonpayable","type":"function"},
+  {"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getUserReferralRewards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+  {"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
+  {"inputs":[{"internalType":"address","name":"referrer","type":"address"}],"name":"setReferrer","outputs":[],"stateMutability":"nonpayable","type":"function"},
+  {"inputs":[],"name":"withdrawBNB","outputs":[],"stateMutability":"nonpayable","type":"function"},
+  {"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdrawTokens","outputs":[],"stateMutability":"nonpayable","type":"function"},
+  {"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"userInfo","outputs":[{"internalType":"uint256","name":"normalMachineCount","type":"uint256"},{"internalType":"uint256","name":"testMachineCount","type":"uint256"}],"stateMutability":"view","type":"function"}
+];
 const ADDRESS = "0xf2F65d4f0F5A83a3d12e6b63635426D7aF89b8d0";
-const CHAIN_ID = "0x38"; // BSC
+const CHAIN_ID  = "0x38"; // BSC
 
 let provider, signer, contract, userAddress;
 
-/* ===== 修复 3：日志 ===== */
+/* ===== 工具 ===== */
 function log(msg, type = "info") {
   const div = document.createElement("div");
   div.className = type;
@@ -127,51 +139,56 @@ function log(msg, type = "info") {
   document.getElementById("log").scrollTop = 1e9;
 }
 
-/* ===== 修复 4：标签切换 ===== */
+/* ===== 标签切换 ===== */
 document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll(".tab-btn").forEach(btn => {
-    btn.onclick = () => {
-      const target = btn.dataset.tab;
+    btn.addEventListener("click", () => {
+      const tab = btn.dataset.tab;
       document.querySelectorAll(".tab-content").forEach(x => x.classList.remove("active"));
       document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-      document.getElementById(target).classList.add("active");
+      document.getElementById(tab).classList.add("active");
       btn.classList.add("active");
-    };
+    });
   });
 });
 
-/* ===== 修复 5：钱包连接 ===== */
+/* ===== 钱包连接（支持 TP、MetaMask、OKX、BitKeep） ===== */
 document.getElementById("connectBtn").addEventListener("click", async () => {
-  if (!window.ethereum) return log("请先安装 MetaMask", "error");
+  const providerObj = window.ethereum || window.tp || window.okexchain || window.bitkeep?.ethereum;
+  if (!providerObj) return log("请使用支持 BSC 的钱包浏览器", "error");
+
   try {
-    await window.ethereum.request({ method: "eth_requestAccounts" });
-    if (await window.ethereum.request({ method: "eth_chainId" }) !== CHAIN_ID)
-      return log("请切换到 BSC 主网", "error");
-    provider = new ethers.providers.Web3Provider(window.ethereum);
-    signer = provider.getSigner();
+    await providerObj.request({ method: "eth_requestAccounts" });
+    const chainId = await providerObj.request({ method: "eth_chainId" });
+    if (chainId !== CHAIN_ID) return log("请切换到 BSC 主网", "error");
+
+    provider = new ethers.providers.Web3Provider(providerObj);
+    signer   = provider.getSigner();
     contract = new ethers.Contract(ADDRESS, ABI, signer);
     userAddress = await signer.getAddress();
     document.getElementById("connectBtn").innerText =
       `✅ ${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`;
     log("钱包已连接", "success");
     await refresh();
+
+    // 显示管理员面板
     const owner = await contract.owner();
     if (owner.toLowerCase() === userAddress.toLowerCase())
-      document.getElementById("adminBtn").style.display = "flex";
+      document.getElementById("adminTabBtn").style.display = "flex";
   } catch (e) {
     log("连接失败：" + e.message, "error");
   }
 });
 
-/* ===== 修复 6：功能函数 ===== */
+/* ===== 业务函数 ===== */
 async function refresh() {
   if (!contract) return log("请先连接钱包", "error");
   try {
-    const user = await contract.userInfo(userAddress);
+    const user   = await contract.userInfo(userAddress);
     const reward = await contract.calculateRewards(userAddress);
-    const ref = await contract.getUserReferralRewards(userAddress);
-    document.getElementById("basicCount").textContent = user.normalMachineCount.toString();
-    document.getElementById("testCount").textContent = user.testMachineCount.toString();
+    const ref    = await contract.getUserReferralRewards(userAddress);
+    document.getElementById("basicCount").textContent   = user.normalMachineCount.toString();
+    document.getElementById("testCount").textContent    = user.testMachineCount.toString();
     document.getElementById("pendingReward").textContent = ethers.utils.formatEther(reward) + " α";
     document.getElementById("referralReward").textContent = ethers.utils.formatEther(ref) + " α";
   } catch (e) {
