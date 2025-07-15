@@ -2,262 +2,252 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8"/>
-<title>Mining Pro – 离线版</title>
+<title>Mining Pro (No History 修复版)</title>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <style>
-/* ---------- 变量 ---------- */
 :root{
-  --bg:#0d1117;
-  --bgCard:#161b22;
-  --border:#30363d;
-  --accent:#58a6ff;
-  --success:#3fb950;
-  --error:#f85149;
-  --text:#f0f6fc;
-  --radius:12px;
-  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  --bg:#0f172a;
+  --card:#1e293b80;
+  --glass:backdrop-filter:blur(8px);
+  --primary:#3b82f6;
+  --success:#22c55e;
+  --error:#f87171;
+  --text:#e2e8f0;
+  --radius:16px;
 }
-/* ---------- 通用 ---------- */
-*{margin:0;padding:0;box-sizing:border-box;font-family:var(--font);color:var(--text)}
-body{background:var(--bg);display:flex;justify-content:center;padding:24px}
-.container{max-width:440px;width:100%}
-h2{margin:24px 0 32px;text-align:center;font-size:28px;letter-spacing:.5px;background:linear-gradient(90deg,#58a6ff 0%,#79c0ff 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.card{background:var(--bgCard);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:20px}
-h3{display:flex;align-items:center;gap:8px;font-size:18px;font-weight:600;margin-bottom:12px}
-.btn{width:100%;display:flex;align-items:center;justify-content:center;gap:8px;padding:12px 16px;border:none;border-radius:var(--radius);font-size:15px;font-weight:600;cursor:pointer;transition:.25s}
-.btn.primary{background:#238636;color:#fff}
-.btn.primary:hover{background:#2ea043}
+*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+body{background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);color:var(--text);display:flex;justify-content:center;padding:20px}
+.container{max-width:480px;width:100%}
+h2{text-align:center;background:linear-gradient(90deg,#60a5fa,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin:20px 0;font-size:26px}
+.card{background:var(--card);border-radius:var(--radius);padding:20px;margin-bottom:20px;border:1px solid #334155;backdrop-filter:blur(8px)}
+h3{display:flex;align-items:center;gap:8px;margin-bottom:12px;font-size:18px}
+.btn{display:flex;align-items:center;gap:8px;width:100%;padding:14px;border:none;border-radius:var(--radius);font-size:16px;font-weight:600;cursor:pointer;transition:.3s}
+.btn.primary{background:linear-gradient(90deg,#3b82f6,#2563eb);color:#fff}
+.btn.success{background:linear-gradient(90deg,#22c55e,#16a34a);color:#fff}
 .btn:disabled{opacity:.5;cursor:not-allowed}
-input[type=number],input[type=text]{width:100%;padding:12px;border-radius:var(--radius);border:1px solid var(--border);background:#0d1117;color:var(--text)}
-.tab{display:flex;border-bottom:1px solid var(--border);margin-bottom:12px}
-.tab button{flex:1;padding:12px;border:none;background:transparent;color:#8b949e;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:.25s}
-.tab button.active{background:#21262d;color:#fff;border-radius:var(--radius) var(--radius) 0 0}
+input[type=number],input[type=text]{width:100%;padding:12px;border-radius:var(--radius);border:1px solid #334155;background:#111;color:#fff;margin:6px 0}
+.tab{display:flex;border-bottom:1px solid #334155;margin-bottom:12px}
+.tab button{flex:1;padding:12px;border:none;background:transparent;color:#93c5fd;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
+.tab button.active{background:#334155;color:#fff;border-radius:var(--radius) var(--radius) 0 0}
 .tab-content{display:none}
 .tab-content.active{display:block}
-.log{max-height:120px;overflow-y:auto;font-size:13px;line-height:1.4;color:#8b949e;margin-top:8px}
-.log>div{margin-bottom:4px}
-.log .error{color:var(--error)}
-.log .success{color:var(--success)}
+.loading{display:inline-block;width:16px;height:16px;border:2px solid #fff;border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
 <div class="container">
-  <h2>Mining Pro</h2>
+  <h2 id="title">Mining Pro</h2>
 
   <!-- 标签栏 -->
   <div class="tab">
-    <button class="tab-btn active" onclick="showTab('dashboard')">
-      <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10-16v6h8V3h-8zm0 22h8v-10h-8v10z"/></svg>仪表盘
-    </button>
-    <button class="tab-btn" onclick="showTab('buy')">
-      <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M7 18c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12L8.1 13h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>购买
-    </button>
-    <button class="tab-btn" onclick="showTab('claim')">
-      <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-2 14h-2v2h-2v-2H8v-2h2v-2h2v2h2v2zm2-9V3.5L18.5 9H14z"/></svg>领取
-    </button>
-    <button class="tab-btn" onclick="showTab('refer')">
-      <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M16 4c0-1.11.89-2 2-2s2 .89 2 2-.89 2-2 2-2-.89-2-2zm-8 0c0-1.11.89-2 2-2s2 .89 2 2-.89 2-2 2-2-.89-2-2zm0 18c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4zm8-18c0-1.11.89-2 2-2s2 .89 2 2-.89 2-2 2-2-.89-2-2zm0 18c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>推荐
-    </button>
-    <button class="tab-btn" onclick="showTab('admin')" id="adminTabBtn" style="display:none">
-      <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-.01L12 2z"/></svg>管理
-    </button>
+    <button class="tab-btn active" data-tab="dashboard">仪表盘</button>
+    <button class="tab-btn" data-tab="buy">购买</button>
+    <button class="tab-btn" data-tab="claim">领取</button>
+    <button class="tab-btn" data-tab="refer">推荐</button>
+    <button class="tab-btn" data-tab="admin" id="adminTabBtn" style="display:none">管理</button>
   </div>
 
   <!-- 仪表盘 -->
   <div id="dashboard" class="tab-content active">
     <div class="card">
-      <h3><svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10-16v6h8V3h-8zm0 22h8v-10h-8v10z"/></svg>仪表盘</h3>
+      <h3>仪表盘</h3>
       <p>基础矿机：<strong id="basicCount">-</strong></p>
       <p>高级矿机：<strong id="testCount">-</strong></p>
       <p>待领奖励：<strong id="pendingReward">- α</strong></p>
       <p>推荐奖励：<strong id="referralReward">- α</strong></p>
-      <button class="btn primary" onclick="refresh()">
-        <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>刷新
-      </button>
+      <button class="btn primary" onclick="refresh()">刷新</button>
     </div>
   </div>
 
-  <!-- 购买 -->
+  <!-- 购买矿机 -->
   <div id="buy" class="tab-content">
     <div class="card">
-      <h3><svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M7 18c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12L8.1 13h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>购买矿机</h3>
-      <button class="btn primary" onclick="buyBasic()">
-        <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M13 3L4 14h7v7l9-11h-7z"/></svg>基础矿机 (0.01 BNB)
-      </button>
+      <h3>购买矿机</h3>
+      <button class="btn primary" onclick="buyBasic()">基础矿机 (0.01 BNB)</button>
       <input type="number" id="advancedCount" placeholder="数量" min="1" max="100" value="1">
-      <button class="btn primary" onclick="buyAdvanced()">
-        <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M7 18c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12L8.1 13h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>高级矿机 (100 α/台)
-      </button>
+      <button class="btn primary" onclick="buyAdvanced()">高级矿机 (100 α/台)</button>
     </div>
   </div>
 
-  <!-- 领取 -->
+  <!-- 领取奖励 -->
   <div id="claim" class="tab-content">
     <div class="card">
-      <h3><svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-2 14h-2v2h-2v-2H8v-2h2v-2h2v2h2v2zm2-9V3.5L18.5 9H14z"/></svg>领取奖励</h3>
-      <button class="btn primary" onclick="claimRewards()">
-        <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>领取所有奖励
-      </button>
+      <h3>领取奖励</h3>
+      <button class="btn success" onclick="claimRewards()">领取所有奖励</button>
     </div>
   </div>
 
-  <!-- 推荐 -->
+  <!-- 推荐人 -->
   <div id="refer" class="tab-content">
     <div class="card">
-      <h3><svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M16 4c0-1.11.89-2 2-2s2 .89 2 2-.89 2-2 2-2-.89-2-2zm-8 0c0-1.11.89-2 2-2s2 .89 2 2-.89 2-2 2-2-.89-2-2zm0 18c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4zm8-18c0-1.11.89-2 2-2s2 .89 2 2-.89 2-2 2-2-.89-2-2zm0 18c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>推荐人</h3>
+      <h3>推荐人</h3>
       <input type="text" id="referralAddress" placeholder="推荐人地址">
-      <button class="btn primary" onclick="setReferrer()">
-        <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>设置推荐人
-      </button>
+      <button class="btn primary" onclick="setReferrer()">设置推荐人</button>
     </div>
   </div>
 
   <!-- 管理员 -->
   <div id="admin" class="tab-content">
     <div class="card">
-      <h3><svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-.01L12 2z"/></svg>管理员</h3>
-      <button class="btn primary" onclick="withdrawBNB()">
-        <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>提取 BNB
-      </button>
+      <h3>管理员</h3>
+      <button class="btn success" onclick="withdrawBNB()">提取 BNB</button>
       <input type="number" id="withdrawAmount" placeholder="数量 α">
-      <button class="btn primary" onclick="withdrawTokens()">
-        <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>提取代币
-      </button>
+      <button class="btn success" onclick="withdrawTokens()">提取代币</button>
     </div>
   </div>
 
   <!-- 日志 -->
   <div class="card">
-    <h3><svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>操作日志</h3>
-    <div id="log" class="log"></div>
+    <h3>操作日志</h3>
+    <div class="log" id="log"></div>
   </div>
 
-  <!-- 连接钱包按钮 -->
-  <button id="connectBtn" class="btn primary" style="margin-bottom:20px">连接钱包</button>
+  <button id="connectBtn" class="btn primary">连接钱包</button>
 </div>
 
-<!-- ============ 核心脚本 ============ -->
+<!-- ===== 修复 1：内联 ethers.js ===== -->
+<script src="https://cdn.ethers.io/lib/ethers-5.7.umd.min.js"></script>
+
 <script>
-/* ---------- 合约 & 链 ---------- */
-const ABI = [{"inputs":[{"internalType":"address","name":"_rewardToken","type":"address"},{"internalType":"address","name":"_treasury","type":"address"},{"internalType":"uint256","name":"_baseReward","type":"uint256"}],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[],"name":"INITIAL_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"additionalMachinePriceToken","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"count","type":"uint256"}],"name":"buyAdditionalMachine","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"buyInitialMachine","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"userAddress","type":"address"}],"name":"calculateRewards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"claimRewards","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getUserReferralRewards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"referrer","type":"address"}],"name":"setReferrer","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"withdrawBNB","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdrawTokens","outputs":[],"stateMutability":"nonpayable","type":"function"}];
+/* ===== 修复 2：合约信息 ===== */
+const ABI = [{"inputs":[],"name":"INITIAL_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"additionalMachinePriceToken","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"count","type":"uint256"}],"name":"buyAdditionalMachine","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"buyInitialMachine","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"userAddress","type":"address"}],"name":"calculateRewards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"claimRewards","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getUserReferralRewards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"referrer","type":"address"}],"name":"setReferrer","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"withdrawBNB","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdrawTokens","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"userInfo","outputs":[{"internalType":"uint256","name":"normalMachineCount","type":"uint256"},{"internalType":"uint256","name":"testMachineCount","type":"uint256"}],"stateMutability":"view","type":"function"}];
+
 const ADDRESS = "0xf2F65d4f0F5A83a3d12e6b63635426D7aF89b8d0";
-const CHAIN_ID  = "0x38"; // BSC
+const CHAIN_ID = "0x38"; // BSC
 
 let provider, signer, contract, userAddress;
 
-/* ---------- 工具 ---------- */
-function log(msg, type="info"){
-  const div=document.createElement("div");
-  div.className=type;
-  div.textContent=`[${new Date().toLocaleTimeString()}] ${msg}`;
+/* ===== 修复 3：日志 ===== */
+function log(msg, type = "info") {
+  const div = document.createElement("div");
+  div.className = type;
+  div.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
   document.getElementById("log").appendChild(div);
-  document.getElementById("log").scrollTop=1e9;
+  document.getElementById("log").scrollTop = 1e9;
 }
 
-function showTab(name){
-  document.querySelectorAll(".tab-content").forEach(t=>t.classList.remove("active"));
-  document.getElementById(name).classList.add("active");
-  document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
-  event.target.classList.add("active");
-}
-
-/* ---------- 钱包连接 ---------- */
-document.getElementById("connectBtn").addEventListener("click", async ()=>{
-  if(!window.ethereum){log("请安装 MetaMask","error");return;}
-  try{
-    await window.ethereum.request({method:"eth_requestAccounts"});
-    if(await window.ethereum.request({method:"eth_chainId"})!==CHAIN_ID){
-      log("请切换至 BSC 主网","error");return;
-    }
-    provider=new ethers.providers.Web3Provider(window.ethereum);
-    signer=provider.getSigner();
-    contract=new ethers.Contract(ADDRESS,ABI,signer);
-    userAddress=await signer.getAddress();
-    document.getElementById("connectBtn").innerText=`✅ ${userAddress.slice(0,6)}...${userAddress.slice(-4)}`;
-    log("钱包已连接","success");
-    refresh();
-    const owner=await contract.owner();
-    if(owner.toLowerCase()===userAddress.toLowerCase()){
-      document.getElementById("adminTabBtn").style.display="flex";
-    }
-  }catch(e){log("连接失败："+e.message,"error");}
+/* ===== 修复 4：标签切换 ===== */
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll(".tab-btn").forEach(btn => {
+    btn.onclick = () => {
+      const target = btn.dataset.tab;
+      document.querySelectorAll(".tab-content").forEach(x => x.classList.remove("active"));
+      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+      document.getElementById(target).classList.add("active");
+      btn.classList.add("active");
+    };
+  });
 });
 
-/* ---------- 功能 ---------- */
-async function refresh(){
-  if(!contract)return;
-  try{
-    const user=await contract.userInfo(userAddress);
-    const rew=await contract.calculateRewards(userAddress);
-    const ref=await contract.getUserReferralRewards(userAddress);
-    document.getElementById("basicCount").textContent=user.normalMachineCount.toString();
-    document.getElementById("testCount").textContent=user.testMachineCount.toString();
-    document.getElementById("pendingReward").textContent=ethers.utils.formatEther(rew)+" α";
-    document.getElementById("referralReward").textContent=ethers.utils.formatEther(ref)+" α";
-  }catch(e){log("刷新失败："+e.message,"error")}
-}
+/* ===== 修复 5：钱包连接 ===== */
+document.getElementById("connectBtn").addEventListener("click", async () => {
+  if (!window.ethereum) return log("请先安装 MetaMask", "error");
+  try {
+    await window.ethereum.request({ method: "eth_requestAccounts" });
+    if (await window.ethereum.request({ method: "eth_chainId" }) !== CHAIN_ID)
+      return log("请切换到 BSC 主网", "error");
+    provider = new ethers.providers.Web3Provider(window.ethereum);
+    signer = provider.getSigner();
+    contract = new ethers.Contract(ADDRESS, ABI, signer);
+    userAddress = await signer.getAddress();
+    document.getElementById("connectBtn").innerText =
+      `✅ ${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`;
+    log("钱包已连接", "success");
+    await refresh();
+    const owner = await contract.owner();
+    if (owner.toLowerCase() === userAddress.toLowerCase())
+      document.getElementById("adminBtn").style.display = "flex";
+  } catch (e) {
+    log("连接失败：" + e.message, "error");
+  }
+});
 
-async function buyBasic(){
-  if(!contract){log("请先连接钱包","error");return;}
-  try{
-    const tx=await contract.buyInitialMachine({value:ethers.utils.parseEther("0.01")});
+/* ===== 修复 6：功能函数 ===== */
+async function refresh() {
+  if (!contract) return log("请先连接钱包", "error");
+  try {
+    const user = await contract.userInfo(userAddress);
+    const reward = await contract.calculateRewards(userAddress);
+    const ref = await contract.getUserReferralRewards(userAddress);
+    document.getElementById("basicCount").textContent = user.normalMachineCount.toString();
+    document.getElementById("testCount").textContent = user.testMachineCount.toString();
+    document.getElementById("pendingReward").textContent = ethers.utils.formatEther(reward) + " α";
+    document.getElementById("referralReward").textContent = ethers.utils.formatEther(ref) + " α";
+  } catch (e) {
+    log("刷新失败：" + e.message, "error");
+  }
+}
+async function buyBasic() {
+  if (!contract) return log("请先连接钱包", "error");
+  try {
+    const tx = await contract.buyInitialMachine({ value: ethers.utils.parseEther("0.01") });
     await tx.wait();
-    log("基础矿机购买成功","success");refresh();
-  }catch(e){log("购买失败："+e.message,"error")}
+    log("基础矿机购买成功", "success");
+    refresh();
+  } catch (e) {
+    log("购买失败：" + e.message, "error");
+  }
 }
-
-async function buyAdvanced(){
-  if(!contract){log("请先连接钱包","error");return;}
-  const cnt=parseInt(document.getElementById("advancedCount").value);
-  if(!cnt||cnt<1||cnt>100){log("数量 1-100","error");return;}
-  try{
-    const tx=await contract.buyAdditionalMachine(cnt);
+async function buyAdvanced() {
+  if (!contract) return log("请先连接钱包", "error");
+  const cnt = parseInt(document.getElementById("advancedCount").value);
+  if (!cnt || cnt < 1 || cnt > 100) return log("数量 1-100", "error");
+  try {
+    const tx = await contract.buyAdditionalMachine(cnt);
     await tx.wait();
-    log(`高级矿机×${cnt} 购买成功`,"success");refresh();
-  }catch(e){log("购买失败："+e.message,"error")}
+    log(`高级矿机×${cnt} 购买成功`, "success");
+    refresh();
+  } catch (e) {
+    log("购买失败：" + e.message, "error");
+  }
 }
-
-async function claimRewards(){
-  if(!contract){log("请先连接钱包","error");return;}
-  try{
-    const tx=await contract.claimRewards();
+async function claimRewards() {
+  if (!contract) return log("请先连接钱包", "error");
+  try {
+    const tx = await contract.claimRewards();
     await tx.wait();
-    log("奖励领取成功","success");refresh();
-  }catch(e){log("领取失败："+e.message,"error")}
+    log("奖励领取成功", "success");
+    refresh();
+  } catch (e) {
+    log("领取失败：" + e.message, "error");
+  }
 }
-
-async function setReferrer(){
-  const ref=document.getElementById("referralAddress").value;
-  if(!ethers.utils.isAddress(ref)){log("地址格式错误","error");return;}
-  if(!contract){log("请先连接钱包","error");return;}
-  try{
-    const tx=await contract.setReferrer(ref);
+async function setReferrer() {
+  const ref = document.getElementById("referralAddress").value;
+  if (!ethers.utils.isAddress(ref)) return log("地址格式错误", "error");
+  if (!contract) return log("请先连接钱包", "error");
+  try {
+    const tx = await contract.setReferrer(ref);
     await tx.wait();
-    log("推荐人设置成功","success");
-  }catch(e){log("设置失败："+e.message,"error")}
+    log("推荐人设置成功", "success");
+  } catch (e) {
+    log("设置失败：" + e.message, "error");
+  }
 }
-
-async function withdrawBNB(){
-  if(!contract){log("请先连接钱包","error");return;}
-  try{
-    const tx=await contract.withdrawBNB();
+async function withdrawBNB() {
+  if (!contract) return log("请先连接钱包", "error");
+  try {
+    const tx = await contract.withdrawBNB();
     await tx.wait();
-    log("BNB 提取成功","success");
-  }catch(e){log("提取失败："+e.message,"error")}
+    log("BNB 提取成功", "success");
+  } catch (e) {
+    log("提取失败：" + e.message, "error");
+  }
 }
-
-async function withdrawTokens(){
-  const amt=document.getElementById("withdrawAmount").value;
-  if(!amt||isNaN(amt)){log("请输入数量","error");return;}
-  if(!contract){log("请先连接钱包","error");return;}
-  try{
-    const tx=await contract.withdrawTokens(ethers.utils.parseEther(amt));
+async function withdrawTokens() {
+  const amt = document.getElementById("withdrawAmount").value;
+  if (!amt || isNaN(amt)) return log("请输入有效数量", "error");
+  if (!contract) return log("请先连接钱包", "error");
+  try {
+    const tx = await contract.withdrawTokens(ethers.utils.parseEther(amt));
     await tx.wait();
-    log("代币提取成功","success");
-  }catch(e){log("提取失败："+e.message,"error")}
+    log("代币提取成功", "success");
+  } catch (e) {
+    log("提取失败：" + e.message, "error");
+  }
 }
 
-/* ---------- 初始化 ---------- */
 log("等待连接钱包...");
 </script>
 </body>
