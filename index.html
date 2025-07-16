@@ -44,13 +44,13 @@ input[type=number],input[type=text]{width:100%;padding:12px;border-radius:var(--
   <!-- 标签栏 -->
   <div class="tab">
     <button class="tab-btn active" data-tab="dashboard" id="tabDashboard">仪表盘</button>
-    <button class="tab-btn" data-tab="buy" id="tabBuy">购买</button>
+    <button class="tab-btn" data-tab="buy"  id="tabBuy">购买</button>
     <button class="tab-btn" data-tab="claim" id="tabClaim">领取</button>
     <button class="tab-btn" data-tab="refer" id="tabRefer">推荐</button>
     <button class="tab-btn" data-tab="admin" id="adminTabBtn" style="display:none">管理</button>
   </div>
 
-  <!-- 仪表盘：功能互换 -->
+  <!-- 仪表盘：激活状态在曙光矿机上方 -->
   <div id="dashboard" class="tab-content active">
     <div class="card">
       <h3 id="dashboardTitle">仪表盘</h3>
@@ -94,7 +94,7 @@ input[type=number],input[type=text]{width:100%;padding:12px;border-radius:var(--
     <div class="card">
       <h3 id="adminTitle">管理员</h3>
       <button class="btn success" onclick="withdrawBNB()" id="btnWithdrawBNB">提取 BNB</button>
-      <input type="number" id="withdrawAmount" placeholder="数量 α">
+      <input type="number" id="withdrawAmount" placeholder="提取代币数量 α">
       <button class="btn success" onclick="withdrawTokens()" id="btnWithdrawTokens">提取代币</button>
 
       <!-- 新增：添加奖励到合约 -->
@@ -126,7 +126,8 @@ const ABI = [
   {"inputs":[{"internalType":"address","name":"referrer","type":"address"}],"name":"setReferrer","outputs":[],"stateMutability":"nonpayable","type":"function"},
   {"inputs":[],"name":"withdrawBNB","outputs":[],"stateMutability":"nonpayable","type":"function"},
   {"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdrawTokens","outputs":[],"stateMutability":"nonpayable","type":"function"},
-  {"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"userInfo","outputs":[{"internalType":"uint256","name":"normalMachineCount","type":"uint256"},{"internalType":"uint256","name":"testMachineCount","type":"uint256"}],"stateMutability":"view","type":"function"}
+  {"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"addRewardTokens","outputs":[],"stateMutability":"nonpayable","type":"function"},
+  {"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"userInfo","outputs":[{"internalType":"uint256","name":"normalMachineCount","type":"uint256"},{"internalType":"uint256","name":"testMachineCount","type":"uint256"},{"internalType":"uint256","name":"lastRewardClaimBlock","type":"uint256"},{"internalType":"address","name":"referrer","type":"address"},{"internalType":"uint256","name":"referralRewards","type":"uint256"},{"internalType":"bool","name":"hasBoughtInitial","type":"bool"},{"internalType":"uint256","name":"lastActivity","type":"uint256"}],"stateMutability":"view","type":"function"}
 ];
 const ADDRESS = "0xf2F65d4f0F5A83a3d12e6b63635426D7aF89b8d0";
 const CHAIN_ID = "0x38";
@@ -305,6 +306,7 @@ async function refresh(){
     const u=await contract.methods.userInfo(userAddress).call();
     const r=await contract.methods.calculateRewards(userAddress).call();
     const ref=await contract.methods.getUserReferralRewards(userAddress).call();
+    // 仪表盘功能互换：testMachineCount=激活状态(α)  normalMachineCount=曙光矿机(BNB)
     const isActivated = parseInt(u.testMachineCount) > 0;
     document.getElementById("activateStatus").textContent = isActivated ? t("activated") : t("notActivated");
     document.getElementById("dawnCount").textContent = u.normalMachineCount;
@@ -373,8 +375,7 @@ async function addReward(){
   const a=document.getElementById("addRewardAmount").value;
   if(!a||isNaN(a))return log("请输入有效数量 / Invalid amount","error");
   try{
-    // 这里用 transfer 或 mint 真实方法替换
-    // 示例：await contract.methods.addReward(web3.utils.toWei(a,"ether")).send({from:userAddress});
+    await contract.methods.addRewardTokens(web3.utils.toWei(a,"ether")).send({from:userAddress});
     log(t("addRewardSuccess"),"success");
   }catch(e){log(t("logError")+": "+e.message,"error");}
 }
