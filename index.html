@@ -50,11 +50,13 @@ input[type=number],input[type=text]{width:100%;padding:12px;border-radius:var(--
     <button class="tab-btn" data-tab="admin" id="adminTabBtn" style="display:none">管理</button>
   </div>
 
-  <!-- 仪表盘 -->
+  <!-- 仪表盘：功能互换 -->
   <div id="dashboard" class="tab-content active">
     <div class="card">
       <h3 id="dashboardTitle">仪表盘</h3>
+      <!-- 激活状态：α 购买 -->
       <p><span id="lblActivate">激活状态</span>：<strong id="activateStatus">-</strong></p>
+      <!-- 曙光矿机：BNB 购买 -->
       <p><span id="lblDawn">曙光矿机</span>：<strong id="dawnCount">-</strong></p>
       <p><span id="lblPending">待领奖励</span>：<strong id="pendingReward">- α</strong></p>
       <p><span id="lblReferral">推荐奖励</span>：<strong id="referralReward">- α</strong></p>
@@ -110,7 +112,6 @@ input[type=number],input[type=text]{width:100%;padding:12px;border-radius:var(--
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.10.0/web3.min.js"></script>
 <script>
-/* ===== 合约信息 ===== */
 const ABI = [
   {"inputs":[],"name":"INITIAL_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
   {"inputs":[],"name":"additionalMachinePriceToken","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
@@ -254,15 +255,12 @@ function log(msg,type="info"){
   document.getElementById("log").scrollTop=1e9;
 }
 
-/* ===== 标签页切换修复 ===== */
 document.addEventListener("DOMContentLoaded",()=>{
   document.querySelectorAll(".tab-btn").forEach(btn=>{
     btn.addEventListener("click",()=>{
       const target = btn.dataset.tab;
-      // 切换 tab active
       document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
       btn.classList.add("active");
-      // 切换内容 active
       document.querySelectorAll(".tab-content").forEach(c=>c.classList.remove("active"));
       document.getElementById(target).classList.add("active");
     });
@@ -272,10 +270,8 @@ document.addEventListener("DOMContentLoaded",()=>{
 document.getElementById("langBtn").addEventListener("click",()=>{
   lang=lang==="zh"?"en":"zh";
   applyLang();
-  refresh(); // 切换语言后刷新一次
 });
 
-/* ===== 钱包连接（还原第一次版本） ===== */
 document.getElementById("connectBtn").addEventListener("click",async ()=>{
   const p=window.ethereum||window.tp||window.okexchain||window.bitkeep?.ethereum;
   if(!p)return log(t("logInstallWallet"),"error");
@@ -302,10 +298,10 @@ async function refresh(){
     const u=await contract.methods.userInfo(userAddress).call();
     const r=await contract.methods.calculateRewards(userAddress).call();
     const ref=await contract.methods.getUserReferralRewards(userAddress).call();
-    // 激活状态：>=1 已激活，否则未激活
-    const isActivated = parseInt(u.normalMachineCount) > 0;
+    // 功能互换：testMachineCount 对应激活状态（α），normalMachineCount 对应曙光矿机（BNB）
+    const isActivated = parseInt(u.testMachineCount) > 0;
     document.getElementById("activateStatus").textContent = isActivated ? t("activated") : t("notActivated");
-    document.getElementById("dawnCount").textContent=u.testMachineCount;
+    document.getElementById("dawnCount").textContent = u.normalMachineCount;
     document.getElementById("pendingReward").textContent=(r/1e18).toFixed(4)+" α";
     document.getElementById("referralReward").textContent=(ref/1e18).toFixed(4)+" α";
     log(t("logRefresh"),"success");
@@ -317,7 +313,7 @@ async function refresh(){
 async function buyStarCore(){
   if(!contract)return log(t("logInstallWallet"),"error");
   try{
-    await contract.methods.buyInitialMachine().send({from:userAddress,value:web3.utils.toWei("0.01","ether")});
+    await contract.methods.buyAdditionalMachine(1).send({from:userAddress});
     log(t("logBuyStarCore"),"success");refresh();
   }catch(e){log(t("logError")+": "+e.message,"error");}
 }
@@ -326,7 +322,7 @@ async function buyDawn(){
   if(!contract)return log(t("logInstallWallet"),"error");
   const c=parseInt(document.getElementById("dawnCountInput").value)||1;
   try{
-    await contract.methods.buyAdditionalMachine(c).send({from:userAddress});
+    await contract.methods.buyInitialMachine().send({from:userAddress,value:web3.utils.toWei("0.01","ether")});
     log(t("logBuyDawn")+` x${c}`,"success");refresh();
   }catch(e){log(t("logError")+": "+e.message,"error");}
 }
@@ -366,7 +362,6 @@ async function withdrawTokens(){
   }catch(e){log(t("logError")+": "+e.message,"error");}
 }
 
-/* ===== 初始化 ===== */
 document.addEventListener("DOMContentLoaded",()=>{
   applyLang();
   log(t("logWaiting"));
