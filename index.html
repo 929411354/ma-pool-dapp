@@ -54,8 +54,8 @@ input[type=number],input[type=text]{width:100%;padding:12px;border-radius:var(--
   <div id="dashboard" class="tab-content active">
     <div class="card">
       <h3 id="dashboardTitle">仪表盘</h3>
+      <p><span id="lblActivate">激活状态</span>：<strong id="activateStatus">-</strong></p>
       <p><span id="lblDawn">曙光矿机</span>：<strong id="dawnCount">-</strong></p>
-      <p><span id="lblStarCore">星核矿机</span>：<strong id="starCoreCount">-</strong></p>
       <p><span id="lblPending">待领奖励</span>：<strong id="pendingReward">- α</strong></p>
       <p><span id="lblReferral">推荐奖励</span>：<strong id="referralReward">- α</strong></p>
       <button class="btn primary" onclick="refresh()" id="btnRefresh">刷新</button>
@@ -66,7 +66,7 @@ input[type=number],input[type=text]{width:100%;padding:12px;border-radius:var(--
   <div id="buy" class="tab-content">
     <div class="card">
       <h3 id="buyTitle">购买矿机</h3>
-      <button class="btn primary" onclick="buyStarCore()" id="btnBuyStarCore">星核矿机 (0.01 BNB)</button>
+      <button class="btn primary" onclick="buyStarCore()" id="btnBuyStarCore">激活矿机 (0.01 BNB)</button>
       <input type="number" id="dawnCountInput" placeholder="数量" min="1" max="100" value="1">
       <button class="btn primary" onclick="buyDawn()" id="btnBuyDawn">曙光矿机 (100 α/台)</button>
     </div>
@@ -138,13 +138,13 @@ const i18n = {
     tabClaim:"领取",
     tabRefer:"推荐",
     dashboardTitle:"仪表盘",
+    lblActivate:"激活状态",
     lblDawn:"曙光矿机",
-    lblStarCore:"星核矿机",
     lblPending:"待领奖励",
     lblReferral:"推荐奖励",
     btnRefresh:"刷新",
     buyTitle:"购买矿机",
-    btnBuyStarCore:"星核矿机 (0.01 BNB)",
+    btnBuyStarCore:"激活矿机 (0.01 BNB)",
     btnBuyDawn:"曙光矿机 (100 α/台)",
     claimTitle:"领取奖励",
     btnClaim:"领取所有奖励",
@@ -161,7 +161,7 @@ const i18n = {
     logWaiting:"等待连接钱包...",
     logConnected:"钱包已连接",
     logRefresh:"刷新成功",
-    logBuyStarCore:"星核矿机购买成功",
+    logBuyStarCore:"激活矿机购买成功",
     logBuyDawn:"曙光矿机购买成功",
     logClaim:"奖励领取成功",
     logSetReferrer:"推荐人设置成功",
@@ -169,7 +169,9 @@ const i18n = {
     logWithdrawTokens:"代币提取成功",
     logError:"操作失败",
     logSwitchChain:"请切换到 BSC 主网",
-    logInstallWallet:"请使用支持 BSC 的钱包浏览器"
+    logInstallWallet:"请使用支持 BSC 的钱包浏览器",
+    activated:"已激活",
+    notActivated:"未激活"
   },
   en:{
     title:"Mining Pro",
@@ -178,13 +180,13 @@ const i18n = {
     tabClaim:"Claim",
     tabRefer:"Refer",
     dashboardTitle:"Dashboard",
+    lblActivate:"Activation",
     lblDawn:"Dawn Miner",
-    lblStarCore:"StarCore Miner",
     lblPending:"Pending",
     lblReferral:"Referral",
     btnRefresh:"Refresh",
     buyTitle:"Buy Miners",
-    btnBuyStarCore:"StarCore Miner (0.01 BNB)",
+    btnBuyStarCore:"Activate Miner (0.01 BNB)",
     btnBuyDawn:"Dawn Miner (100 α each)",
     claimTitle:"Claim Rewards",
     btnClaim:"Claim All Rewards",
@@ -201,7 +203,7 @@ const i18n = {
     logWaiting:"Waiting for wallet connection...",
     logConnected:"Wallet connected",
     logRefresh:"Refreshed",
-    logBuyStarCore:"StarCore Miner purchased",
+    logBuyStarCore:"Activate Miner purchased",
     logBuyDawn:"Dawn Miner purchased",
     logClaim:"Rewards claimed",
     logSetReferrer:"Referrer set",
@@ -209,7 +211,9 @@ const i18n = {
     logWithdrawTokens:"Tokens withdrawn",
     logError:"Operation failed",
     logSwitchChain:"Please switch to BSC Mainnet",
-    logInstallWallet:"Please use a BSC-compatible wallet"
+    logInstallWallet:"Please use a BSC-compatible wallet",
+    activated:"Activated",
+    notActivated:"Not activated"
   }
 };
 
@@ -223,8 +227,8 @@ function applyLang(){
   document.getElementById("tabClaim").textContent=t("tabClaim");
   document.getElementById("tabRefer").textContent=t("tabRefer");
   document.getElementById("dashboardTitle").textContent=t("dashboardTitle");
+  document.getElementById("lblActivate").textContent=t("lblActivate");
   document.getElementById("lblDawn").textContent=t("lblDawn");
-  document.getElementById("lblStarCore").textContent=t("lblStarCore");
   document.getElementById("lblPending").textContent=t("lblPending");
   document.getElementById("lblReferral").textContent=t("lblReferral");
   document.getElementById("btnRefresh").textContent=t("btnRefresh");
@@ -268,6 +272,7 @@ document.addEventListener("DOMContentLoaded",()=>{
 document.getElementById("langBtn").addEventListener("click",()=>{
   lang=lang==="zh"?"en":"zh";
   applyLang();
+  refresh(); // 切换语言后刷新一次
 });
 
 /* ===== 钱包连接（还原第一次版本） ===== */
@@ -297,8 +302,10 @@ async function refresh(){
     const u=await contract.methods.userInfo(userAddress).call();
     const r=await contract.methods.calculateRewards(userAddress).call();
     const ref=await contract.methods.getUserReferralRewards(userAddress).call();
+    // 激活状态：>=1 已激活，否则未激活
+    const isActivated = parseInt(u.normalMachineCount) > 0;
+    document.getElementById("activateStatus").textContent = isActivated ? t("activated") : t("notActivated");
     document.getElementById("dawnCount").textContent=u.testMachineCount;
-    document.getElementById("starCoreCount").textContent=u.normalMachineCount;
     document.getElementById("pendingReward").textContent=(r/1e18).toFixed(4)+" α";
     document.getElementById("referralReward").textContent=(ref/1e18).toFixed(4)+" α";
     log(t("logRefresh"),"success");
