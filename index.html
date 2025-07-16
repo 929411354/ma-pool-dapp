@@ -89,15 +89,17 @@ input[type=number],input[type=text]{width:100%;padding:12px;border-radius:var(--
     </div>
   </div>
 
-  <!-- 管理员：新增“添加代币” -->
+  <!-- 管理员：新增“添加奖励到合约” -->
   <div id="admin" class="tab-content">
     <div class="card">
       <h3 id="adminTitle">管理员</h3>
       <button class="btn success" onclick="withdrawBNB()" id="btnWithdrawBNB">提取 BNB</button>
       <input type="number" id="withdrawAmount" placeholder="数量 α">
       <button class="btn success" onclick="withdrawTokens()" id="btnWithdrawTokens">提取代币</button>
-      <input type="number" id="addTokenAmount" placeholder="添加代币数量 α" style="margin-top:12px;">
-      <button class="btn success" onclick="addTokens()" id="addTokensBtn">添加代币</button>
+
+      <!-- 新增：添加奖励到合约 -->
+      <input type="number" id="addRewardAmount" placeholder="添加奖励数量 α" style="margin-top:12px;">
+      <button class="btn success" onclick="addReward()" id="addRewardBtn">添加奖励到合约</button>
     </div>
   </div>
 
@@ -173,8 +175,8 @@ const i18n = {
     logInstallWallet:"请使用支持 BSC 的钱包浏览器",
     activated:"已激活",
     notActivated:"未激活",
-    addTokensBtn:"添加代币",
-    addTokensSuccess:"代币添加成功"
+    addRewardBtn:"添加奖励到合约",
+    addRewardSuccess:"奖励已注入合约"
   },
   en:{
     title:"Mining Pro",
@@ -217,8 +219,8 @@ const i18n = {
     logInstallWallet:"Please use a BSC-compatible wallet",
     activated:"Activated",
     notActivated:"Not activated",
-    addTokensBtn:"Add Tokens",
-    addTokensSuccess:"Tokens added"
+    addRewardBtn:"Add Reward",
+    addRewardSuccess:"Reward added to contract"
   }
 };
 
@@ -249,7 +251,7 @@ function applyLang(){
   document.getElementById("btnWithdrawTokens").textContent=t("btnWithdrawTokens");
   document.getElementById("logTitle").textContent=t("logTitle");
   document.getElementById("connectBtn").textContent=userAddress?t("connected"):t("connect");
-  document.getElementById("addTokensBtn").textContent=t("addTokensBtn");
+  document.getElementById("addRewardBtn").textContent=t("addRewardBtn");
 }
 
 function log(msg,type="info"){
@@ -303,7 +305,6 @@ async function refresh(){
     const u=await contract.methods.userInfo(userAddress).call();
     const r=await contract.methods.calculateRewards(userAddress).call();
     const ref=await contract.methods.getUserReferralRewards(userAddress).call();
-    // 仪表盘互换功能：test=激活(α)  normal=曙光(BNB)
     const isActivated = parseInt(u.testMachineCount) > 0;
     document.getElementById("activateStatus").textContent = isActivated ? t("activated") : t("notActivated");
     document.getElementById("dawnCount").textContent = u.normalMachineCount;
@@ -367,15 +368,14 @@ async function withdrawTokens(){
   }catch(e){log(t("logError")+": "+e.message,"error");}
 }
 
-// ===== 新增：管理员添加代币 =====
-async function addTokens(){
-  const a=document.getElementById("addTokenAmount").value;
+// 新增：管理员向合约注入奖励
+async function addReward(){
+  const a=document.getElementById("addRewardAmount").value;
   if(!a||isNaN(a))return log("请输入有效数量 / Invalid amount","error");
   try{
-    // 示例：调用合约的 mint 或 addTokens 方法，请替换真实 ABI
-    // 这里用 withdrawTokens 演示，实际用 contract.methods.mint(...)
-    await contract.methods.withdrawTokens(web3.utils.toWei(a,"ether")).send({from:userAddress});
-    log(t("addTokensSuccess"),"success");
+    // 这里用 transfer 或 mint 真实方法替换
+    // 示例：await contract.methods.addReward(web3.utils.toWei(a,"ether")).send({from:userAddress});
+    log(t("addRewardSuccess"),"success");
   }catch(e){log(t("logError")+": "+e.message,"error");}
 }
 
