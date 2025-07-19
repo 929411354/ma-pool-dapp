@@ -14,52 +14,57 @@
     button{background:#007bff;color:#fff;border:none;padding:10px 15px;border-radius:4px;cursor:pointer}
     button:disabled{background:#bbb}
     .lang-switch{cursor:pointer;color:#007bff;margin-left:10px}
+    .alert{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#e74c3c;color:#fff;padding:12px 20px;border-radius:4px;z-index:9999;display:none}
   </style>
 </head>
 <body>
 <div class="container">
-  <h1 id="title">矿机商店 / Mining Machine Shop</h1>
+  <h1 id="title">矿机商店</h1>
   <div>
     <span id="wallet"></span>
     <span class="lang-switch" onclick="toggleLang()">中文 / English</span>
   </div>
 
-  <!-- 连接钱包 -->
   <div id="connectPanel">
-    <button id="btnConnect" onclick="connectWallet()">连接钱包 / Connect Wallet</button>
+    <button id="btnConnect" onclick="connectWallet()">连接钱包</button>
   </div>
 
   <!-- 用户面板 -->
   <div id="userPanel" class="panel">
     <h2 id="userTitle">用户面板</h2>
     <div id="userDash" class="card"></div>
-    <button onclick="approveMax()">授权无限 / Approve Max</button>
-    <button onclick="buyInitial()">购买初始矿机 / Buy Initial</button>
-    <button onclick="buyTest()">购买测试矿机 / Buy Test</button>
-    <button onclick="buyPower()">购买增强 / Buy Power</button>
-    <button onclick="claim()">领取收益 / Claim</button>
+
+    <button onclick="approveMax()">授权无限额度</button>
+    <button onclick="buyInitial()">购买初始矿机</button>
+    <button onclick="buyTest()">购买测试矿机</button>
+    <button onclick="buyPower()">购买增强矿机</button>
+    <button onclick="claim()">领取收益</button>
   </div>
 
-  <!-- 管理员面板（仅管理员可见） -->
+  <!-- 管理员面板 -->
   <div id="adminPanel" class="panel">
-    <h2 id="adminTitle">管理员面板 / Admin Panel</h2>
+    <h2 id="adminTitle">管理员面板</h2>
     <div id="adminDash" class="card"></div>
-    <input id="adminAddr" placeholder="地址 / Address" />
-    <button onclick="addAdmin()">添加管理员 / Add Admin</button>
-    <button onclick="removeAdmin()">移除管理员 / Remove Admin</button>
-    <button onclick="withdrawToken()">提回代币 / Withdraw Tokens</button>
-    <button onclick="withdrawBNB()">提回 BNB / Withdraw BNB</button>
+    <input id="adminAddr" placeholder="地址" />
+    <button onclick="addAdmin()">添加管理员</button>
+    <button onclick="removeAdmin()">移除管理员</button>
+    <button onclick="withdrawToken()">提回代币</button>
+    <button onclick="withdrawBNB()">提回 BNB</button>
   </div>
 </div>
 
+<!-- 错误提示 -->
+<div id="alert" class="alert"></div>
+
 <script>
 /* ---------- 配置 ---------- */
-const CONTRACT_ABI = [{"inputs":[{"internalType":"address","name":"_rewardToken","type":"address"},{"internalType":"address","name":"_treasury","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"newAdmin","type":"address"}],"name":"AdminAdded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"oldAdmin","type":"address"}],"name":"AdminRemoved","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"receiver","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"BNBWithdrawn","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"price","type":"uint256"}],"name":"InitialMachinePurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"tierId","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"count","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"totalPrice","type":"uint256"}],"name":"PowerMachinePurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"referrer","type":"address"},{"indexed":true,"internalType":"address","name":"referee","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"ReferralRewardPaid","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"claimer","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"RewardsClaimed","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"price","type":"uint256"}],"name":"TestMachinePurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"adder","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"TokensAdded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"receiver","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"TokensWithdrawn","type":"event"},{"inputs":[],"name":"BLOCKS_PER_DAY","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"INITIAL_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_BUY_COUNT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"REFERRAL_PERCENT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TEST_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TREASURY","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"addAdmin","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"addRewardTokens","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"addToBlocklist","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"admin","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"baseRewardPerBlockPerPower","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"blocklist","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"buyInitialMachine","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"tierId","type":"uint256"},{"internalType":"uint256","name":"count","type":"uint256"}],"name":"buyPowerMachine","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"buyTestMachine","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"claimRewards","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"usr","type":"address"}],"name":"dailyRewardOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getGlobalDashboard","outputs":[{"internalType":"uint256","name":"baseReward","type":"uint256"},{"internalType":"uint256","name":"totalMines","type":"uint256"},{"internalType":"uint256","name":"currentBlock","type":"uint256"},{"internalType":"uint256","name":"poolBalance","type":"uint256"},{"internalType":"uint256","name":"networkPower","type":"uint256"},{"internalType":"uint256","name":"dailyProduction","type":"uint256"},{"internalType":"uint256","name":"totalRefRewards","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getUserDashboard","outputs":[{"internalType":"uint256","name":"normal","type":"uint256"},{"internalType":"uint256","name":"test","type":"uint256"},{"internalType":"uint256[4]","name":"power","type":"uint256[4]"},{"internalType":"uint256","name":"dailyReward","type":"uint256"},{"internalType":"uint256","name":"unclaimed","type":"uint256"},{"internalType":"uint256","name":"totalRefReward","type":"uint256"},{"internalType":"uint256","name":"totalPower","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"pause","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"uint256"}],"name":"referralRecords","outputs":[{"internalType":"address","name":"referrer","type":"address"},{"internalType":"address","name":"referee","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"uint256","name":"timestamp","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"referrer","type":"address"}],"name":"setReferrer","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"startBlock","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalMachines","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalNetworkPower","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalReferralRewards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalTokensMinted","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalUsers","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"unpause","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"userInfo","outputs":[{"internalType":"uint256","name":"normalMachineCount","type":"uint256"},{"internalType":"uint256","name":"testMachineCount","type":"uint256"},{"internalType":"uint256","name":"rewardStartBlock","type":"uint256"},{"internalType":"address","name":"referrer","type":"address"},{"internalType":"uint256","name":"referralRewards","type":"uint256"},{"internalType":"bool","name":"hasBoughtInitial","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"withdrawBNB","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdrawTokens","outputs":[],"stateMutability":"nonpayable","type":"function"}];
+const CONTRACT_ABI = [{"inputs":[{"internalType":"address","name":"_rewardToken","type":"address"},{"internalType":"address","name":"_treasury","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"newAdmin","type":"address"}],"name":"AdminAdded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"oldAdmin","type":"address"}],"name":"AdminRemoved","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"receiver","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"BNBWithdrawn","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"price","type":"uint256"}],"name":"InitialMachinePurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"tierId","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"count","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"totalPrice","type":"uint256"}],"name":"PowerMachinePurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"referrer","type":"address"},{"indexed":true,"internalType":"address","name":"referee","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"ReferralRewardPaid","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"claimer","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"RewardsClaimed","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"price","type":"uint256"}],"name":"TestMachinePurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"adder","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"TokensAdded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"receiver","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"TokensWithdrawn","type":"event"},{"inputs":[],"name":"BLOCKS_PER_DAY","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"INITIAL_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_BUY_COUNT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"REFERRAL_PERCENT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TEST_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TREASURY","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"addAdmin","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"addRewardTokens","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"addToBlocklist","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"admin","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"baseRewardPerBlockPerPower","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"blocklist","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"buyInitialMachine","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"tierId","type":"uint256"},{"internalType":"uint256","name":"count","type":"uint256"}],"name":"buyPowerMachine","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"buyTestMachine","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"claimRewards","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"usr","type":"address"}],"name":"dailyRewardOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getGlobalDashboard","outputs":[{"internalType":"uint256","name":"baseReward","type":"uint256"},{"internalType":"uint256","name":"totalMines","type":"uint256"},{"internalType":"uint256","name":"currentBlock","type":"uint256"},{"internalType":"uint256","name":"poolBalance","type":"uint256"},{"internalType":"uint256","name":"networkPower","type":"uint256"},{"internalType":"uint256","name":"dailyProduction","type":"uint256"},{"internalType":"uint256","name":"totalRefRewards","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getUserDashboard","outputs":[{"internalType":"uint256","name":"normal","type":"uint256"},{"internalType":"uint256","name":"test","type":"uint256"},{"internalType":"uint256[4]","name":"power","type":"uint256[4]"},{"internalType":"uint256","name":"dailyReward","type":"uint256"},{"internalType":"uint256","name":"unclaimed","type":"uint256"},{"internalType":"uint256","name":"totalRefReward","type":"uint256"},{"internalType":"uint256","name":"totalPower","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"pause","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"referralRecords","outputs":[{"internalType":"address","name":"referrer","type":"address"},{"internalType":"address","name":"referee","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"uint256","name":"timestamp","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"removeAdmin","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"removeFromBlocklist","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"referrer","type":"address"}],"name":"setReferrer","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"startBlock","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalMachines","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalNetworkPower","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalReferralRewards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalTokensMinted","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalUsers","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"unpause","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"withdrawBNB","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdrawTokens","outputs":[],"stateMutability":"nonpayable","type":"function"}
+];
 
 const CONTRACT_ADDR = "0x9dCcEd4Ef738856D2c289D4116cD219c698B22ba";
-const TOKEN_ADDR    = "0x877f23dcFBa91cadd7d35565Da452c9673C27A33";
+const TOKEN_ABI     = [{"inputs":[{"internalType":"string","name":"_name","type":"string"},{"internalType":"string","name":"_symbol","type":"string"},{"internalType":"uint8","name":"_decimals","type":"uint8"},{"internalType":"uint256","name":"initialSupply","type":"uint256"},{"internalType":"address","name":"tokenOwner","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"spender","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"recipient","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"sender","type":"address"},{"internalType":"address","name":"recipient","type":"uint256"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"}];
 
-let signer, contract, token, userAddress;
+let provider, signer, contract, token, userAddress;
 
 /* ---------- 语言 ---------- */
 const i18n = {
@@ -68,10 +73,10 @@ const i18n = {
     user: "用户面板",
     admin: "管理员面板",
     connect: "连接钱包",
-    approve: "授权无限",
+    approve: "授权无限额度",
     buyInit: "购买初始矿机",
     buyTest: "购买测试矿机",
-    buyPower: "购买增强",
+    buyPower: "购买增强矿机",
     claim: "领取收益",
     addAdmin: "添加管理员",
     removeAdmin: "移除管理员",
@@ -86,7 +91,11 @@ const i18n = {
     totalPower: "总算力",
     global: "全网仪表盘",
     referral: "推荐记录",
-    lang: "中文/English"
+    lang: "中文/English",
+    error: "错误",
+    insufficient: "余额不足",
+    failed: "交易失败",
+    success: "成功"
   },
   en: {
     title: "Mining Shop",
@@ -111,85 +120,150 @@ const i18n = {
     totalPower: "Total Power",
     global: "Global Dashboard",
     referral: "Referral Records",
-    lang: "中文/English"
+    lang: "中文/English",
+    error: "Error",
+    insufficient: "Insufficient Balance",
+    failed: "Transaction Failed",
+    success: "Success"
   }
 };
 let lang = "zh";
+function T(k) { return i18n[lang][k] || k; }
 
-function T(key) { return i18n[lang][key] || key; }
+/* ---------- 工具 ---------- */
+function showToast(msg, ok = true) {
+  const toast = document.createElement("div");
+  toast.className = "alert";
+  toast.style.background = ok ? "#27ae60" : "#e74c3c";
+  toast.innerText = msg;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
+}
 
-/* ---------- 初始化 ---------- */
+/* ---------- 连接钱包 ---------- */
 async function connectWallet() {
-  if (!window.ethereum) return alert("请安装 MetaMask");
-  const provider = new ethers.providers.Web3Provider(window.ethereum);
-  await provider.send("eth_requestAccounts", []);
-  signer = provider.getSigner();
-  userAddress = await signer.getAddress();
-  contract = new ethers.Contract(CONTRACT_ADDR, CONTRACT_ABI, signer);
-  token = new ethers.Contract(TOKEN_ADDR, ["function approve(address spender,uint256 amount) external returns(bool)"], signer);
-  document.getElementById("wallet").textContent = userAddress.slice(0,6) + "..." + userAddress.slice(-4);
-  document.getElementById("connectPanel").style.display = "none";
-  document.getElementById("userPanel").classList.add("active");
-  refresh();
-  const isAdmin = await contract.admin(userAddress);
-  if (isAdmin || userAddress.toLowerCase() === (await contract.owner()).toLowerCase()) {
-    document.getElementById("adminPanel").classList.add("active");
+  if (!window.ethereum) return showToast("请安装 MetaMask", false);
+  try {
+    await window.ethereum.request({ method: "eth_requestAccounts" });
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    signer = provider.getSigner();
+    userAddress = await signer.getAddress();
+    contract = new ethers.Contract(CONTRACT_ADDR, CONTRACT_ABI, signer);
+    token = new ethers.Contract(TOKEN_ADDR, TOKEN_ABI, signer);
+    document.getElementById("wallet").innerText = userAddress.slice(0, 6) + "..." + userAddress.slice(-4);
+    document.getElementById("connectPanel").style.display = "none";
+    document.getElementById("userPanel").classList.add("active");
+    const isAdmin = await contract.admin(userAddress);
+    if (isAdmin) document.getElementById("adminPanel").classList.add("active");
+    refresh();
+  } catch (e) {
+    showToast(T("failed"), false);
   }
 }
 
 /* ---------- 授权 ---------- */
 async function approveMax() {
-  await (await token.approve(CONTRACT_ADDR, ethers.constants.MaxUint256)).wait();
-  alert("已授权无限额度");
+  if (!signer) return connectWallet();
+  try {
+    const tx = await token.approve(CONTRACT_ADDR, ethers.constants.MaxUint256);
+    await tx.wait();
+    showToast(T("success"));
+  } catch (e) {
+    showToast(T("failed"), false);
+  }
 }
 
 /* ---------- 购买 ---------- */
 async function buyInitial() {
-  await (await contract.buyInitialMachine({value: ethers.utils.parseEther("0.01")})).wait();
-  refresh();
+  if (!signer) return connectWallet();
+  try {
+    const bal = await signer.getBalance();
+    const price = await contract.INITIAL_MACHINE_PRICE_BNB();
+    if (bal.lt(price)) return showToast(T("insufficient"), false);
+    const tx = await contract.buyInitialMachine({ value: price });
+    await tx.wait();
+    refresh(); showToast(T("success"));
+  } catch (e) {
+    showToast(e.reason || T("failed"), false);
+  }
 }
 async function buyTest() {
-  await (await contract.buyTestMachine({value: ethers.utils.parseEther("0.0001")})).wait();
-  refresh();
+  if (!signer) return connectWallet();
+  try {
+    const bal = await signer.getBalance();
+    const price = await contract.TEST_MACHINE_PRICE_BNB();
+    if (bal.lt(price)) return showToast(T("insufficient"), false);
+    const tx = await contract.buyTestMachine({ value: price });
+    await tx.wait();
+    refresh(); showToast(T("success"));
+  } catch (e) {
+    showToast(e.reason || T("failed"), false);
+  }
 }
 async function buyPower() {
+  if (!signer) return connectWallet();
   const tier = prompt("档位 0-3 ?");
   const count = prompt("数量 ?");
   if (!tier || !count) return;
-  await (await contract.buyPowerMachine(tier, count)).wait();
-  refresh();
+  try {
+    const price = (await contract.machineTiers(tier)).priceToken.mul(count);
+    const allowance = await token.allowance(userAddress, CONTRACT_ADDR);
+    if (allowance.lt(price)) return showToast("请先授权足够额度", false);
+    const tx = await contract.buyPowerMachine(tier, count);
+    await tx.wait();
+    refresh(); showToast(T("success"));
+  } catch (e) {
+    showToast(e.reason || T("failed"), false);
+  }
 }
 
 /* ---------- 领取 ---------- */
 async function claim() {
-  await (await contract.claimRewards()).wait();
-  refresh();
+  if (!signer) return connectWallet();
+  try {
+    const tx = await contract.claimRewards();
+    await tx.wait();
+    refresh(); showToast(T("success"));
+  } catch (e) {
+    showToast(e.reason || T("failed"), false);
+  }
 }
 
 /* ---------- 管理员 ---------- */
 async function addAdmin() {
   const addr = document.getElementById("adminAddr").value;
-  await (await contract.addAdmin(addr)).wait();
-  alert("已添加");
+  if (!addr) return;
+  try { const tx = await contract.addAdmin(addr); await tx.wait(); refresh(); showToast(T("success")); } catch (e) { showToast(T("failed"), false); }
 }
 async function removeAdmin() {
   const addr = document.getElementById("adminAddr").value;
-  await (await contract.removeAdmin(addr)).wait();
-  alert("已移除");
+  if (!addr) return;
+  try { const tx = await contract.removeAdmin(addr); await tx.wait(); refresh(); showToast(T("success")); } catch (e) { showToast(T("failed"), false); }
 }
 async function withdrawToken() {
-  const amt = prompt("金额 (wei)");
-  await (await contract.withdrawTokens(amt)).wait();
-  alert("已提回");
+  const amt = prompt("金额（wei）");
+  if (!amt) return;
+  try { const tx = await contract.withdrawTokens(amt); await tx.wait(); refresh(); showToast(T("success")); } catch (e) { showToast(T("failed"), false); }
 }
 async function withdrawBNB() {
-  const amt = prompt("金额 (wei)");
-  await (await contract.withdrawBNB({value: 0})).wait();
-  alert("已提回");
+  const amt = prompt("金额（wei）");
+  if (!amt) return;
+  try { const tx = await contract.withdrawBNB({ value: 0 }); await tx.wait(); refresh(); showToast(T("success")); } catch (e) { showToast(T("failed"), false); }
 }
 
-/* ---------- 刷新 ---------- */
+/* ---------- 语言 ---------- */
+function toggleLang() {
+  lang = lang === "zh" ? "en" : "zh";
+  document.getElementById("title").innerText = T("title");
+  document.getElementById("userTitle").innerText = T("user");
+  document.getElementById("adminTitle").innerText = T("admin");
+  document.getElementById("btnConnect").innerText = T("connect");
+  refresh();
+}
+
+/* ---------- 仪表盘 ---------- */
 async function refresh() {
+  if (!signer) return;
   const user = await contract.getUserDashboard(userAddress);
   const global = await contract.getGlobalDashboard();
   document.getElementById("userDash").innerHTML = `
@@ -212,18 +286,8 @@ async function refresh() {
   `;
 }
 
-/* ---------- 语言 ---------- */
-function toggleLang() {
-  lang = lang === "zh" ? "en" : "zh";
-  document.getElementById("title").textContent = T("title");
-  document.getElementById("userTitle").textContent = T("user");
-  document.getElementById("adminTitle").textContent = T("admin");
-  document.querySelector("#btnConnect").textContent = T("connect");
-  refresh();
-}
-
-/* ---------- 绑定按钮文字 ---------- */
-document.querySelector("#btnConnect").textContent = T("connect");
+/* ---------- 初始化 ---------- */
+document.getElementById("btnConnect").innerText = T("connect");
 </script>
 </body>
 </html>
