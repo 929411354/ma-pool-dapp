@@ -1,417 +1,216 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Mining DApp</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/web3modal@1.9.8/dist/web3modal.min.js"></script>
-    <style>
-        .glass-card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>矿机商店 · Mining Shop</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root { --bg:#121212; --panel:#1e1e1e; --accent:#3f51b5; --text:#e0e0e0; }
+    body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;background:var(--bg);color:var(--text);display:flex;justify-content:center;align-items:center;min-height:100vh}
+    .card{background:var(--panel);border-radius:16px;padding:32px;max-width:800px;width:100%;box-shadow:0 8px 32px rgba(0,0,0,.5);backdrop-filter:blur(10px);transition:.3s}
+    h1{margin-top:0;text-align:center;font-weight:700;font-size:2rem}
+    .btn{display:inline-flex;align-items:center;justify-content:center;padding:12px 24px;border-radius:8px;border:none;font-size:1rem;cursor:pointer;transition:.3s;background:var(--accent);color:#fff;margin:8px 4px}
+    .btn:disabled{background:#555}
+    .btn:hover{filter:brightness(1.1)}
+    .row{display:flex;gap:16px;flex-wrap:wrap}
+    .col{flex:1 1 200px}
+    .stat{margin:8px 0}
+    .lang{position:absolute;top:16px;right:16px;cursor:pointer;color:var(--accent)}
+    .alert{position:fixed;top:20px;left:50%;transform:translateX(-50%);padding:12px 24px;border-radius:8px;font-weight:600;z-index:9999;display:none}
+    .alert.err{background:#e74c3c;color:#fff}
+    .alert.ok{background:#27ae60;color:#fff}
+    @media (max-width:600px){.row{flex-direction:column}}
+  </style>
 </head>
-<body class="bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white">
-    <div id="app" class="container mx-auto p-4">
-        <!-- Navigation -->
-        <nav class="flex justify-between items-center mb-8">
-            <h1 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-500">Mining DApp</h1>
-            <div class="flex gap-4">
-                <button onclick="switchTab('dashboard')" class="tab-button">Dashboard</button>
-                <button onclick="switchTab('buy')" class="tab-button">Buy Machines</button>
-                <button onclick="switchTab('rewards')" class="tab-button">Rewards</button>
-                <button onclick="switchTab('referrals')" class="tab-button">Referrals</button>
-                <button onclick="switchTab('admin')" class="tab-button admin-tab" id="adminTab">Admin</button>
-            </div>
-        </nav>
-
-        <!-- Wallet Status -->
-        <div class="flex justify-between items-center mb-8">
-            <div>
-                <p class="text-sm text-gray-400">Connected as:</p>
-                <p id="walletAddress" class="text-green-400 font-mono truncate max-w-xs"></p>
-            </div>
-            <button onclick="connectWallet()" class="bg-gradient-to-r from-green-500 to-blue-600 px-4 py-2 rounded-lg hover:shadow-lg transition-all">
-                Connect Wallet
-            </button>
-        </div>
-
-        <!-- Content Tabs -->
-        <div id="contentArea" class="space-y-8">
-            <!-- Dashboard Tab -->
-            <div id="dashboard" class="tab-content">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div class="glass-card p-4 rounded-lg">
-                        <h3 class="text-sm text-gray-400">Total Machines</h3>
-                        <p id="totalMachines" class="text-2xl font-bold mt-2">0</p>
-                    </div>
-                    <div class="glass-card p-4 rounded-lg">
-                        <h3 class="text-sm text-gray-400">Network Power</h3>
-                        <p id="networkPower" class="text-2xl font-bold mt-2">0</p>
-                    </div>
-                    <div class="glass-card p-4 rounded-lg">
-                        <h3 class="text-sm text-gray-400">Pool Balance</h3>
-                        <p id="poolBalance" class="text-2xl font-bold mt-2">0 BNB</p>
-                    </div>
-                    <div class="glass-card p-4 rounded-lg">
-                        <h3 class="text-sm text-gray-400">Daily Production</h3>
-                        <p id="dailyProduction" class="text-2xl font-bold mt-2">0 BNB</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Buy Machines Tab -->
-            <div id="buy" class="tab-content hidden">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="glass-card p-4 rounded-lg">
-                        <h2 class="text-xl font-bold mb-4">Initial Machine</h2>
-                        <p id="initialPrice" class="mb-4">Loading price...</p>
-                        <button onclick="buyInitialMachine()" class="w-full bg-green-600 hover:bg-green-700 py-2 rounded-lg transition-all">
-                            Buy Initial Machine
-                        </button>
-                    </div>
-                    
-                    <div class="glass-card p-4 rounded-lg">
-                        <h2 class="text-xl font-bold mb-4">Test Machine</h2>
-                        <p id="testPrice" class="mb-4">Loading price...</p>
-                        <button onclick="buyTestMachine()" class="w-full bg-blue-600 hover:bg-blue-700 py-2 rounded-lg transition-all">
-                            Buy Test Machine
-                        </button>
-                    </div>
-
-                    <div class="glass-card p-4 rounded-lg col-span-full">
-                        <h2 class="text-xl font-bold mb-4">Power Machines</h2>
-                        <div class="mb-4">
-                            <label class="block text-sm mb-2">Tier:</label>
-                            <select id="tierId" class="w-full p-2 bg-gray-800 rounded-lg">
-                                <option value="0">Tier 1</option>
-                                <option value="1">Tier 2</option>
-                                <option value="2">Tier 3</option>
-                                <option value="3">Tier 4</option>
-                            </select>
-                        </div>
-                        <div class="mb-4">
-                            <label class="block text-sm mb-2">Quantity:</label>
-                            <input type="number" id="count" min="1" max="10" value="1" class="w-full p-2 bg-gray-800 rounded-lg">
-                        </div>
-                        <button onclick="buyPowerMachine()" class="w-full bg-purple-600 hover:bg-purple-700 py-2 rounded-lg transition-all">
-                            Buy Power Machine
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Rewards Tab -->
-            <div id="rewards" class="tab-content hidden">
-                <div class="glass-card p-6 rounded-lg">
-                    <h2 class="text-xl font-bold mb-4">Your Rewards</h2>
-                    <div class="mb-6">
-                        <p class="text-gray-400">Unclaimed Rewards:</p>
-                        <p id="unclaimedRewards" class="text-3xl font-bold mt-2">0 BNB</p>
-                    </div>
-                    <button onclick="claimRewards()" class="bg-yellow-500 hover:bg-yellow-600 py-2 px-4 rounded-lg">
-                        Claim Rewards
-                    </button>
-                </div>
-            </div>
-
-            <!-- Referrals Tab -->
-            <div id="referrals" class="tab-content hidden">
-                <div class="glass-card p-6 rounded-lg">
-                    <h2 class="text-xl font-bold mb-4">Referral System</h2>
-                    <div class="mb-4">
-                        <label class="block text-sm mb-2">Set Referrer:</label>
-                        <input type="text" id="referrerAddress" placeholder="Enter referrer address" class="w-full p-2 bg-gray-800 rounded-lg">
-                    </div>
-                    <button onclick="setReferrer()" class="bg-indigo-600 hover:bg-indigo-700 py-2 px-4 rounded-lg">
-                        Set Referrer
-                    </button>
-                    <div id="referralStats" class="mt-6 text-gray-400"></div>
-                </div>
-            </div>
-
-            <!-- Admin Tab -->
-            <div id="admin" class="tab-content hidden">
-                <div class="glass-card p-6 rounded-lg">
-                    <h2 class="text-xl font-bold mb-4">Admin Functions</h2>
-                    <div class="space-y-3">
-                        <button onclick="addAdmin()" class="w-full bg-red-600 hover:bg-red-700 py-2 rounded-lg">Add Admin</button>
-                        <button onclick="removeAdmin()" class="w-full bg-red-600 hover:bg-red-700 py-2 rounded-lg">Remove Admin</button>
-                        <button onclick="addToBlocklist()" class="w-full bg-red-600 hover:bg-red-700 py-2 rounded-lg">Add to Blocklist</button>
-                        <button onclick="removeFromBlocklist()" class="w-full bg-red-600 hover:bg-red-700 py-2 rounded-lg">Remove from Blocklist</button>
-                        <button onclick="withdrawTokens()" class="w-full bg-red-600 hover:bg-red-700 py-2 rounded-lg">Withdraw Tokens</button>
-                        <button onclick="withdrawBNB()" class="w-full bg-red-600 hover:bg-red-700 py-2 rounded-lg">Withdraw BNB</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+<body>
+  <div class="card">
+    <span class="lang" onclick="toggleLang()">🌐 中文 / English</span>
+    <h1 id="title">矿机商店</h1>
+    <div id="connectPanel">
+      <button class="btn" id="btnConnect" onclick="connectWallet()"><i class="fas fa-wallet"></i> <span id="connectTxt">连接钱包</span></button>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
-    <script>
-        let web3Modal;
-        let provider;
-        let signer;
-        let contract;
-        let tokenContract;
-        let userAddress;
+    <!-- 用户面板 -->
+    <div id="userPanel" style="display:none">
+      <div class="row">
+        <div class="col">
+          <div class="stat"><strong id="statNormal">普通矿机: --</strong></div>
+          <div class="stat"><strong id="statTest">测试矿机: --</strong></div>
+          <div class="stat"><strong id="statPower">增强矿机: --</strong></div>
+          <div class="stat"><strong id="statDaily">日产量: --</strong></div>
+        </div>
+        <div class="col">
+          <div class="stat"><strong id="statUnclaimed">未领取: --</strong></div>
+          <div class="stat"><strong id="statRef">推荐奖励: --</strong></div>
+          <div class="stat"><strong id="statPowerTotal">总算力: --</strong></div>
+        </div>
+      </div>
+      <div class="row">
+        <button class="btn" onclick="approveMax()"><i class="fas fa-key"></i> <span id="btnApprove">授权无限</span></button>
+        <button class="btn" onclick="buyInitial()"><i class="fas fa-plus"></i> <span id="btnBuyInit">购买初始矿机</span></button>
+        <button class="btn" onclick="buyTest()"><i class="fas fa-plus"></i> <span id="btnBuyTest">测试矿机</span></button>
+        <button class="btn" onclick="buyPower()"><i class="fas fa-plus"></i> <span id="btnBuyPower">增强矿机</span></button>
+        <button class="btn" onclick="claim()"><i class="fas fa-gift"></i> <span id="btnClaim">领取收益</span></button>
+      </div>
+    </div>
 
-        const contractAddress = "0x9dCcEd4Ef738856D2c289D4116cD219c698B22ba";
-        const tokenAddress = "0x877f23dcFBa91cadd7d35565Da452c9673C27A33";
+    <!-- 管理员面板 -->
+    <div id="adminPanel" style="display:none">
+      <h2 id="adminTitle">管理员面板</h2>
+      <input id="adminAddr" placeholder="地址" class="btn" style="width:100%;margin-bottom:12px" />
+      <div class="row">
+        <button class="btn" onclick="addAdmin()"><i class="fas fa-user-plus"></i> <span id="btnAdd">添加管理员</span></button>
+        <button class="btn" onclick="removeAdmin()"><i class="fas fa-user-minus"></i> <span id="btnRemove">移除管理员</span></button>
+        <button class="btn" onclick="withdrawToken()"><i class="fas fa-coins"></i> <span id="btnWithdrawT">提回代币</span></button>
+        <button class="btn" onclick="withdrawBNB()"><i class="fas fa-coins"></i> <span id="btnWithdrawB">提回 BNB</span></button>
+      </div>
+    </div>
+  </div>
 
-        const abi = [/* 全部ABI内容 */];
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+  <script>
+    const CONTRACT_ABI = [{"inputs":[{"internalType":"address","name":"_rewardToken","type":"address"},{"internalType":"address","name":"_treasury","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"newAdmin","type":"address"}],"name":"AdminAdded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"oldAdmin","type":"address"}],"name":"AdminRemoved","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"receiver","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"BNBWithdrawn","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"price","type":"uint256"}],"name":"InitialMachinePurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"tierId","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"count","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"totalPrice","type":"uint256"}],"name":"PowerMachinePurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"referrer","type":"address"},{"indexed":true,"internalType":"address","name":"referee","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"ReferralRewardPaid","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"claimer","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"RewardsClaimed","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"price","type":"uint256"}],"name":"TestMachinePurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"adder","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"TokensAdded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"receiver","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"TokensWithdrawn","type":"event"},{"inputs":[],"name":"BLOCKS_PER_DAY","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"INITIAL_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_BUY_COUNT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"REFERRAL_PERCENT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TEST_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TREASURY","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"addAdmin","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"addRewardTokens","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"addToBlocklist","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"admin","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"baseRewardPerBlockPerPower","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"blocklist","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"buyInitialMachine","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"tierId","type":"uint256"},{"internalType":"uint256","name":"count","type":"uint256"}],"name":"buyPowerMachine","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"buyTestMachine","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"claimRewards","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"usr","type":"address"}],"name":"dailyRewardOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getGlobalDashboard","outputs":[{"internalType":"uint256","name":"baseReward","type":"uint256"},{"internalType":"uint256","name":"totalMines","type":"uint256"},{"internalType":"uint256","name":"currentBlock","type":"uint256"},{"internalType":"uint256","name":"poolBalance","type":"uint256"},{"internalType":"uint256","name":"networkPower","type":"uint256"},{"internalType":"uint256","name":"dailyProduction","type":"uint256"},{"internalType":"uint256","name":"totalRefRewards","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getUserDashboard","outputs":[{"internalType":"uint256","name":"normal","type":"uint256"},{"internalType":"uint256","name":"test","type":"uint256"},{"internalType":"uint256[4]","name":"power","type":"uint256[4]"},{"internalType":"uint256","name":"dailyReward","type":"uint256"},{"internalType":"uint256","name":"unclaimed","type":"uint256"},{"internalType":"uint256","name":"totalRefReward","type":"uint256"},{"internalType":"uint256","name":"totalPower","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"pause","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"referralRecords","outputs":[{"internalType":"address","name":"referrer","type":"address"},{"internalType":"address","name":"referee","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"uint256","name":"timestamp","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"referrer","type":"address"}],"name":"setReferrer","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"startBlock","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalMachines","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalNetworkPower","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalReferralRewards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalTokensMinted","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalUsers","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"unpause","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"withdrawBNB","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdrawTokens","outputs":[],"stateMutability":"nonpayable","type":"function"}];
 
-        // Initialize Web3Modal
-        web3Modal = new Web3Modal.default({
-            cacheProvider: false,
-            providerOptions: {} // Add provider options if needed
-        });
+    const CONTRACT_ADDR = "0x9dCcEd4Ef738856D2c289D4116cD219c698B22ba";
+    const TOKEN_ABI = [{"inputs":[],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}];
+    const TOKEN_ADDR = "0x877f23dcFBa91cadd7d35565Da452c9673C27A33";
 
-        async function connectWallet() {
-            try {
-                const instance = await web3Modal.connect();
-                provider = new ethers.providers.Web3Provider(instance);
-                signer = provider.getSigner();
-                userAddress = await signer.getAddress();
-                
-                contract = new ethers.Contract(contractAddress, abi, signer);
-                tokenContract = new ethers.Contract(tokenAddress, [
-                    "function approve(address spender, uint256 amount) public returns (bool)",
-                    "function balanceOf(address account) public view returns (uint256)",
-                    "function allowance(address owner, address spender) public view returns (uint256)"
-                ], signer);
+    let provider, signer, contract, token, userAddress;
 
-                document.getElementById("walletAddress").textContent = userAddress;
-                loadDashboard();
-                checkAdminStatus();
-                alert("Connected successfully!");
-            } catch (e) {
-                console.error(e);
-                alert("Failed to connect wallet. Please make sure MetaMask is installed and you're on the correct network.");
-            }
-        }
+    /* ---------- 语言 ---------- */
+    const i18n = { zh:{title:"矿机商店",connect:"连接钱包",approve:"授权无限",buyInit:"购买初始矿机",buyTest:"测试矿机",buyPower:"增强矿机",claim:"领取收益",normal:"普通",test:"测试",power:"增强",daily:"日产量",unclaimed:"未领取",refReward:"推荐奖励",totalPower:"总算力",global:"全网",lang:"中文/English",error:"错误",insufficient:"余额不足",failed:"交易失败",success:"成功",addAdmin:"添加管理员",removeAdmin:"移除管理员",withdrawToken:"提回代币",withdrawBNB:"提回BNB"},en:{title:"Mining Shop",connect:"Connect Wallet",approve:"Approve Max",buyInit:"Buy Initial",buyTest:"Buy Test",buyPower:"Buy Power",claim:"Claim",normal:"Normal",test:"Test",power:"Power",daily:"Daily",unclaimed:"Unclaimed",refReward:"Ref Reward",totalPower:"Total Power",global:"Global",lang:"中文/English",error:"Error",insufficient:"Insufficient Balance",failed:"Tx Failed",success:"Success",addAdmin:"Add Admin",removeAdmin:"Remove Admin",withdrawToken:"Withdraw Tokens",withdrawBNB:"Withdraw BNB"}};
+    let lang = "zh";
+    function T(k){return i18n[lang][k]||k;}
 
-        async function loadDashboard() {
-            try {
-                const data = await contract.getGlobalDashboard();
-                document.getElementById("totalMachines").textContent = data.totalMines;
-                document.getElementById("networkPower").textContent = data.networkPower;
-                document.getElementById("poolBalance").textContent = ethers.utils.formatEther(data.poolBalance) + " BNB";
-                document.getElementById("dailyProduction").textContent = ethers.utils.formatEther(data.dailyProduction) + " BNB";
-                
-                const user = await contract.getUserDashboard(userAddress);
-                document.getElementById("unclaimedRewards").textContent = ethers.utils.formatEther(user.unclaimed) + " BNB";
-                
-                const initialPrice = await contract.INITIAL_MACHINE_PRICE_BNB();
-                document.getElementById("initialPrice").textContent = "Price: " + ethers.utils.formatEther(initialPrice) + " BNB";
-                
-                const testPrice = await contract.TEST_MACHINE_PRICE_BNB();
-                document.getElementById("testPrice").textContent = "Price: " + ethers.utils.formatEther(testPrice) + " BNB";
-            } catch (e) {
-                console.error("Error loading dashboard:", e);
-            }
-        }
+    /* ---------- 提示 ---------- */
+    function toast(msg, ok = true) {
+      const el = document.createElement("div");
+      el.className = "alert";
+      el.style.background = ok ? "#27ae60" : "#e74c3c";
+      el.innerText = msg;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 3000);
+    }
 
-        async function buyInitialMachine() {
-            try {
-                const price = await contract.INITIAL_MACHINE_PRICE_BNB();
-                const tx = await contract.buyInitialMachine({ value: price });
-                await tx.wait();
-                alert("Initial machine purchased!");
-                loadDashboard();
-            } catch (e) {
-                handleTransactionError(e);
-            }
-        }
+    /* ---------- 连接钱包 ---------- */
+    async function connectWallet() {
+      if (!window.ethereum) return toast("请安装 MetaMask", false);
+      try {
+        await window.ethereum.request({ method: "eth_requestAccounts" });
+        provider = new ethers.providers.Web3Provider(window.ethereum);
+        signer = provider.getSigner();
+        userAddress = await signer.getAddress();
+        contract = new ethers.Contract(CONTRACT_ADDR, CONTRACT_ABI, signer);
+        token = new ethers.Contract(TOKEN_ADDR, TOKEN_ABI, signer);
+        document.getElementById("wallet").innerText = userAddress.slice(0,6)+"..."+userAddress.slice(-4);
+        document.getElementById("connectPanel").style.display = "none";
+        document.getElementById("userPanel").classList.add("active");
+        const isAdmin = await contract.admin(userAddress);
+        const isOwner = userAddress.toLowerCase() === (await contract.owner()).toLowerCase();
+        if (isAdmin || isOwner) document.getElementById("adminPanel").classList.add("active");
+        refresh();
+      } catch (e) { toast(T("failed"), false); }
+    }
 
-        async function buyTestMachine() {
-            try {
-                const price = await contract.TEST_MACHINE_PRICE_BNB();
-                const tx = await contract.buyTestMachine({ value: price });
-                await tx.wait();
-                alert("Test machine purchased!");
-                loadDashboard();
-            } catch (e) {
-                handleTransactionError(e);
-            }
-        }
+    /* ---------- 授权 ---------- */
+    async function approveMax() {
+      if (!signer) return connectWallet();
+      try {
+        const tx = await token.approve(CONTRACT_ADDR, ethers.constants.MaxUint256);
+        await tx.wait();
+        toast(T("success"));
+      } catch (e) { toast(e.reason || T("failed"), false); }
+    }
 
-        async function buyPowerMachine() {
-            const tierId = document.getElementById("tierId").value;
-            const count = parseInt(document.getElementById("count").value);
-            
-            try {
-                const tierInfo = await contract.machineTiers(tierId);
-                const totalPrice = tierInfo.priceToken.mul(count);
-                
-                const allowance = await tokenContract.allowance(userAddress, contractAddress);
-                if (allowance.lt(totalPrice)) {
-                    const approveTx = await tokenContract.approve(contractAddress, ethers.constants.MaxUint256);
-                    await approveTx.wait();
-                }
-                
-                const tx = await contract.buyPowerMachine(tierId, count);
-                await tx.wait();
-                alert(`Purchased <LaTex>${count} Tier $</LaTex>{parseInt(tierId)+1} machines!`);
-                loadDashboard();
-            } catch (e) {
-                handleTransactionError(e);
-            }
-        }
+    /* ---------- 购买 ---------- */
+    async function buyInitial() {
+      if (!signer) return connectWallet();
+      try {
+        const bal = await signer.getBalance();
+        const price = await contract.INITIAL_MACHINE_PRICE_BNB();
+        if (bal.lt(price)) return toast(T("insufficient"), false);
+        const tx = await contract.buyInitialMachine({ value: price });
+        await tx.wait();
+        refresh(); toast(T("success"));
+      } catch (e) { toast(e.reason || T("failed"), false); }
+    }
+    async function buyTest() {
+      if (!signer) return connectWallet();
+      try {
+        const bal = await signer.getBalance();
+        const price = await contract.TEST_MACHINE_PRICE_BNB();
+        if (bal.lt(price)) return toast(T("insufficient"), false);
+        const tx = await contract.buyTestMachine({ value: price });
+        await tx.wait();
+        refresh(); toast(T("success"));
+      } catch (e) { toast(e.reason || T("failed"), false); }
+    }
+    async function buyPower() {
+      if (!signer) return connectWallet();
+      const tier = prompt("档位 0-3?");
+      const count = prompt("数量?");
+      if (!tier || !count) return;
+      try {
+        const price = (await contract.machineTiers(tier)).priceToken.mul(count);
+        const allowance = await token.allowance(userAddress, CONTRACT_ADDR);
+        if (allowance.lt(price)) return toast("请先授权足够额度", false);
+        const tx = await contract.buyPowerMachine(tier, count);
+        await tx.wait();
+        refresh(); toast(T("success"));
+      } catch (e) { toast(e.reason || T("failed"), false); }
+    }
 
-        async function claimRewards() {
-            try {
-                const tx = await contract.claimRewards();
-                await tx.wait();
-                alert("Rewards claimed!");
-                loadDashboard();
-            } catch (e) {
-                handleTransactionError(e);
-            }
-        }
+    /* ---------- 领取 ---------- */
+    async function claim() {
+      if (!signer) return connectWallet();
+      try {
+        const tx = await contract.claimRewards();
+        await tx.wait();
+        refresh(); toast(T("success"));
+      } catch (e) { toast(e.reason || T("failed"), false); }
+    }
 
-        async function setReferrer() {
-            const referrer = document.getElementById("referrerAddress").value;
-            try {
-                const tx = await contract.setReferrer(referrer);
-                await tx.wait();
-                alert("Referrer set successfully!");
-                loadDashboard();
-            } catch (e) {
-                handleTransactionError(e);
-            }
-        }
+    /* ---------- 管理员 ---------- */
+    async function addAdmin() {
+      const addr = document.getElementById("adminAddr").value;
+      if (!addr) return;
+      try { await (await contract.addAdmin(addr)).wait(); refresh(); toast(T("success")); } catch(e){ toast(T("failed"), false); }
+    }
+    async function removeAdmin() {
+      const addr = document.getElementById("adminAddr").value;
+      if (!addr) return;
+      try { await (await contract.removeAdmin(addr)).wait(); refresh(); toast(T("success")); } catch(e){ toast(T("failed"), false); }
+    }
+    async function withdrawToken() {
+      const amt = prompt("金额 (wei)");
+      if (!amt) return;
+      try { await (await contract.withdrawTokens(amt)).wait(); refresh(); toast(T("success")); } catch(e){ toast(T("failed"), false); }
+    }
+    async function withdrawBNB() {
+      try { await (await contract.withdrawBNB()).wait(); refresh(); toast(T("success")); } catch(e){ toast(T("failed"), false); }
+    }
 
-        async function checkAdminStatus() {
-            if (!contract || !userAddress) return;
-            try {
-                const isAdmin = await contract.admin(userAddress);
-                document.getElementById("adminTab").classList.toggle("hidden", !isAdmin);
-            } catch (e) {
-                console.error(e);
-            }
-        }
+    /* ---------- 语言切换 ---------- */
+    function toggleLang() {
+      lang = lang === "zh" ? "en" : "zh";
+      document.getElementById("title").innerText = T("title");
+      document.getElementById("connectTxt").innerText = T("connect");
+      ["btnApprove","btnBuyInit","btnBuyTest","btnBuyPower","btnClaim","btnAdd","btnRemove","btnWithdrawT","btnWithdrawB"].forEach(id=>document.getElementById(id).innerText=T(id.replace("btn","").toLowerCase()));
+      refresh();
+    }
 
-        async function addAdmin() {
-            const address = prompt("Enter admin address:");
-            if (!address) return;
-            try {
-                const tx = await contract.addAdmin(address);
-                await tx.wait();
-                alert("Admin added!");
-                checkAdminStatus();
-            } catch (e) {
-                handleTransactionError(e);
-            }
-        }
+    /* ---------- 仪表盘 ---------- */
+    async function refresh() {
+      if (!signer) return;
+      const user = await contract.getUserDashboard(userAddress);
+      const global = await contract.getGlobalDashboard();
+      ["normal","test","daily","unclaimed","refReward","totalPower"].forEach(k => document.getElementById("stat"+k.charAt(0).toUpperCase()+k.slice(1)).innerText = `${T(k)}: ${ethers.utils.formatEther(user[k] || 0)}`);
+      document.getElementById("statPower").innerText = `${T("power")}: [${user.power.join(", ")}]`;
+    }
 
-        async function removeAdmin() {
-            const address = prompt("Enter admin address to remove:");
-            if (!address) return;
-            try {
-                const tx = await contract.removeAdmin(address);
-                await tx.wait();
-                alert("Admin removed!");
-                checkAdminStatus();
-            } catch (e) {
-                handleTransactionError(e);
-            }
-        }
-
-        async function addToBlocklist() {
-            const address = prompt("Enter address to block:");
-            if (!address) return;
-            try {
-                const tx = await contract.addToBlocklist(address);
-                await tx.wait();
-                alert("Address added to blocklist!");
-            } catch (e) {
-                handleTransactionError(e);
-            }
-        }
-
-        async function removeFromBlocklist() {
-            const address = prompt("Enter address to unblock:");
-            if (!address) return;
-            try {
-                const tx = await contract.removeFromBlocklist(address);
-                await tx.wait();
-                alert("Address removed from blocklist!");
-            } catch (e) {
-                handleTransactionError(e);
-            }
-        }
-
-        async function withdrawTokens() {
-            const amount = prompt("Enter amount to withdraw:");
-            if (!amount) return;
-            try {
-                const tx = await contract.withdrawTokens(ethers.utils.parseEther(amount));
-                await tx.wait();
-                alert("Tokens withdrawn!");
-            } catch (e) {
-                handleTransactionError(e);
-            }
-        }
-
-        async function withdrawBNB() {
-            const amount = prompt("Enter BNB amount to withdraw:");
-            if (!amount) return;
-            try {
-                const tx = await contract.withdrawBNB({ value: ethers.utils.parseEther(amount) });
-                await tx.wait();
-                alert("BNB withdrawn!");
-            } catch (e) {
-                handleTransactionError(e);
-            }
-        }
-
-        function handleTransactionError(error) {
-            console.error("Transaction error:", error);
-            let message = "Transaction failed. ";
-            
-            if (error.code === 4001) {
-                message += "User rejected transaction.";
-            } else if (error.code === -32000) {
-                message += "Invalid input parameters.";
-            } else if (error.code === -32603) {
-                message += "Contract execution error.";
-            } else if (error.data && error.data.message) {
-                message += error.data.message.replace("execution reverted: ", "");
-            } else {
-                message += "Please check the console for details.";
-            }
-            
-            alert(message);
-        }
-
-        function switchTab(tabName) {
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.add('hidden');
-            });
-            document.getElementById(tabName).classList.remove('hidden');
-            document.querySelectorAll('.tab-button').forEach(btn => {
-                btn.classList.remove('bg-gradient-to-r', 'from-green-500', 'to-blue-600');
-                btn.classList.add('bg-gray-800', 'hover:bg-gray-700');
-            });
-            document.querySelector(`[onclick="switchTab('<LaTex>${tabName}')"]`).classList.remove('bg-gray-800', 'hover:bg-gray-700');[ty-n]            document.querySelector(`[onclick="switchTab('$</LaTex>{tabName}')"]`).classList.add('bg-gradient-to-r', 'from-green-500', 'to-blue-600');
-        }
-
-        // Auto-connect if possible
-        (async () => {
-            if (window.ethereum) {
-                window.ethereum.on('accountsChanged', async (accounts) => {
-                    if (accounts.length > 0) {
-                        await connectWallet();
-                    } else {
-                        location.reload();
-                    }
-                });
-            }
-        })();
-    </script>
+    /* 初始化文本 */
+    window.onload = () => { toggleLang(); };
+  </script>
 </body>
 </html>
