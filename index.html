@@ -2,162 +2,178 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Advanced Mining Contract Interface</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Mining DApp</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web3modal@1.9.8/dist/web3modal.min.js"></script>
     <style>
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background: #0f0f0f;
-            color: #ffffff;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        .card {
-            background: #1a1a1a;
-            border-radius: 12px;
-            padding: 20px;
-            margin: 20px 0;
-            box-shadow: 0 0 20px #00ff9922;
-        }
-        button {
-            background: #00ff99;
-            color: #000;
-            border: none;
-            padding: 10px 20px;
-            margin: 5px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        button:hover {
-            background: #00cc88;
-        }
-        input, select {
-            background: #2a2a2a;
-            color: #fff;
-            border: none;
-            padding: 10px;
-            border-radius: 8px;
-            margin: 5px 0;
-        }
-        .wallet-address {
-            font-weight: bold;
-            color: #00ff99;
-        }
-        .section-title {
-            color: #00ff99;
-            border-bottom: 2px solid #00ff99;
-            padding-bottom: 5px;
-            margin-bottom: 20px;
-        }
-        .stat-card {
-            display: flex;
-            justify-content: space-between;
-            margin: 10px 0;
-        }
-        .loading {
-            color: #888;
-            font-style: italic;
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <h1 style="color:#00ff99;">🚀 Advanced Mining Contract</h1>
-        
-        <div id="walletSection" class="card">
-            <h2 class="section-title">Wallet Connection</h2>
-            <p>Connected as: <span class="wallet-address" id="walletAddress">Not connected</span></p>
-            <button onclick="connectWallet()">Connect MetaMask</button>
-        </div>
+<body class="bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white">
+    <div id="app" class="container mx-auto p-4">
+        <!-- Navigation -->
+        <nav class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-500">Mining DApp</h1>
+            <div class="flex gap-4">
+                <button onclick="switchTab('dashboard')" class="tab-button">Dashboard</button>
+                <button onclick="switchTab('buy')" class="tab-button">Buy Machines</button>
+                <button onclick="switchTab('rewards')" class="tab-button">Rewards</button>
+                <button onclick="switchTab('referrals')" class="tab-button">Referrals</button>
+                <button onclick="switchTab('admin')" class="tab-button admin-tab" id="adminTab">Admin</button>
+            </div>
+        </nav>
 
-        <div id="dashboard" class="card">
-            <h2 class="section-title">📊 Global Dashboard</h2>
-            <div id="globalStats" class="loading">Loading global stats...</div>
-        </div>
-
-        <div id="userDashboard" class="card">
-            <h2 class="section-title">👤 Your Dashboard</h2>
-            <div id="userStats" class="loading">Loading your stats...</div>
-        </div>
-
-        <div class="card">
-            <h2 class="section-title">⛏️ Mining Operations</h2>
-            
-            <h3>Initial Machine</h3>
+        <!-- Wallet Status -->
+        <div class="flex justify-between items-center mb-8">
             <div>
-                <button onclick="buyInitialMachine()">Buy Initial Machine (BNB)</button>
-                <p class="loading" id="initialPrice">Loading price...</p>
+                <p class="text-sm text-gray-400">Connected as:</p>
+                <p id="walletAddress" class="text-green-400 font-mono truncate max-w-xs"></p>
+            </div>
+            <button onclick="connectWallet()" class="bg-gradient-to-r from-green-500 to-blue-600 px-4 py-2 rounded-lg hover:shadow-lg transition-all">
+                Connect Wallet
+            </button>
+        </div>
+
+        <!-- Content Tabs -->
+        <div id="contentArea" class="space-y-8">
+            <!-- Dashboard Tab -->
+            <div id="dashboard" class="tab-content">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="glass-card p-4 rounded-lg">
+                        <h3 class="text-sm text-gray-400">Total Machines</h3>
+                        <p id="totalMachines" class="text-2xl font-bold mt-2">0</p>
+                    </div>
+                    <div class="glass-card p-4 rounded-lg">
+                        <h3 class="text-sm text-gray-400">Network Power</h3>
+                        <p id="networkPower" class="text-2xl font-bold mt-2">0</p>
+                    </div>
+                    <div class="glass-card p-4 rounded-lg">
+                        <h3 class="text-sm text-gray-400">Pool Balance</h3>
+                        <p id="poolBalance" class="text-2xl font-bold mt-2">0 BNB</p>
+                    </div>
+                    <div class="glass-card p-4 rounded-lg">
+                        <h3 class="text-sm text-gray-400">Daily Production</h3>
+                        <p id="dailyProduction" class="text-2xl font-bold mt-2">0 BNB</p>
+                    </div>
+                </div>
             </div>
 
-            <h3>Test Machine</h3>
-            <div>
-                <button onclick="buyTestMachine()">Buy Test Machine (BNB)</button>
-                <p class="loading" id="testPrice">Loading price...</p>
+            <!-- Buy Machines Tab -->
+            <div id="buy" class="tab-content hidden">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="glass-card p-4 rounded-lg">
+                        <h2 class="text-xl font-bold mb-4">Initial Machine</h2>
+                        <p id="initialPrice" class="mb-4">Loading price...</p>
+                        <button onclick="buyInitialMachine()" class="w-full bg-green-600 hover:bg-green-700 py-2 rounded-lg transition-all">
+                            Buy Initial Machine
+                        </button>
+                    </div>
+                    
+                    <div class="glass-card p-4 rounded-lg">
+                        <h2 class="text-xl font-bold mb-4">Test Machine</h2>
+                        <p id="testPrice" class="mb-4">Loading price...</p>
+                        <button onclick="buyTestMachine()" class="w-full bg-blue-600 hover:bg-blue-700 py-2 rounded-lg transition-all">
+                            Buy Test Machine
+                        </button>
+                    </div>
+
+                    <div class="glass-card p-4 rounded-lg col-span-full">
+                        <h2 class="text-xl font-bold mb-4">Power Machines</h2>
+                        <div class="mb-4">
+                            <label class="block text-sm mb-2">Tier:</label>
+                            <select id="tierId" class="w-full p-2 bg-gray-800 rounded-lg">
+                                <option value="0">Tier 1</option>
+                                <option value="1">Tier 2</option>
+                                <option value="2">Tier 3</option>
+                                <option value="3">Tier 4</option>
+                            </select>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm mb-2">Quantity:</label>
+                            <input type="number" id="count" min="1" max="10" value="1" class="w-full p-2 bg-gray-800 rounded-lg">
+                        </div>
+                        <button onclick="buyPowerMachine()" class="w-full bg-purple-600 hover:bg-purple-700 py-2 rounded-lg transition-all">
+                            Buy Power Machine
+                        </button>
+                    </div>
+                </div>
             </div>
 
-            <h3>Power Machines</h3>
-            <div>
-                <label>Machine Tier: 
-                    <select id="tierId">
-                        <option value="0">Tier 1</option>
-                        <option value="1">Tier 2</option>
-                        <option value="2">Tier 3</option>
-                        <option value="3">Tier 4</option>
-                    </select>
-                </label>
-                <label>Quantity: <input type="number" id="count" min="1" max="10" value="1"></label>
-                <button onclick="buyPowerMachine()">Buy Power Machine</button>
+            <!-- Rewards Tab -->
+            <div id="rewards" class="tab-content hidden">
+                <div class="glass-card p-6 rounded-lg">
+                    <h2 class="text-xl font-bold mb-4">Your Rewards</h2>
+                    <div class="mb-6">
+                        <p class="text-gray-400">Unclaimed Rewards:</p>
+                        <p id="unclaimedRewards" class="text-3xl font-bold mt-2">0 BNB</p>
+                    </div>
+                    <button onclick="claimRewards()" class="bg-yellow-500 hover:bg-yellow-600 py-2 px-4 rounded-lg">
+                        Claim Rewards
+                    </button>
+                </div>
             </div>
-        </div>
 
-        <div class="card">
-            <h2 class="section-title">💰 Rewards</h2>
-            <button onclick="claimRewards()">Claim Rewards</button>
-            <p class="loading" id="unclaimedRewards">Loading unclaimed rewards...</p>
-        </div>
+            <!-- Referrals Tab -->
+            <div id="referrals" class="tab-content hidden">
+                <div class="glass-card p-6 rounded-lg">
+                    <h2 class="text-xl font-bold mb-4">Referral System</h2>
+                    <div class="mb-4">
+                        <label class="block text-sm mb-2">Set Referrer:</label>
+                        <input type="text" id="referrerAddress" placeholder="Enter referrer address" class="w-full p-2 bg-gray-800 rounded-lg">
+                    </div>
+                    <button onclick="setReferrer()" class="bg-indigo-600 hover:bg-indigo-700 py-2 px-4 rounded-lg">
+                        Set Referrer
+                    </button>
+                    <div id="referralStats" class="mt-6 text-gray-400"></div>
+                </div>
+            </div>
 
-        <div class="card">
-            <h2 class="section-title">🔗 Referrals</h2>
-            <label>Set Referrer: <input type="text" id="referrerAddress" placeholder="Enter referrer address"></label>
-            <button onclick="setReferrer()">Set Referrer</button>
-            <p class="loading" id="referralStats">Loading referral stats...</p>
-        </div>
-
-        <div class="card" id="adminPanel" style="display:none;">
-            <h2 class="section-title">🔐 Admin Functions</h2>
-            <button onclick="addAdmin()">Add Admin</button>
-            <button onclick="removeAdmin()">Remove Admin</button>
-            <button onclick="addToBlocklist()">Add to Blocklist</button>
-            <button onclick="removeFromBlocklist()">Remove from Blocklist</button>
-            <button onclick="withdrawTokens()">Withdraw Tokens</button>
-            <button onclick="withdrawBNB()">Withdraw BNB</button>
+            <!-- Admin Tab -->
+            <div id="admin" class="tab-content hidden">
+                <div class="glass-card p-6 rounded-lg">
+                    <h2 class="text-xl font-bold mb-4">Admin Functions</h2>
+                    <div class="space-y-3">
+                        <button onclick="addAdmin()" class="w-full bg-red-600 hover:bg-red-700 py-2 rounded-lg">Add Admin</button>
+                        <button onclick="removeAdmin()" class="w-full bg-red-600 hover:bg-red-700 py-2 rounded-lg">Remove Admin</button>
+                        <button onclick="addToBlocklist()" class="w-full bg-red-600 hover:bg-red-700 py-2 rounded-lg">Add to Blocklist</button>
+                        <button onclick="removeFromBlocklist()" class="w-full bg-red-600 hover:bg-red-700 py-2 rounded-lg">Remove from Blocklist</button>
+                        <button onclick="withdrawTokens()" class="w-full bg-red-600 hover:bg-red-700 py-2 rounded-lg">Withdraw Tokens</button>
+                        <button onclick="withdrawBNB()" class="w-full bg-red-600 hover:bg-red-700 py-2 rounded-lg">Withdraw BNB</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
     <script>
+        let web3Modal;
+        let provider;
+        let signer;
+        let contract;
+        let tokenContract;
+        let userAddress;
+
         const contractAddress = "0x9dCcEd4Ef738856D2c289D4116cD219c698B22ba";
         const tokenAddress = "0x877f23dcFBa91cadd7d35565Da452c9673C27A33";
 
         const abi = [/* 全部ABI内容 */];
 
-        let provider, signer, contract, tokenContract;
-        let userAddress;
+        // Initialize Web3Modal
+        web3Modal = new Web3Modal.default({
+            cacheProvider: false,
+            providerOptions: {} // Add provider options if needed
+        });
 
         async function connectWallet() {
-            if (typeof window.ethereum === 'undefined') {
-                alert("Please install MetaMask!");
-                return;
-            }
-
             try {
-                await window.ethereum.request({ method: 'eth_requestAccounts' });
-                provider = new ethers.providers.Web3Provider(window.ethereum);
+                const instance = await web3Modal.connect();
+                provider = new ethers.providers.Web3Provider(instance);
                 signer = provider.getSigner();
                 userAddress = await signer.getAddress();
                 
@@ -169,38 +185,80 @@
                 ], signer);
 
                 document.getElementById("walletAddress").textContent = userAddress;
-                document.getElementById("walletAddress").title = userAddress;
-                loadUserDashboard();
-                loadGlobalDashboard();
-                loadPrices();
+                loadDashboard();
                 checkAdminStatus();
+                alert("Connected successfully!");
             } catch (e) {
                 console.error(e);
-                alert("Failed to connect wallet");
+                alert("Failed to connect wallet. Please make sure MetaMask is installed and you're on the correct network.");
             }
         }
 
-        async function loadGlobalDashboard() {
+        async function loadDashboard() {
             try {
                 const data = await contract.getGlobalDashboard();
-                const stats = document.getElementById("globalStats");
-                stats.innerHTML = `
-                    <div class="stat-card"><strong>Base Reward:</strong> <LaTex>${ethers.utils.formatEther(data.baseReward)} BNB</div>[ty-n]                    <div class="stat-card"><strong>Total Machines:</strong> $</LaTex>{data.totalMines}</div>
-                    <div class="stat-card"><strong>Current Block:</strong> <LaTex>${data.currentBlock}</div>[ty-n]                    <div class="stat-card"><strong>Pool Balance:</strong> $</LaTex>{ethers.utils.formatEther(data.poolBalance)} BNB</div>
-                    <div class="stat-card"><strong>Network Power:</strong> <LaTex>${data.networkPower}</div>[ty-n]                    <div class="stat-card"><strong>Daily Production:</strong> $</LaTex>{ethers.utils.formatEther(data.dailyProduction)} BNB</div>
-                    <div class="stat-card"><strong>Total Referral Rewards:</strong> <LaTex>${ethers.utils.formatEther(data.totalRefRewards)} BNB</div>[ty-n]                `;[ty-n]            } catch (e) {[ty-n]                console.error(e);[ty-n]                document.getElementById("globalStats").innerHTML = "Error loading global stats";[ty-n]            }[ty-n]        }[ty-n][ty-n]        async function loadUserDashboard() {[ty-n]            try {[ty-n]                const data = await contract.getUserDashboard(userAddress);[ty-n]                const stats = document.getElementById("userStats");[ty-n]                stats.innerHTML = `[ty-n]                    <div class="stat-card"><strong>Normal Machines:</strong> $</LaTex>{data.normal}</div>
-                    <div class="stat-card"><strong>Test Machines:</strong> <LaTex>${data.test}</div>[ty-n]                    <div class="stat-card"><strong>Power Machines:</strong> $</LaTex>{data.power.join(', ')}</div>
-                    <div class="stat-card"><strong>Daily Reward:</strong> <LaTex>${ethers.utils.formatEther(data.dailyReward)} BNB</div>[ty-n]                    <div class="stat-card"><strong>Unclaimed Rewards:</strong> $</LaTex>{ethers.utils.formatEther(data.unclaimed)} BNB</div>
-                    <div class="stat-card"><strong>Total Referral Rewards:</strong> <LaTex>${ethers.utils.formatEther(data.totalRefReward)} BNB</div>[ty-n]                    <div class="stat-card"><strong>Total Power:</strong> $</LaTex>{data.totalPower}</div>
-                `;
-                document.getElementById("unclaimedRewards").textContent = `Unclaimed: <LaTex>${ethers.utils.formatEther(data.unclaimed)} BNB`;[ty-n]            } catch (e) {[ty-n]                console.error(e);[ty-n]                document.getElementById("userStats").innerHTML = "Error loading user stats";[ty-n]            }[ty-n]        }[ty-n][ty-n]        async function loadPrices() {[ty-n]            try {[ty-n]                const initialPrice = await contract.INITIAL\_MACHINE\_PRICE\_BNB();[ty-n]                document.getElementById("initialPrice").textContent = `Price: $</LaTex>{ethers.utils.formatEther(initialPrice)} BNB`;
+                document.getElementById("totalMachines").textContent = data.totalMines;
+                document.getElementById("networkPower").textContent = data.networkPower;
+                document.getElementById("poolBalance").textContent = ethers.utils.formatEther(data.poolBalance) + " BNB";
+                document.getElementById("dailyProduction").textContent = ethers.utils.formatEther(data.dailyProduction) + " BNB";
+                
+                const user = await contract.getUserDashboard(userAddress);
+                document.getElementById("unclaimedRewards").textContent = ethers.utils.formatEther(user.unclaimed) + " BNB";
+                
+                const initialPrice = await contract.INITIAL_MACHINE_PRICE_BNB();
+                document.getElementById("initialPrice").textContent = "Price: " + ethers.utils.formatEther(initialPrice) + " BNB";
                 
                 const testPrice = await contract.TEST_MACHINE_PRICE_BNB();
-                document.getElementById("testPrice").textContent = `Price: <LaTex>${ethers.utils.formatEther(testPrice)} BNB`;[ty-n]            } catch (e) {[ty-n]                console.error("Error loading prices:", e);[ty-n]            }[ty-n]        }[ty-n][ty-n]        async function buyInitialMachine() {[ty-n]            try {[ty-n]                const price = await contract.INITIAL\_MACHINE\_PRICE\_BNB();[ty-n]                const tx = await contract.buyInitialMachine({[ty-n]                    value: price[ty-n]                });[ty-n]                await tx.wait();[ty-n]                alert("Initial machine purchased!");[ty-n]                loadUserDashboard();[ty-n]            } catch (e) {[ty-n]                console.error(e);[ty-n]                alert("Failed to purchase initial machine");[ty-n]            }[ty-n]        }[ty-n][ty-n]        async function buyTestMachine() {[ty-n]            try {[ty-n]                const price = await contract.TEST\_MACHINE\_PRICE\_BNB();[ty-n]                const tx = await contract.buyTestMachine({[ty-n]                    value: price[ty-n]                });[ty-n]                await tx.wait();[ty-n]                alert("Test machine purchased!");[ty-n]                loadUserDashboard();[ty-n]            } catch (e) {[ty-n]                console.error(e);[ty-n]                alert("Failed to purchase test machine");[ty-n]            }[ty-n]        }[ty-n][ty-n]        async function buyPowerMachine() {[ty-n]            const tierId = document.getElementById("tierId").value;[ty-n]            const count = parseInt(document.getElementById("count").value);[ty-n]            [ty-n]            try {[ty-n]                const tierInfo = await contract.machineTiers(tierId);[ty-n]                const totalPrice = tierInfo.priceToken.mul(count);[ty-n]                [ty-n]                // Check allowance[ty-n]                const allowance = await tokenContract.allowance(userAddress, contractAddress);[ty-n]                if (allowance.lt(totalPrice)) {[ty-n]                    // Approve if needed[ty-n]                    const approveTx = await tokenContract.approve(contractAddress, ethers.constants.MaxUint256);[ty-n]                    await approveTx.wait();[ty-n]                }[ty-n]                [ty-n]                const tx = await contract.buyPowerMachine(tierId, count);[ty-n]                await tx.wait();[ty-n]                alert(`Purchased $</LaTex>{count} Tier ${tierId + 1} machines!`);
-                loadUserDashboard();
+                document.getElementById("testPrice").textContent = "Price: " + ethers.utils.formatEther(testPrice) + " BNB";
             } catch (e) {
-                console.error(e);
-                alert("Failed to purchase power machines");
+                console.error("Error loading dashboard:", e);
+            }
+        }
+
+        async function buyInitialMachine() {
+            try {
+                const price = await contract.INITIAL_MACHINE_PRICE_BNB();
+                const tx = await contract.buyInitialMachine({ value: price });
+                await tx.wait();
+                alert("Initial machine purchased!");
+                loadDashboard();
+            } catch (e) {
+                handleTransactionError(e);
+            }
+        }
+
+        async function buyTestMachine() {
+            try {
+                const price = await contract.TEST_MACHINE_PRICE_BNB();
+                const tx = await contract.buyTestMachine({ value: price });
+                await tx.wait();
+                alert("Test machine purchased!");
+                loadDashboard();
+            } catch (e) {
+                handleTransactionError(e);
+            }
+        }
+
+        async function buyPowerMachine() {
+            const tierId = document.getElementById("tierId").value;
+            const count = parseInt(document.getElementById("count").value);
+            
+            try {
+                const tierInfo = await contract.machineTiers(tierId);
+                const totalPrice = tierInfo.priceToken.mul(count);
+                
+                const allowance = await tokenContract.allowance(userAddress, contractAddress);
+                if (allowance.lt(totalPrice)) {
+                    const approveTx = await tokenContract.approve(contractAddress, ethers.constants.MaxUint256);
+                    await approveTx.wait();
+                }
+                
+                const tx = await contract.buyPowerMachine(tierId, count);
+                await tx.wait();
+                alert(`Purchased <LaTex>${count} Tier $</LaTex>{parseInt(tierId)+1} machines!`);
+                loadDashboard();
+            } catch (e) {
+                handleTransactionError(e);
             }
         }
 
@@ -209,10 +267,9 @@
                 const tx = await contract.claimRewards();
                 await tx.wait();
                 alert("Rewards claimed!");
-                loadUserDashboard();
+                loadDashboard();
             } catch (e) {
-                console.error(e);
-                alert("Failed to claim rewards");
+                handleTransactionError(e);
             }
         }
 
@@ -222,9 +279,9 @@
                 const tx = await contract.setReferrer(referrer);
                 await tx.wait();
                 alert("Referrer set successfully!");
+                loadDashboard();
             } catch (e) {
-                console.error(e);
-                alert("Failed to set referrer");
+                handleTransactionError(e);
             }
         }
 
@@ -232,8 +289,7 @@
             if (!contract || !userAddress) return;
             try {
                 const isAdmin = await contract.admin(userAddress);
-                const adminPanel = document.getElementById("adminPanel");
-                adminPanel.style.display = isAdmin ? "block" : "none";
+                document.getElementById("adminTab").classList.toggle("hidden", !isAdmin);
             } catch (e) {
                 console.error(e);
             }
@@ -248,8 +304,7 @@
                 alert("Admin added!");
                 checkAdminStatus();
             } catch (e) {
-                console.error(e);
-                alert("Failed to add admin");
+                handleTransactionError(e);
             }
         }
 
@@ -262,8 +317,7 @@
                 alert("Admin removed!");
                 checkAdminStatus();
             } catch (e) {
-                console.error(e);
-                alert("Failed to remove admin");
+                handleTransactionError(e);
             }
         }
 
@@ -275,8 +329,7 @@
                 await tx.wait();
                 alert("Address added to blocklist!");
             } catch (e) {
-                console.error(e);
-                alert("Failed to add to blocklist");
+                handleTransactionError(e);
             }
         }
 
@@ -288,8 +341,7 @@
                 await tx.wait();
                 alert("Address removed from blocklist!");
             } catch (e) {
-                console.error(e);
-                alert("Failed to remove from blocklist");
+                handleTransactionError(e);
             }
         }
 
@@ -301,8 +353,7 @@
                 await tx.wait();
                 alert("Tokens withdrawn!");
             } catch (e) {
-                console.error(e);
-                alert("Failed to withdraw tokens");
+                handleTransactionError(e);
             }
         }
 
@@ -314,21 +365,53 @@
                 await tx.wait();
                 alert("BNB withdrawn!");
             } catch (e) {
-                console.error(e);
-                alert("Failed to withdraw BNB");
+                handleTransactionError(e);
             }
         }
 
-        // Auto-connect if MetaMask is available
-        if (typeof window.ethereum !== 'undefined') {
-            window.ethereum.on('accountsChanged', async (accounts) => {
-                if (accounts.length > 0) {
-                    await connectWallet();
-                } else {
-                    location.reload();
-                }
-            });
+        function handleTransactionError(error) {
+            console.error("Transaction error:", error);
+            let message = "Transaction failed. ";
+            
+            if (error.code === 4001) {
+                message += "User rejected transaction.";
+            } else if (error.code === -32000) {
+                message += "Invalid input parameters.";
+            } else if (error.code === -32603) {
+                message += "Contract execution error.";
+            } else if (error.data && error.data.message) {
+                message += error.data.message.replace("execution reverted: ", "");
+            } else {
+                message += "Please check the console for details.";
+            }
+            
+            alert(message);
         }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            document.getElementById(tabName).classList.remove('hidden');
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('bg-gradient-to-r', 'from-green-500', 'to-blue-600');
+                btn.classList.add('bg-gray-800', 'hover:bg-gray-700');
+            });
+            document.querySelector(`[onclick="switchTab('<LaTex>${tabName}')"]`).classList.remove('bg-gray-800', 'hover:bg-gray-700');[ty-n]            document.querySelector(`[onclick="switchTab('$</LaTex>{tabName}')"]`).classList.add('bg-gradient-to-r', 'from-green-500', 'to-blue-600');
+        }
+
+        // Auto-connect if possible
+        (async () => {
+            if (window.ethereum) {
+                window.ethereum.on('accountsChanged', async (accounts) => {
+                    if (accounts.length > 0) {
+                        await connectWallet();
+                    } else {
+                        location.reload();
+                    }
+                });
+            }
+        })();
     </script>
 </body>
 </html>
