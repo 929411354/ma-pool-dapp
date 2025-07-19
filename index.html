@@ -2,111 +2,94 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Mining DApp</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mining DApp</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/web3modal@1.9.8/dist/web3modal.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/ethers@6.4.0/dist/ethers.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js"></script>
-    <style>
-        /* 玻璃卡片样式 */
-        .glass-card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-    </style>
 </head>
-<body class="bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white">
-    <div id="app" class="container mx-auto p-4">
-        <!-- 导航栏 -->
-        <nav class="flex justify-between items-center mb-8">
-            <h1 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-500">Mining DApp</h1>
-            <div class="flex gap-4">
-                <button onclick="switchTab('dashboard')" class="tab-button">Dashboard</button>
-                <button onclick="switchTab('buy')" class="tab-button">Buy Machines</button>
-                <button onclick="switchTab('rewards')" class="tab-button">Rewards</button>
-                <button onclick="switchTab('referrals')" class="tab-button">Referrals</button>
-                <button onclick="switchTab('admin')" class="tab-button admin-tab" id="adminTab">Admin</button>
-            </div>
-        </nav>
+<body class="bg-gray-900 text-white">
+    <div class="container mx-auto p-4">
+        <h1 class="text-3xl font-bold mb-4">Mining DApp</h1>
 
-        <!-- 钱包状态 -->
-        <div class="flex justify-between items-center mb-8">
-            <div>
-                <p class="text-sm text-gray-400">Connected as:</p>
-                <p id="walletAddress" class="text-green-400 font-mono truncate max-w-xs"></p>
-            </div>
-            <button onclick="connectWallet()" class="bg-gradient-to-r from-green-500 to-blue-600 px-4 py-2 rounded-lg hover:shadow-lg transition-all">
-                Connect Wallet
-            </button>
-        </div>
+        <!-- 钱包连接按钮 -->
+        <button id="connectButton" onclick="connectWallet()" class="bg-green-500 hover:bg-green-600 px-4 py-2 rounded-lg">
+            连接钱包
+        </button>
 
-        <!-- 内容区域 -->
-        <div id="contentArea" class="space-y-8">
-            <!-- Dashboard Tab -->
-            <div id="dashboard" class="tab-content">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div class="glass-card p-4 rounded-lg">
-                        <h3 class="text-sm text-gray-400">Total Machines</h3>
-                        <p id="totalMachines" class="text-2xl font-bold">0</p>
-                    </div>
-                    <!-- 其他卡片... -->
-                </div>
-            </div>
-        </div>
+        <!-- 钱包地址显示 -->
+        <p id="walletAddress" class="mt-4 text-gray-400">未连接</p>
     </div>
 
     <script>
-        // 初始化Web3Modal
         const web3Modal = new Web3Modal({
-            cacheProvider: true
+            cacheProvider: true,
+            providerOptions: {} // 可配置更多钱包选项
         });
 
-        // 连接钱包
+        function detectWallet() {
+            if (window.ethereum) {
+                console.log("钱包已注入");
+                return true;
+            } else if (window.web3) {
+                console.log("旧版钱包已注入");
+                return true;
+            } else {
+                console.warn("未检测到钱包，请使用 dApp 浏览器打开此页面。");
+                return false;
+            }
+        }
+
         async function connectWallet() {
+            if (!detectWallet()) {
+                alert("请使用支持以太坊的钱包打开此页面！");
+                return;
+            }
+
             try {
                 const provider = await web3Modal.connect();
-                const signer = new ethers.Wallet(provider);
+                const signer = new ethers.providers.Web3Provider(provider).getSigner();
                 const address = await signer.getAddress();
                 document.getElementById('walletAddress').textContent = address;
-                loadUserData(address);
+                enableDAppFeatures();
             } catch (error) {
-                console.error("连接钱包失败:", error);
-                showSnackbar("请检查钱包是否已安装或网络是否正常。");
+                console.error("钱包连接失败:", error);
+                alert("钱包连接失败，请检查钱包是否已安装或网络是否正常。");
             }
         }
 
-        // 加载用户数据
-        async function loadUserData(address) {
-            // 从智能合约获取数据（示例）
-            const totalMachines = await fetch(`/api/user/${address}/machines`).then(res => res.json());
-            document.getElementById('totalMachines').textContent = totalMachines;
+        function enableDAppFeatures() {
+            document.querySelectorAll('[disabled]').forEach(el => el.removeAttribute('disabled'));
         }
 
-        // 切换标签页
-        function switchTab(tabId) {
-            const tabs = document.querySelectorAll('.tab-content');
-            tabs.forEach(tab => tab.classList.add('hidden'));
-            document.getElementById(tabId).classList.remove('hidden');
+        function disableDAppFeatures() {
+            document.querySelectorAll('.dapp-feature').forEach(el => el.setAttribute('disabled', true));
         }
 
-        // 初始化FastClick
-        document.addEventListener('DOMContentLoaded', function() {
-            FastClick.attach(document.body);
-            if (web3Modal.cachedProvider) {
+        // 页面加载时检测钱包并自动连接
+        window.addEventListener('DOMContentLoaded', () => {
+            const connectButton = document.getElementById('connectButton');
+            const hasWallet = detectWallet();
+            connectButton.disabled = !hasWallet;
+            if (hasWallet && web3Modal.cachedProvider) {
                 connectWallet();
+            }
+
+            // 监听钱包断开
+            if (window.ethereum) {
+                window.ethereum.on('disconnect', () => {
+                    alert("钱包已断开，请重新连接。");
+                    document.getElementById('walletAddress').textContent = "未连接";
+                    disableDAppFeatures();
+                });
             }
         });
 
-        // 显示提示
-        function showSnackbar(message) {
-            const snackbar = document.createElement('div');
-            snackbar.textContent = message;
-            snackbar.className = "fixed bottom-8 right-8 bg-red-600 text-white px-4 py-2 rounded-lg";
-            document.body.appendChild(snackbar);
-            setTimeout(() => snackbar.remove(), 3000);
-        }
+        // 修复移动端点击延迟
+        document.addEventListener('DOMContentLoaded', function () {
+            FastClick.attach(document.body);
+        }, false);
     </script>
 </body>
 </html>
