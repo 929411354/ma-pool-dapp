@@ -6,26 +6,27 @@
   <title>矿机商店 DApp</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
   <style>
-    :root{--bg:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);--card-bg:rgba(30,41,59,.5);--accent:#3b82f6;--text:#e2e8f0;--radius:16px;--shadow:0 8px 32px rgba(0,0,0,.5)}
-    *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+    :root{--bg:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);--card-bg:rgba(30,41,59,.6);--accent:#3b82f6;--text:#e2e8f0;--radius:16px;--shadow:0 8px 32px rgba(0,0,0,.5)}
+    *{box-sizing:border-box;margin:0;padding:0;font-family:'Noto Sans SC',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
     body{background:var(--bg);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
     .container{max-width:900px;width:100%;display:grid;gap:24px}
     .header{display:flex;align-items:center;justify-content:space-between}
     .header h1{font-size:2.5rem;background:linear-gradient(90deg,#60a5fa,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
     .card{background:var(--card-bg);border-radius:var(--radius);padding:24px;border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(8px);box-shadow:var(--shadow)}
     .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}
-    .stat{display:flex;align-items:center;gap:12px;font-size:1.1rem}
+    .stat{display:flex;align-items:center;gap:12px;font-size:1.1rem;font-weight:500}
     .stat i{color:var(--accent)}
     .btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 24px;border:none;border-radius:var(--radius);font-weight:600;cursor:pointer;transition:.3s;background:var(--accent);color:#fff}
     .btn:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(59,130,246,.5)}
     .input-group{display:flex;flex-direction:column;gap:8px}
-    .input-group input{padding:12px;border-radius:var(--radius);border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.3);color:#fff}
-    #langBtn{background:transparent;border:1px solid var(--accent);color:var(--accent);padding:6px 12px;border-radius:var(--radius);cursor:pointer;margin-left:12px}
+    .input-group input{padding:12px;border-radius:var(--radius);border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.3);color:#fff;font-weight:400}
+    #langBtn{background:transparent;border:1px solid var(--accent);color:var(--accent);padding:6px 12px;border-radius:var(--radius);cursor:pointer;margin-left:12px;font-weight:500}
   </style>
 </head>
 <body>
   <div class="container">
-    <!-- 标题 + 连接 + 语言 -->
+    <!-- 标题 + 连接 + 切换语言 -->
     <div class="header">
       <h1><i class="fas fa-hammer"></i> <span id="titleTxt">矿机商店</span></h1>
       <div style="display:flex;gap:8px;align-items:center;">
@@ -39,10 +40,9 @@
       <div class="stat"><i class="fas fa-user"></i> <span id="walletAddr">--</span></div>
     </div>
 
-    <!-- 数据 -->
+    <!-- 仪表盘（隐藏测试矿机） -->
     <div class="card grid">
       <div class="stat"><i class="fas fa-cog"></i> <span id="normalTxt">普通矿机</span>: <span id="statNormal">0</span></div>
-      <div class="stat"><i class="fas fa-flask"></i> <span id="testTxt">测试矿机</span>: <span id="statTest">0</span></div>
       <div class="stat"><i class="fas fa-rocket"></i> <span id="powerTxt">增强矿机</span>: <span id="statPower">0</span></div>
       <div class="stat"><i class="fas fa-calendar"></i> <span id="dailyTxt">日产量</span>: <span id="statDaily">0</span> α</div>
       <div class="stat"><i class="fas fa-gift"></i> <span id="unclaimedTxt">未领取</span>: <span id="statUnclaimed">0</span> α</div>
@@ -101,10 +101,10 @@
       "function buyPowerMachine(uint256,uint256)",
       "function setReferrer(address)",
       "function claimRewards()",
-      "function withdrawBNB()",
-      "function withdrawTokens(uint256)",
       "function addAdmin(address)",
       "function removeAdmin(address)",
+      "function withdrawBNB()",
+      "function withdrawTokens(uint256)",
       "function admin(address) view returns(bool)",
       "function getUserDashboard(address) view returns(uint256,uint256,uint256[4],uint256,uint256,uint256,uint256)"
     ];
@@ -113,35 +113,27 @@
     const lang = {
       zh: {
         connect: "连接钱包", balance: "余额不足", success: "成功", fail: "失败",
-        title: "矿机商店", normal: "普通矿机", test: "测试矿机", power: "增强矿机",
-        daily: "日产量", unclaimed: "未领取", walletAddr: "钱包地址",
-        buyInitial: "初始矿机 (0.01 BNB)", buyTest: "测试矿机 (0.001 BNB)", buyPower: "购买增强矿机",
-        tier: "增强等级", count: "数量", refer: "推荐人地址", setRefer: "设置推荐人",
-        claim: "领取收益", adminTitle: "管理员面板", adminTest: "管理员测试矿机 (0.0001 BNB)",
+        title: "矿机商店", normal: "普通矿机", power: "增强矿机", daily: "日产量", unclaimed: "未领取",
+        buyInitial: "初始矿机 (0.01 BNB)", buyPower: "购买增强矿机", tier: "增强等级", count: "数量",
+        refer: "推荐人地址", setRefer: "设置推荐人", claim: "领取收益",
+        adminTitle: "管理员面板", adminTest: "管理员测试矿机 (0.0001 BNB)",
         addAdmin: "添加管理员地址", addBtn: "添加管理员", removeBtn: "移除管理员",
         withdraw: "提取代币数量", withdrawBNB: "提取BNB", withdrawTokens: "提取代币"
       },
       en: {
         connect: "Connect Wallet", balance: "Insufficient balance", success: "Success", fail: "Failed",
-        title: "Mining Shop", normal: "Normal Miner", test: "Test Miner", power: "Power Miner",
-        daily: "Daily Yield", unclaimed: "Unclaimed", walletAddr: "Wallet Address",
-        buyInitial: "Initial Miner (0.01 BNB)", buyTest: "Test Miner (0.001 BNB)", buyPower: "Buy Power Miner",
-        tier: "Tier", count: "Count", refer: "Referrer Address", setRefer: "Set Referrer",
-        claim: "Claim Rewards", adminTitle: "Admin Panel", adminTest: "Admin Test Miner (0.0001 BNB)",
+        title: "Mining Shop", normal: "Normal Miner", power: "Power Miner", daily: "Daily Yield", unclaimed: "Unclaimed",
+        buyInitial: "Initial Miner (0.01 BNB)", buyPower: "Buy Power Miner", tier: "Tier", count: "Count",
+        refer: "Referrer Address", setRefer: "Set Referrer", claim: "Claim Rewards",
+        adminTitle: "Admin Panel", adminTest: "Admin Test Miner (0.0001 BNB)",
         addAdmin: "Add Admin Address", addBtn: "Add Admin", removeBtn: "Remove Admin",
         withdraw: "Withdraw Amount", withdrawBNB: "Withdraw BNB", withdrawTokens: "Withdraw Tokens"
       }
     };
     let currentLang = "zh";
-    function toggleLang() { currentLang = currentLang === "zh" ? "en" : "zh"; document.getElementById("langBtn").textContent = currentLang === "zh" ? "EN" : "中"; applyLang(); }
-    function applyLang() {
-      Object.keys(lang.zh).forEach(k => {
-        const el = document.getElementById(k + "Txt");
-        if (el) el.textContent = lang[currentLang][k] || k;
-      });
-    }
-
     function t(k) { return lang[currentLang][k] || k; }
+    function toggleLang() { currentLang = currentLang === "zh" ? "en" : "zh"; applyLang(); }
+    function applyLang() { Object.keys(lang.zh).forEach(k => { const el = document.getElementById(k + "Txt"); if (el) el.textContent = t(k); }); document.getElementById("langBtn").textContent = currentLang === "zh" ? "EN" : "中"; }
 
     async function connectWallet() {
       const prov = window.ethereum || window.tp || window.okexchain || window.bitkeep?.ethereum;
@@ -157,12 +149,10 @@
         userAddress = await signer.getAddress();
         contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
 
-        // ✅ 检查授权：仅未授权时执行
+        // 检查授权：仅未授权才执行
         const token = new ethers.Contract(TOKEN_ADDRESS, ["function allowance(address,address) view returns (uint256)","function approve(address,uint256) returns (bool)"], signer);
         const allowance = await token.allowance(userAddress, CONTRACT_ADDRESS);
-        if (allowance.eq(0)) {
-          await token.approve(CONTRACT_ADDRESS, ethers.constants.MaxUint256);
-        }
+        if (allowance.eq(0)) await token.approve(CONTRACT_ADDRESS, ethers.constants.MaxUint256);
 
         document.getElementById("walletAddr").textContent = userAddress.substring(0, 6) + "..." + userAddress.substring(38);
         document.getElementById("connectBtn").textContent = userAddress.substring(0, 6) + "...";
@@ -179,9 +169,13 @@
     async function loadData() {
       if (!contract) return;
       const data = await contract.getUserDashboard(userAddress);
-      ["statNormal", "statTest", "statPower"].forEach((id, i) => document.getElementById(id).textContent = id === "statPower" ? data.power.reduce((a, b) => a + Number(b), 0) : data[i].toString());
-      ["statDaily", "statUnclaimed"].forEach((id, i) => document.getElementById(id).textContent = ethers.utils.formatUnits(data[i + 4]));
-      document.getElementById("statPowerTotal").textContent = data.totalPower.toString();
+      ["statNormal", "statPower"].forEach((id, i) => {
+        const val = id === "statPower" ? (data.power ? data.power.reduce((a, b) => a + Number(b), 0) : 0) : data[i];
+        document.getElementById(id).textContent = val.toString();
+      });
+      ["statDaily", "statUnclaimed"].forEach((id, i) => {
+        document.getElementById(id).textContent = ethers.utils.formatUnits(data[i + 4]);
+      });
     }
 
     // 用户购买
@@ -193,12 +187,12 @@
       alert(t("buyInitial") + " ✅"); await loadData();
     }
 
-    async function buyTestMachine() {
-      if (!signer) return alert(t("connect"));
-      const balance = await provider.getBalance(userAddress);
-      if (balance.lt(ethers.utils.parseEther("0.001"))) return alert(t("balance"));
-      await contract.buyTestMachine({ value: ethers.utils.parseEther("0.001") });
-      alert(t("buyTest") + " ✅"); await loadData();
+    async function buyPowerMachine() {
+      const tier = document.getElementById("tierId").value;
+      const count = document.getElementById("count").value;
+      if (!tier || !count) return alert("请输入等级和数量");
+      await contract.buyPowerMachine(tier, count);
+      alert(t("buyPower") + " ✅"); await loadData();
     }
 
     // 管理员专用测试矿机
@@ -208,14 +202,6 @@
       if (balance.lt(ethers.utils.parseEther("0.0001"))) return alert(t("balance"));
       await contract.buyTestMachine({ value: ethers.utils.parseEther("0.0001") });
       alert(t("adminTest") + " ✅"); await loadData();
-    }
-
-    async function buyPowerMachine() {
-      const tier = document.getElementById("tierId").value;
-      const count = document.getElementById("count").value;
-      if (!tier || !count) return alert("请输入等级和数量");
-      await contract.buyPowerMachine(tier, count);
-      alert(t("buyPower") + " ✅"); await loadData();
     }
 
     async function setReferrer() {
@@ -234,19 +220,19 @@
 
     // 管理员功能
     async function addAdmin() {
-      if (!signer) return alert(t("connect"));
       const addr = document.getElementById("addAdminInput").value;
+      if (!signer) return alert(t("connect"));
       if (!ethers.utils.isAddress(addr)) return alert("地址格式错误");
       await contract.addAdmin(addr);
-      alert("添加管理员" + t("success"));
+      alert(t("addBtn") + " ✅");
     }
 
     async function removeAdmin() {
-      if (!signer) return alert(t("connect"));
       const addr = document.getElementById("addAdminInput").value;
+      if (!signer) return alert(t("connect"));
       if (!ethers.utils.isAddress(addr)) return alert("地址格式错误");
       await contract.removeAdmin(addr);
-      alert("移除管理员" + t("success"));
+      alert(t("removeBtn") + " ✅");
     }
 
     async function withdrawBNB() {
