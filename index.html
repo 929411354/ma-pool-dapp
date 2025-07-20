@@ -7,64 +7,68 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
   <style>
-    :root { --bg:#121212; --panel:#1e1e1e; --accent:#3f51b5; --text:#e0e0e0; }
-    body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;background:var(--bg);color:var(--text);display:flex;justify-content:center;align-items:center;min-height:100vh}
-    .card{background:var(--panel);border-radius:16px;padding:32px;max-width:800px;width:100%;box-shadow:0 8px 32px rgba(0,0,0,.5);backdrop-filter:blur(10px);transition:.3s}
-    h1{margin-top:0;text-align:center;font-weight:700;font-size:2rem}
-    .btn{display:inline-flex;align-items:center;justify-content:center;padding:12px 24px;border-radius:8px;border:none;font-size:1rem;cursor:pointer;transition:.3s;background:var(--accent);color:#fff;margin:8px 4px}
-    .btn:disabled{background:#555}
-    .btn:hover{filter:brightness(1.1)}
-    .row{display:flex;gap:16px;flex-wrap:wrap}
-    .col{flex:1 1 200px}
-    .stat{margin:8px 0}
-    .lang{position:absolute;top:16px;right:16px;cursor:pointer;color:var(--accent)}
-    .alert{position:fixed;top:20px;left:50%;transform:translateX(-50%);padding:12px 24px;border-radius:8px;font-weight:600;z-index:9999;display:none}
-    .alert.ok{background:#27ae60;color:#fff}
-    .alert.err{background:#e74c3c;color:#fff}
-    #qrcode canvas{margin:10px auto;display:block}
+    :root {
+      --bg: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      --card-bg: rgba(30, 41, 59, 0.5);
+      --accent: #3b82f6;
+      --text: #e2e8f0;
+      --radius: 16px;
+      --shadow: 0 8px 32px rgba(0,0,0,0.5);
+    }
+    *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+    body{background:var(--bg);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+    .container{max-width:900px;width:100%;display:grid;gap:24px}
+    .header{display:flex;align-items:center;justify-content:space-between}
+    .header h1{font-size:2.5rem;background:linear-gradient(90deg,#60a5fa,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .card{background:var(--card-bg);border-radius:var(--radius);padding:24px;border:1px solid rgba(255,255,255,0.1);backdrop-filter:blur(8px);box-shadow:var(--shadow)}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}
+    .stat{display:flex;align-items:center;gap:12px;font-size:1.1rem}
+    .stat i{color:var(--accent)}
+    .btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 24px;border:none;border-radius:var(--radius);font-weight:600;cursor:pointer;transition:.3s;background:var(--accent);color:#fff}
+    .btn:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(59,130,246,0.5)}
+    .input-group{display:flex;flex-direction:column;gap:8px}
+    .input-group input{padding:12px;border-radius:var(--radius);border:1px solid rgba(255,255,255,0.2);background:rgba(0,0,0,0.3);color:#fff}
+    #qrcode canvas{margin:0 auto;display:block}
   </style>
 </head>
 <body>
-  <div class="card">
-    <span class="lang" onclick="toggleLang()">🌐 中文/English</span>
-    <h1>矿机商店 · Mining Shop</h1>
-
-    <div id="connectPanel">
+  <div class="container">
+    <div class="header">
+      <h1><i class="fas fa-hammer"></i> 矿机商店</h1>
       <button class="btn" onclick="connectWallet()"><i class="fas fa-wallet"></i> 连接钱包</button>
     </div>
 
-    <div id="userPanel" style="display:none">
-      <div class="row">
-        <div class="col">
-          <div class="stat"><strong>普通矿机：<span id="statNormal">0</span></strong></div>
-          <div class="stat"><strong>测试矿机：<span id="statTest">0</span></strong></div>
-          <div class="stat"><strong>增强矿机：<span id="statPower">0</span></strong></div>
-          <div class="stat"><strong>日产量：<span id="statDaily">0</span> α</strong></div>
-        </div>
-        <div class="col">
-          <div class="stat"><strong>未领取：<span id="statUnclaimed">0</span> α</strong></div>
-          <div class="stat"><strong>推荐奖励：<span id="statRef">0</span> α</strong></div>
-          <div class="stat"><strong>总算力：<span id="statPowerTotal">0</span></strong></div>
-        </div>
-      </div>
+    <!-- 数据卡片 -->
+    <div class="card grid" id="userPanel" style="display:none">
+      <div class="stat"><i class="fas fa-cog"></i> 普通矿机：<span id="statNormal">0</span></div>
+      <div class="stat"><i class="fas fa-flask"></i> 测试矿机：<span id="statTest">0</span></div>
+      <div class="stat"><i class="fas fa-rocket"></i> 增强矿机：<span id="statPower">0</span></div>
+      <div class="stat"><i class="fas fa-calendar-day"></i> 日产量：<span id="statDaily">0</span> α</div>
+      <div class="stat"><i class="fas fa-gift"></i> 未领取：<span id="statUnclaimed">0</span> α</div>
+      <div class="stat"><i class="fas fa-user-friends"></i> 推荐奖励：<span id="statRef">0</span> α</div>
+      <div class="stat"><i class="fas fa-bolt"></i> 总算力：<span id="statPowerTotal">0</span></div>
+    </div>
 
-      <div class="row">
-        <button class="btn" onclick="buyInitial()">购买初始矿机</button>
-        <button class="btn" onclick="buyTest()">测试矿机</button>
-        <button class="btn" onclick="buyPower()">增强矿机</button>
-        <button class="btn" onclick="claim()">领取收益</button>
+    <!-- 操作卡片 -->
+    <div class="card" id="actionPanel" style="display:none">
+      <div class="grid">
+        <button class="btn" onclick="buyInitial()"><i class="fas fa-plus"></i> 购买初始矿机</button>
+        <button class="btn" onclick="buyTest()"><i class="fas fa-plus"></i> 测试矿机</button>
+        <button class="btn" onclick="buyPower()"><i class="fas fa-plus"></i> 增强矿机</button>
+        <button class="btn" onclick="claim()"><i class="fas fa-gift"></i> 领取收益</button>
       </div>
+    </div>
 
-      <div style="margin-top:20px">
-        <label>推荐人地址：</label>
-        <input id="referInput" placeholder="0x..." style="width:100%;padding:8px;margin-top:5px" />
-        <button class="btn" onclick="setReferrer()">设置推荐人</button>
+    <!-- 推荐人卡片 -->
+    <div class="card" id="referPanel" style="display:none">
+      <h2><i class="fas fa-share-alt"></i> 推荐人</h2>
+      <div class="input-group">
+        <label>推荐人地址</label>
+        <input id="referInput" placeholder="0x..." />
+        <button class="btn" onclick="setReferrer()"><i class="fas fa-check"></i> 设置推荐人</button>
       </div>
-
-      <div style="margin-top:20px">
-        <p>您的推荐二维码：</p>
-        <div id="qrcode"></div>
-      </div>
+      <h3 style="margin-top:20px">您的推荐二维码</h3>
+      <div id="qrcode"></div>
     </div>
   </div>
 
@@ -72,7 +76,6 @@
   <script>
     const TOKEN_ADDRESS = "0x877f23dcFBa91cadd7d35565Da452c9673C27A33";
     const CONTRACT_ADDRESS = "0x9dCcEd4Ef738856D2c289D4116cD219c698B22ba";
-
     const CONTRACT_ABI = [{"inputs":[{"internalType":"address","name":"_rewardToken","type":"address"},{"internalType":"address","name":"_treasury","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[],"name":"buyInitialMachine","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"buyTestMachine","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"tierId","type":"uint256"},{"internalType":"uint256","name":"count","type":"uint256"}],"name":"buyPowerMachine","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"claimRewards","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getUserDashboard","outputs":[{"internalType":"uint256","name":"normal","type":"uint256"},{"internalType":"uint256","name":"test","type":"uint256"},{"internalType":"uint256[4]","name":"power","type":"uint256[4]"},{"internalType":"uint256","name":"dailyReward","type":"uint256"},{"internalType":"uint256","name":"unclaimed","type":"uint256"},{"internalType":"uint256","name":"totalRefReward","type":"uint256"},{"internalType":"uint256","name":"totalPower","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"referrer","type":"address"}],"name":"setReferrer","outputs":[],"stateMutability":"nonpayable","type":"function"}];
 
     let signer, userAddress, contract;
@@ -90,8 +93,8 @@
         userAddress = await signer.getAddress();
         contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
 
-        document.getElementById("connectPanel").style.display = "none";
-        document.getElementById("userPanel").style.display = "block";
+        document.querySelector(".btn").textContent = "已连接";
+        ["userPanel", "actionPanel", "referPanel"].forEach(id => document.getElementById(id).style.display = "block");
 
         await autoApprove();
         await loadUserData();
@@ -151,7 +154,7 @@
 
     function generateQRCode() {
       const url = `${window.location.origin}${window.location.pathname}?ref=${userAddress}`;
-      QRCode.toCanvas(document.getElementById("qrcode"), url, function (error) {
+      QRCode.toCanvas(document.getElementById("qrcode"), url, { width: 200 }, function (error) {
         if (error) console.error(error);
       });
     }
