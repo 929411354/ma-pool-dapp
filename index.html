@@ -2,9 +2,9 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>矿机商店 DApp</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
   <style>
     :root {
       --bg: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
@@ -27,64 +27,66 @@
     .btn:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(59,130,246,0.5)}
     .input-group{display:flex;flex-direction:column;gap:8px}
     .input-group input{padding:12px;border-radius:var(--radius);border:1px solid rgba(255,255,255,0.2);background:rgba(0,0,0,0.3);color:#fff}
-    .loading{display:inline-block;width:16px;height:16px;border:2px solid #fff;border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite}
-    @keyframes spin{to{transform:rotate(360deg)}}
-    .alert{position:fixed;top:20px;left:50%;transform:translateX(-50%);padding:12px 24px;border-radius:var(--radius);font-weight:600;background:#27ae60;color:#fff;z-index:9999;display:none}
+    #langBtn{position:absolute;top:16px;right:16px;background:transparent;border:1px solid var(--accent);color:var(--accent);padding:6px 12px;border-radius:var(--radius);cursor:pointer}
   </style>
 </head>
 <body>
+  <button id="langBtn" onclick="toggleLang()">EN</button>
+
   <div class="container">
+    <!-- Header -->
     <div class="header">
-      <h1><i class="fas fa-hammer"></i> 矿机商店</h1>
-      <button class="btn" id="connectBtn" onclick="connectWallet()"><i class="fas fa-wallet"></i> 连接钱包</button>
+      <h1><i class="fas fa-hammer"></i> <span id="titleTxt">矿机商店</span></h1>
+      <button id="connectBtn" class="btn" onclick="connectWallet()"><i class="fas fa-wallet"></i> <span id="connectTxt">连接钱包</span></button>
     </div>
 
-    <!-- 数据卡片 -->
-    <div class="card grid" id="userPanel" style="display:none">
-      <div class="stat"><i class="fas fa-wallet"></i> 地址：<span id="userAddress"></span></div>
-      <div class="stat"><i class="fas fa-key"></i> 授权状态：<span id="approvalStatus">未授权</span></div>
+    <!-- Wallet Address -->
+    <div class="card" style="display:flex;gap:12px;align-items:center;">
+      <i class="fas fa-user"></i>
+      <span id="walletAddr">--</span>
     </div>
 
-    <!-- 购买卡片 -->
-    <div class="card" id="buyPanel" style="display:none">
-      <h2><i class="fas fa-plus-circle"></i> 矿机购买</h2>
-      <div class="grid">
-        <button class="btn" onclick="buyInitialMachine()"><i class="fas fa-plus"></i> 初始矿机 (0.01 BNB)</button>
-        <button class="btn" onclick="buyTestMachine()"><i class="fas fa-plus"></i> 测试矿机 (0.001 BNB)</button>
-        <div class="input-group">
-          <label>增强矿机等级 (0~3)</label>
-          <input id="tierId" placeholder="等级" />
-          <label>数量</label>
-          <input id="count" placeholder="数量" />
-          <button class="btn" onclick="buyPowerMachine()"><i class="fas fa-plus"></i> 购买增强矿机</button>
-        </div>
+    <!-- Data -->
+    <div class="card grid">
+      <div class="stat"><i class="fas fa-cog"></i> <span id="normalTxt">普通矿机</span>: <span id="statNormal">0</span></div>
+      <div class="stat"><i class="fas fa-flask"></i> <span id="testTxt">测试矿机</span>: <span id="statTest">0</span></div>
+      <div class="stat"><i class="fas fa-rocket"></i> <span id="powerTxt">增强矿机</span>: <span id="statPower">0</span></div>
+      <div class="stat"><i class="fas fa-calendar"></i> <span id="dailyTxt">日产量</span>: <span id="statDaily">0</span> α</div>
+      <div class="stat"><i class="fas fa-gift"></i> <span id="unclaimedTxt">未领取</span>: <span id="statUnclaimed">0</span> α</div>
+      <div class="stat"><i class="fas fa-bolt"></i> <span id="powerTotalTxt">总算力</span>: <span id="statPowerTotal">0</span></div>
+    </div>
+
+    <!-- Buy -->
+    <div class="card grid">
+      <button class="btn" onclick="buyInitialMachine()"><i class="fas fa-plus"></i> <span id="buyInitialTxt">初始矿机 (0.01 BNB)</span></button>
+      <button class="btn" onclick="buyTestMachine()"><i class="fas fa-plus"></i> <span id="buyTestTxt">测试矿机 (0.001 BNB)</span></button>
+      <div class="input-group">
+        <label><span id="tierTxt">增强等级</span> (0-3)</label>
+        <input id="tierId" placeholder="0" />
+        <label><span id="countTxt">数量</span></label>
+        <input id="count" placeholder="1" />
+        <button class="btn" onclick="buyPowerMachine()"><i class="fas fa-plus"></i> <span id="buyPowerTxt">购买增强矿机</span></button>
       </div>
     </div>
 
-    <!-- 推荐人卡片 -->
-    <div class="card" id="referPanel" style="display:none">
-      <h2><i class="fas fa-user-friends"></i> 推荐人</h2>
+    <!-- Refer & Claim -->
+    <div class="card grid">
       <div class="input-group">
-        <label>推荐人地址</label>
+        <label><span id="referTxt">推荐人地址</span></label>
         <input id="referrerInput" placeholder="0x..." />
-        <button class="btn" onclick="setReferrer()"><i class="fas fa-check"></i> 设置推荐人</button>
+        <button class="btn" onclick="setReferrer()"><i class="fas fa-check"></i> <span id="setReferTxt">设置推荐人</span></button>
       </div>
+      <button class="btn" onclick="claimRewards()"><i class="fas fa-gift"></i> <span id="claimTxt">领取收益</span></button>
     </div>
 
-    <!-- 奖励卡片 -->
-    <div class="card" id="rewardPanel" style="display:none">
-      <h2><i class="fas fa-gift"></i> 奖励系统</h2>
-      <button class="btn" onclick="claimRewards()"><i class="fas fa-gift"></i> 领取收益</button>
-    </div>
-
-    <!-- 管理员卡片 -->
-    <div class="card" id="adminPanel" style="display:none">
-      <h2><i class="fas fa-cogs"></i> 管理员面板</h2>
+    <!-- Admin -->
+    <div class="card" id="adminPanel" style="display:none;">
+      <h2><i class="fas fa-cogs"></i> <span id="adminTitle">管理员面板</span></h2>
       <div class="input-group">
-        <label>提取代币数量</label>
-        <input id="withdrawAmount" placeholder="数量" />
-        <button class="btn" onclick="withdrawBNB()"><i class="fas fa-coins"></i> 提取BNB</button>
-        <button class="btn" onclick="withdrawTokens()"><i class="fas fa-coins"></i> 提取代币</button>
+        <label><span id="withdrawTxt">提取代币数量</span></label>
+        <input id="withdrawAmount" placeholder="100" />
+        <button class="btn" onclick="withdrawBNB()"><i class="fas fa-coins"></i> <span id="withdrawBNBTxt">提取BNB</span></button>
+        <button class="btn" onclick="withdrawTokens()"><i class="fas fa-coins"></i> <span id="withdrawTokensTxt">提取代币</span></button>
       </div>
     </div>
   </div>
@@ -103,10 +105,77 @@
       "function withdrawBNB()",
       "function withdrawTokens(uint256)",
       "function admin(address) view returns (bool)",
-      "function rewardToken() view returns (address)",
+      "function getUserDashboard(address) view returns (uint256,uint256,uint256[4],uint256,uint256,uint256,uint256)",
+      "function dailyRewardOf(address) view returns (uint256)"
     ];
 
+    const i18n = {
+      zh: {
+        title: "矿机商店",
+        connect: "连接钱包",
+        normal: "普通矿机",
+        test: "测试矿机",
+        power: "增强矿机",
+        daily: "日产量",
+        unclaimed: "未领取",
+        powerTotal: "总算力",
+        buyInitial: "初始矿机 (0.01 BNB)",
+        buyTest: "测试矿机 (0.001 BNB)",
+        buyPower: "购买增强矿机",
+        tier: "增强等级",
+        count: "数量",
+        refer: "推荐人地址",
+        setRefer: "设置推荐人",
+        claim: "领取收益",
+        adminTitle: "管理员面板",
+        withdraw: "提取代币数量",
+        withdrawBNB: "提取BNB",
+        withdrawTokens: "提取代币"
+      },
+      en: {
+        title: "Mining Shop",
+        connect: "Connect Wallet",
+        normal: "Normal Miner",
+        test: "Test Miner",
+        power: "Power Miner",
+        daily: "Daily Yield",
+        unclaimed: "Unclaimed",
+        powerTotal: "Total Power",
+        buyInitial: "Initial Miner (0.01 BNB)",
+        buyTest: "Test Miner (0.001 BNB)",
+        buyPower: "Buy Power Miner",
+        tier: "Tier",
+        count: "Count",
+        refer: "Referrer Address",
+        setRefer: "Set Referrer",
+        claim: "Claim Rewards",
+        adminTitle: "Admin Panel",
+        withdraw: "Withdraw Amount",
+        withdrawBNB: "Withdraw BNB",
+        withdrawTokens: "Withdraw Tokens"
+      }
+    };
+
+    let lang = "zh";
     let provider, signer, contract, userAddress;
+    const CONTRACT = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI);
+
+    function t(key) {
+      return i18n[lang][key] || key;
+    }
+
+    function applyLang() {
+      Object.keys(i18n.zh).forEach(key => {
+        const el = document.getElementById(key + "Txt");
+        if (el) el.textContent = t(key);
+      });
+      document.getElementById("langBtn").textContent = lang === "zh" ? "EN" : "中";
+    }
+
+    function toggleLang() {
+      lang = lang === "zh" ? "en" : "zh";
+      applyLang();
+    }
 
     async function connectWallet() {
       const provider = window.ethereum || window.tp || window.okexchain || window.bitkeep?.ethereum;
@@ -115,73 +184,95 @@
       try {
         await provider.request({ method: "eth_requestAccounts" });
         const chainId = await provider.request({ method: "eth_chainId" });
-        if (chainId !== "0x38") return alert("请切换到 BSC 主网");
+        if (chainId !== "0x38") return alert(lang === "zh" ? "请切换到 BSC 主网" : "Please switch to BSC Mainnet");
 
-        signer = new ethers.providers.Web3Provider(provider).getSigner();
+        provider = new ethers.providers.Web3Provider(provider);
+        signer = provider.getSigner();
         userAddress = await signer.getAddress();
-        contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
+        contract = CONTRACT.connect(signer);
 
-        document.getElementById("userAddress").textContent = userAddress.substring(0, 6) + "..." + userAddress.substring(38);
-        ["userPanel", "buyPanel", "referPanel", "rewardPanel"].forEach(id => document.getElementById(id).style.display = "block");
+        document.getElementById("walletAddr").textContent = userAddress.substring(0, 6) + "..." + userAddress.substring(38);
+        document.getElementById("connectBtn").textContent = userAddress.substring(0, 6) + "...";
 
         const isAdmin = await contract.admin(userAddress);
         if (isAdmin) document.getElementById("adminPanel").style.display = "block";
 
         await checkApproval();
+        await loadUserData();
       } catch (err) {
-        alert("连接失败：" + err.message);
+        alert(lang === "zh" ? "连接失败：" + err.message : "Connection failed: " + err.message);
       }
     }
 
     async function checkApproval() {
-      const tokenAbi = ["function allowance(address owner, address spender) view returns (uint256)"];
-      const token = new ethers.Contract(TOKEN_ADDRESS, tokenAbi, signer);
+      const token = new ethers.Contract(TOKEN_ADDRESS, ["function allowance(address,address) view returns (uint256)"], signer);
       const allowance = await token.allowance(userAddress, CONTRACT_ADDRESS);
       document.getElementById("approvalStatus").textContent = allowance.gt(0) ? "已授权" : "未授权";
     }
 
+    async function loadUserData() {
+      if (!contract) return;
+      const data = await contract.getUserDashboard(userAddress);
+      document.getElementById("statNormal").textContent = data.normal.toString();
+      document.getElementById("statTest").textContent = data.test.toString();
+      document.getElementById("statPower").textContent = data.power.reduce((a, b) => a + Number(b), 0).toString();
+      document.getElementById("statDaily").textContent = ethers.utils.formatUnits(data.dailyReward);
+      document.getElementById("statUnclaimed").textContent = ethers.utils.formatUnits(data.unclaimed);
+      document.getElementById("statPowerTotal").textContent = data.totalPower.toString();
+    }
+
     async function buyInitialMachine() {
+      if (!signer) return alert(lang === "zh" ? "请先连接钱包" : "Please connect wallet");
       try {
+        const balance = await provider.getBalance(userAddress);
+        if (balance.lt(ethers.utils.parseEther("0.01"))) return alert(lang === "zh" ? "余额不足" : "Insufficient balance");
         const tx = await contract.buyInitialMachine({ value: ethers.utils.parseEther("0.01") });
         await tx.wait();
-        alert("初始矿机购买成功 ✅");
+        alert(lang === "zh" ? "购买成功" : "Purchase successful");
+        await loadUserData();
       } catch (err) {
-        alert("购买失败：" + err.message);
+        alert(lang === "zh" ? "购买失败：" + err.message : "Purchase failed: " + err.message);
       }
     }
 
     async function buyTestMachine() {
+      if (!signer) return alert(lang === "zh" ? "请先连接钱包" : "Please connect wallet");
       try {
+        const balance = await provider.getBalance(userAddress);
+        if (balance.lt(ethers.utils.parseEther("0.001"))) return alert(lang === "zh" ? "余额不足" : "Insufficient balance");
         const tx = await contract.buyTestMachine({ value: ethers.utils.parseEther("0.001") });
         await tx.wait();
-        alert("测试矿机购买成功 ✅");
+        alert(lang === "zh" ? "测试矿机购买成功" : "Test miner purchased successfully");
+        await loadUserData();
       } catch (err) {
-        alert("购买失败：" + err.message);
+        alert(lang === "zh" ? "购买失败：" + err.message : "Purchase failed: " + err.message);
       }
     }
 
     async function buyPowerMachine() {
+      if (!signer) return alert(lang === "zh" ? "请先连接钱包" : "Please connect wallet");
       const tierId = document.getElementById("tierId").value;
       const count = document.getElementById("count").value;
-      if (!tierId || !count) return alert("请输入等级和数量");
+      if (!tierId || !count) return alert(lang === "zh" ? "请输入等级和数量" : "Please enter tier and count");
       try {
         const tx = await contract.buyPowerMachine(tierId, count);
         await tx.wait();
-        alert("增强矿机购买成功 ✅");
+        alert(lang === "zh" ? "增强矿机购买成功" : "Power miner purchased successfully");
+        await loadUserData();
       } catch (err) {
-        alert("购买失败：" + err.message);
+        alert(lang === "zh" ? "购买失败：" + err.message : "Purchase failed: " + err.message);
       }
     }
 
     async function setReferrer() {
       const ref = document.getElementById("referrerInput").value;
-      if (!ethers.utils.isAddress(ref)) return alert("地址格式错误");
+      if (!ethers.utils.isAddress(ref)) return alert(lang === "zh" ? "地址格式错误" : "Invalid address format");
       try {
         const tx = await contract.setReferrer(ref);
         await tx.wait();
-        alert("推荐人设置成功 ✅");
+        alert(lang === "zh" ? "推荐人设置成功" : "Referrer set successfully");
       } catch (err) {
-        alert("设置失败：" + err.message);
+        alert(lang === "zh" ? "设置失败：" + err.message : "Set referrer failed: " + err.message);
       }
     }
 
@@ -189,9 +280,10 @@
       try {
         const tx = await contract.claimRewards();
         await tx.wait();
-        alert("奖励领取成功 ✅");
+        alert(lang === "zh" ? "奖励领取成功" : "Rewards claimed successfully");
+        await loadUserData();
       } catch (err) {
-        alert("领取失败：" + err.message);
+        alert(lang === "zh" ? "领取失败：" + err.message : "Claim failed: " + err.message);
       }
     }
 
@@ -199,23 +291,25 @@
       try {
         const tx = await contract.withdrawBNB();
         await tx.wait();
-        alert("BNB 提取成功 ✅");
+        alert(lang === "zh" ? "BNB 提取成功" : "BNB withdrawn successfully");
       } catch (err) {
-        alert("提取失败：" + err.message);
+        alert(lang === "zh" ? "提取失败：" + err.message : "Withdraw failed: " + err.message);
       }
     }
 
     async function withdrawTokens() {
       const amount = document.getElementById("withdrawAmount").value;
-      if (!amount) return alert("请输入数量");
+      if (!amount) return alert(lang === "zh" ? "请输入数量" : "Please enter amount");
       try {
         const tx = await contract.withdrawTokens(ethers.utils.parseUnits(amount));
         await tx.wait();
-        alert("代币提取成功 ✅");
+        alert(lang === "zh" ? "代币提取成功" : "Tokens withdrawn successfully");
       } catch (err) {
-        alert("提取失败：" + err.message);
+        alert(lang === "zh" ? "提取失败：" + err.message : "Withdraw failed: " + err.message);
       }
     }
+
+    applyLang();
   </script>
 </body>
 </html>
