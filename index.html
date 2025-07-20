@@ -15,15 +15,15 @@
       --radius: 12px;
       --shadow: 0 8px 32px rgba(0,0,0,.5);
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans SC', sans-serif; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans SC', sans-serif; font-size: 14px; }
     body { background: var(--bg); color: var(--text); min-height: 100vh; padding: 20px; display: flex; justify-content: center; }
-    .container { max-width: 900px; width: 100%; display: grid; gap: 24px; }
+    .container { max-width: 900px; width: 100%; display: grid; gap: 20px; }
     .header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
-    .header h1 { font-size: 2.5rem; background: linear-gradient(90deg,#60a5fa,#3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .header-left { display: flex; align-items: center; gap: 12px; }
+    .header-left h1 { font-size: 2.4rem; background: linear-gradient(90deg,#60a5fa,#3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    #connectBtn { font-size: 0.85rem; padding: 6px 12px; }
     .nav-row { display: flex; gap: 10px; flex-wrap: wrap; }
-    .btn {
-      padding: 8px 14px; border: none; border-radius: var(--radius); background: var(--accent); color: #fff; cursor: pointer; font-weight: 600; transition: .3s;
-    }
+    .btn { padding: 8px 14px; border: none; border-radius: var(--radius); background: var(--accent); color: #fff; cursor: pointer; font-weight: 600; transition: .3s; }
     .btn:hover { transform: translateY(-1px); box-shadow: 0 2px 8px rgba(59,130,246,.5); }
     .card { background: var(--card-bg); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); }
     .grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(180px,1fr)); gap: 14px; }
@@ -38,17 +38,17 @@
   <div class="container">
     <!-- 顶部 -->
     <div class="header">
-      <h1><i class="fas fa-rocket"></i> <span id="titleTxt">星链工坊</span></h1>
-      <div style="display:flex;gap:10px;align-items:center;">
-        <button class="btn" id="langBtn" onclick="toggleLang()">EN</button>
+      <div class="header-left">
+        <h1><i class="fas fa-rocket"></i> <span id="titleTxt">星链工坊</span></h1>
+        <button id="connectBtn" class="btn" onclick="connectWallet()"><i class="fas fa-wallet"></i> <span id="connectTxt">连接钱包</span></button>
       </div>
+      <button id="langBtn" class="btn" onclick="toggleLang()">EN</button>
     </div>
 
     <!-- 导航按钮 -->
     <div class="nav-row">
       <button class="btn active" onclick="showView('dashboard')"><i class="fas fa-chart-line"></i> <span id="dashboardTxt">仪表盘</span></button>
       <button class="btn" onclick="showView('forge')"><i class="fas fa-hammer"></i> <span id="forgeTxt">星核工坊</span></button>
-      <button class="btn" onclick="connectWallet()"><i class="fas fa-wallet"></i> <span id="connectTxt">连接钱包</span></button>
       <button class="btn hidden" id="adminBtn" onclick="showView('admin')"><i class="fas fa-cogs"></i> <span id="adminBtnTxt">管理员</span></button>
     </div>
 
@@ -72,6 +72,7 @@
       <h2><i class="fas fa-hammer"></i> <span id="forgeTitleTxt">星核工坊</span></h2>
       <div class="grid">
         <button class="btn" onclick="buyInitialMachine()"><i class="fas fa-plus"></i> <span id="buyInitialTxt">购买普通星核 (0.01 BNB)</span></button>
+        <button class="btn" onclick="buyAdminTestMachine()"><i class="fas fa-flask"></i> <span id="adminTestTxt">购买迷你星核 (0.0001 BNB)</span></button>
         <button class="btn" onclick="buyLevel(0)"><i class="fas fa-star"></i> <span id="tier0Txt">增强等级 0</span></button>
         <button class="btn" onclick="buyLevel(1)"><i class="fas fa-star"></i> <span id="tier1Txt">增强等级 1</span></button>
         <button class="btn" onclick="buyLevel(2)"><i class="fas fa-star"></i> <span id="tier2Txt">增强等级 2</span></button>
@@ -82,7 +83,6 @@
     <!-- 管理员面板 -->
     <div id="adminView" class="card hidden">
       <h2><i class="fas fa-cogs"></i> <span id="adminTitleTxt">星核工坊（管理员）</span></h2>
-      <button class="btn" onclick="buyAdminTestMachine()"><i class="fas fa-flask"></i> <span id="adminTestTxt">购买迷你星核 (0.0001 BNB)</span></button>
       <div class="input-group">
         <label><span id="addAdminTxt">管理员地址</span></label>
         <input id="addAdminInput" placeholder="0x..." />
@@ -98,7 +98,6 @@
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
   <script>
     const CONTRACT_ADDRESS = "0x9dCcEd4Ef738856D2c289D4116cD219c698B22ba";
     const CONTRACT_ABI = [
@@ -121,19 +120,19 @@
       zh: {
         title: "星链工坊", connect: "连接钱包", dashboard: "仪表盘", forge: "星核工坊", adminBtn: "管理员",
         normal: "普通星核", power: "增强星核", daily: "日产量", unclaimed: "未领取",
-        buyInitial: "购买普通星核 (0.01 BNB)", tier0: "增强等级 0", tier1: "增强等级 1", tier2: "增强等级 2", tier3: "增强等级 3",
+        buyInitial: "购买普通星核 (0.01 BNB)", adminTest: "购买迷你星核 (0.0001 BNB)",
+        tier0: "增强等级 0", tier1: "增强等级 1", tier2: "增强等级 2", tier3: "增强等级 3",
         refer: "推荐人地址", setRefer: "设置推荐人", claim: "领取收益",
-        adminTitle: "星核工坊（管理员）", adminTest: "购买迷你星核 (0.0001 BNB)",
-        addAdmin: "管理员地址", addBtn: "添加管理员", removeBtn: "移除管理员",
+        adminTitle: "星核工坊（管理员）", addAdmin: "管理员地址", addBtn: "添加管理员", removeBtn: "移除管理员",
         withdraw: "提取代币数量", withdrawBNB: "提取BNB", withdrawTokens: "提取代币"
       },
       en: {
         title: "StarForge", connect: "Connect Wallet", dashboard: "Dashboard", forge: "Forge", adminBtn: "Admin",
         normal: "Normal Core", power: "Power Core", daily: "Daily Yield", unclaimed: "Unclaimed",
-        buyInitial: "Buy Normal Core (0.01 BNB)", tier0: "Tier 0", tier1: "Tier 1", tier2: "Tier 2", tier3: "Tier 3",
+        buyInitial: "Buy Normal Core (0.01 BNB)", adminTest: "Buy Mini Core (0.0001 BNB)",
+        tier0: "Tier 0", tier1: "Tier 1", tier2: "Tier 2", tier3: "Tier 3",
         refer: "Referrer Address", setRefer: "Set Referrer", claim: "Claim Rewards",
-        adminTitle: "StarForge (Admin)", adminTest: "Buy Mini Core (0.0001 BNB)",
-        addAdmin: "Admin Address", addBtn: "Add Admin", removeBtn: "Remove Admin",
+        adminTitle: "StarForge (Admin)", addAdmin: "Admin Address", addBtn: "Add Admin", removeBtn: "Remove Admin",
         withdraw: "Withdraw Amount", withdrawBNB: "Withdraw BNB", withdrawTokens: "Withdraw Tokens"
       }
     };
@@ -171,10 +170,13 @@
         signer = provider.getSigner();
         userAddress = await signer.getAddress();
         contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
-        document.getElementById("walletAddr").textContent = userAddress.slice(0, 6) + "..." + userAddress.slice(-4);
-        document.getElementById("connectBtn").innerHTML = `<i class="fas fa-wallet"></i> ${userAddress.slice(0, 6)}...`;
+        const addrEl = document.getElementById("walletAddr");
+        if (addrEl) addrEl.textContent = userAddress.slice(0, 6) + "..." + userAddress.slice(-4);
+        const btn = document.getElementById("connectBtn");
+        if (btn) btn.innerHTML = `<i class="fas fa-wallet"></i> ${userAddress.slice(0, 6)}...`;
         const isAdmin = await contract.admin(userAddress);
-        document.getElementById("adminBtn").classList.toggle("hidden", !isAdmin);
+        const adminBtn = document.getElementById("adminBtn");
+        if (adminBtn) adminBtn.classList.toggle("hidden", !isAdmin);
         await loadData();
       } catch (err) { alert("连接失败: " + err.message); }
     }
