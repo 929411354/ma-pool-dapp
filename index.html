@@ -7,21 +7,21 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>"/>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
-    :root{--bg:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);--card-bg:rgba(30,41,59,.6);--accent:#3b82f6;--text:#e2e8f0;--radius:16px;--shadow:0 8px 32px rgba(0,0,0,.5)}
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500&display=swap');
+    :root{--bg:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);--card-bg:rgba(30,41,59,.7);--accent:#3b82f6;--text:#e2e8f0;--radius:16px;--shadow:0 8px 32px rgba(0,0,0,.5)}
     *{box-sizing:border-box;margin:0;padding:0;font-family:'Noto Sans SC',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
-    body{background:var(--bg);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+    body{background:var(--bg);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;font-size:16px}
     .container{max-width:900px;width:100%;display:grid;gap:24px}
     .header{display:flex;align-items:center;justify-content:space-between}
-    .header h1{font-size:2.5rem;background:linear-gradient(90deg,#60a5fa,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .header h1{font-size:1.8rem;background:linear-gradient(90deg,#60a5fa,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
     .nav{display:flex;gap:8px}
-    .nav button{background:transparent;border:1px solid var(--accent);color:var(--accent);padding:8px 16px;border-radius:var(--radius);cursor:pointer;font-weight:500}
+    .nav button{background:transparent;border:1px solid var(--accent);color:var(--accent);padding:8px 12px;border-radius:var(--radius);cursor:pointer;font-size:0.9rem;font-weight:500}
     .nav button.active{background:var(--accent);color:#fff}
     .card{background:var(--card-bg);border-radius:var(--radius);padding:24px;border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(8px);box-shadow:var(--shadow)}
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
     .stat{display:flex;align-items:center;gap:12px;font-size:1.1rem;font-weight:500}
     .stat i{color:var(--accent)}
-    .btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 24px;border:none;border-radius:var(--radius);font-weight:600;cursor:pointer;transition:.3s;background:var(--accent);color:#fff}
+    .btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:12px 20px;border:none;border-radius:var(--radius);font-weight:600;cursor:pointer;transition:.3s;background:var(--accent);color:#fff;font-size:0.9rem}
     .btn:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(59,130,246,.5)}
     .input-group{display:flex;flex-direction:column;gap:8px}
     .input-group input{padding:12px;border-radius:var(--radius);border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.3);color:#fff;font-weight:400}
@@ -34,10 +34,10 @@
     <div class="header">
       <h1><i class="fas fa-rocket"></i> <span id="titleTxt">星链工坊</span></h1>
       <div class="nav">
-        <button class="btn active" onclick="showView('dashboard')"><i class="fas fa-chart-line"></i> 仪表盘</button>
-        <button class="btn" onclick="showView('forge')"><i class="fas fa-hammer"></i> 星核工坊</button>
+        <button class="btn active" onclick="showView('dashboard')"><i class="fas fa-chart-line fa-sm"></i> 仪表盘</button>
+        <button class="btn" onclick="showView('forge')"><i class="fas fa-hammer fa-sm"></i> 星核工坊</button>
       </div>
-      <button id="connectBtn" class="btn" onclick="connectWallet()"><i class="fas fa-wallet"></i> <span id="connectTxt">连接钱包</span></button>
+      <button id="connectBtn" class="btn" onclick="connectWallet()"><i class="fas fa-wallet fa-sm"></i> <span id="connectTxt">连接钱包</span></button>
     </div>
 
     <!-- 仪表盘（含推荐人） -->
@@ -51,6 +51,7 @@
         <label><span id="referLabelTxt">推荐人地址</span></label><input id="referrerInput" placeholder="0x..."/>
         <button class="btn" onclick="setReferrer()"><i class="fas fa-check"></i> <span id="setReferTxt">设置推荐人</span></button>
       </div>
+      <button class="btn" onclick="claimRewards()"><i class="fas fa-gift"></i> <span id="claimTxt">领取收益</span></button>
     </div>
 
     <!-- 星核工坊 -->
@@ -58,11 +59,10 @@
       <h2><i class="fas fa-hammer"></i> <span id="forgeTitleTxt">星核工坊</span></h2>
       <div class="grid">
         <button class="btn" onclick="buyInitialMachine()"><i class="fas fa-plus"></i> <span id="buyInitialTxt">购买普通星核 (0.01 BNB)</span></button>
-        <!-- 4 个独立增强等级按钮 -->
-        <button class="btn" onclick="buyLevel(0)"><i class="fas fa-star"></i> 增强等级 0 (1台)</button>
-        <button class="btn" onclick="buyLevel(1)"><i class="fas fa-star"></i> 增强等级 1 (1台)</button>
-        <button class="btn" onclick="buyLevel(2)"><i class="fas fa-star"></i> 增强等级 2 (1台)</button>
-        <button class="btn" onclick="buyLevel(3)"><i class="fas fa-star"></i> 增强等级 3 (1台)</button>
+        <button class="btn" onclick="buyLevel(0)"><i class="fas fa-star"></i> 增强等级 0</button>
+        <button class="btn" onclick="buyLevel(1)"><i class="fas fa-star"></i> 增强等级 1</button>
+        <button class="btn" onclick="buyLevel(2)"><i class="fas fa-star"></i> 增强等级 2</button>
+        <button class="btn" onclick="buyLevel(3)"><i class="fas fa-star"></i> 增强等级 3</button>
       </div>
     </div>
 
@@ -87,11 +87,13 @@
   <script>
     const CONTRACT_ADDRESS = "0x9dCcEd4Ef738856D2c289D4116cD219c698B22ba";
     const TOKEN_ADDRESS = "0x877f23dcFBa91cadd7d35565Da452c9673C27A33";
+
     const CONTRACT_ABI = [
       "function buyInitialMachine() payable",
       "function buyTestMachine() payable",
       "function buyPowerMachine(uint256,uint256)",
       "function setReferrer(address)",
+      "function claimRewards()",
       "function addAdmin(address)",
       "function removeAdmin(address)",
       "function withdrawBNB()",
@@ -109,7 +111,8 @@
         refer: "推荐人地址", setRefer: "设置推荐人", claim: "领取收益",
         adminTitle: "星核工坊（管理员）", adminTest: "购买迷你星核 (0.0001 BNB)",
         addAdmin: "管理员地址", addBtn: "添加管理员", removeBtn: "移除管理员",
-        withdraw: "提取代币数量", withdrawBNB: "提取BNB", withdrawTokens: "提取代币"
+        withdraw: "提取代币数量", withdrawBNB: "提取BNB", withdrawTokens: "提取代币",
+        referLabelTxt: "推荐人地址", forgeTitleTxt: "星核工坊"
       },
       en: {
         title: "StarForge", connect: "Connect Wallet", balance: "Insufficient balance", success: "Success", fail: "Failed",
@@ -118,12 +121,21 @@
         refer: "Referrer Address", setRefer: "Set Referrer", claim: "Claim Rewards",
         adminTitle: "StarForge (Admin)", adminTest: "Buy Mini Core (0.0001 BNB)",
         addAdmin: "Admin Address", addBtn: "Add Admin", removeBtn: "Remove Admin",
-        withdraw: "Withdraw Amount", withdrawBNB: "Withdraw BNB", withdrawTokens: "Withdraw Tokens"
+        withdraw: "Withdraw Amount", withdrawBNB: "Withdraw BNB", withdrawTokens: "Withdraw Tokens",
+        referLabelTxt: "Referrer Address", forgeTitleTxt: "StarForge"
       }
     };
     let currentLang = "zh";
+    function t(k) { return lang[currentLang][k] || k; }
+    function toggleLang() { currentLang = currentLang === "zh" ? "en" : "zh"; applyLang(); }
+    function applyLang() {
+      Object.keys(lang.zh).forEach(k => {
+        const el = document.getElementById(k + "Txt") || document.getElementById(k);
+        if (el) el.textContent = t(k);
+      });
+      document.getElementById("langBtn").textContent = currentLang === "zh" ? "EN" : "中";
+    }
 
-    // 界面切换
     function showView(view) {
       document.getElementById("dashboardView").classList.toggle("hidden", view !== "dashboard");
       document.getElementById("forgeView").classList.toggle("hidden", view !== "forge");
@@ -131,7 +143,6 @@
       document.querySelector(`[onclick="showView('${view}')"]`).classList.add("active");
     }
 
-    // 钱包连接
     async function connectWallet() {
       const prov = window.ethereum || window.tp || window.okexchain || window.bitkeep?.ethereum;
       if (!prov) return alert(t("connect"));
@@ -190,14 +201,6 @@
       if (!signer) return alert(t("connect"));
       await contract.buyPowerMachine(level, 1);
       alert(`等级${level} ✅`); await loadData();
-    }
-
-    async function buyAdminTestMachine() {
-      if (!signer) return alert(t("connect"));
-      const balance = await provider.getBalance(userAddress);
-      if (balance.lt(ethers.utils.parseEther("0.0001"))) return alert(t("balance"));
-      await contract.buyTestMachine({ value: ethers.utils.parseEther("0.0001") });
-      alert(t("adminTest") + " ✅"); await loadData();
     }
 
     async function setReferrer() {
