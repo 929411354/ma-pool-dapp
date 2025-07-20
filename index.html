@@ -5,44 +5,50 @@
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>⭐ 星链工坊 DApp</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>"/>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500&display=swap');
-    :root{--bg:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);--card-bg:rgba(30,41,59,.7);--accent:#3b82f6;--text:#e2e8f0;--radius:16px;--shadow:0 8px 32px rgba(0,0,0,.5)}
-    *{box-sizing:border-box;margin:0;padding:0;font-family:'Noto Sans SC',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
-    body{background:var(--bg);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;font-size:14px}
-    .container{max-width:900px;width:100%;display:grid;gap:20px}
-    .header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
-    .header h1{font-size:1.3rem;background:linear-gradient(90deg,#60a5fa,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-    .nav{display:flex;gap:6px}
-    .nav button{background:transparent;border:1px solid var(--accent);color:var(--accent);padding:6px 10px;border-radius:var(--radius);cursor:pointer;font-size:0.8rem;font-weight:500}
-    .nav button.active{background:var(--accent);color:#fff}
-    .card{background:var(--card-bg);border-radius:var(--radius);padding:20px;border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(8px);box-shadow:var(--shadow)}
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px}
-    .stat{display:flex;align-items:center;gap:10px;font-size:1rem;font-weight:500}
-    .stat i{color:var(--accent)}
-    .btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:8px 16px;border:none;border-radius:var(--radius);font-weight:600;cursor:pointer;transition:.3s;background:var(--accent);color:#fff;font-size:0.8rem}
-    .btn:hover{transform:translateY(-1px);box-shadow:0 2px 8px rgba(59,130,246,.5)}
-    .input-group{display:flex;flex-direction:column;gap:6px}
-    .input-group input{padding:8px;border-radius:var(--radius);border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.3);color:#fff;font-weight:400}
-    .hidden{display:none}
-    #langBtn{margin-left:10px;font-size:0.8rem;padding:4px 8px}
-    #connectBtn{font-size:0.8rem;padding:6px 10px}
+    :root {
+      --bg: linear-gradient(135deg,#0f172a 0%,#1e293b 100%);
+      --card-bg: rgba(30,41,59,.7);
+      --accent: #3b82f6;
+      --text: #e2e8f0;
+      --radius: 16px;
+      --shadow: 0 8px 32px rgba(0,0,0,.5);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans SC', sans-serif; font-size: 14px; }
+    body { background: var(--bg); color: var(--text); min-height: 100vh; padding: 20px; display: flex; justify-content: center; align-items: flex-start; }
+    .container { max-width: 900px; width: 100%; display: grid; gap: 20px; }
+    .header { display: flex; flex-direction: column; gap: 10px; }
+    .header-top { display: flex; align-items: center; gap: 12px; }
+    .header-top h1 { font-size: 2.2rem; background: linear-gradient(90deg,#60a5fa,#3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .nav-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .btn {
+      padding: 8px 14px; border: none; border-radius: var(--radius); background: var(--accent); color: #fff; cursor: pointer; font-weight: 600; transition: .3s;
+    }
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 2px 8px rgba(59,130,246,.5); }
+    .card { background: var(--card-bg); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(180px,1fr)); gap: 14px; }
+    .stat { display: flex; align-items: center; gap: 10px; font-weight: 500; }
+    .stat i { color: var(--accent); }
+    .input-group { display: flex; flex-direction: column; gap: 6px; }
+    .input-group input { padding: 8px; border-radius: var(--radius); border: 1px solid rgba(255,255,255,.2); background: rgba(0,0,0,.3); color: #fff; }
+    .hidden { display: none; }
   </style>
 </head>
 <body>
   <div class="container">
-    <!-- 头部 -->
+    <!-- 顶部 -->
     <div class="header">
-      <div style="display:flex;align-items:center">
+      <div class="header-top">
         <h1><i class="fas fa-rocket"></i> <span id="titleTxt">星链工坊</span></h1>
         <button id="langBtn" class="btn" onclick="toggleLang()">EN</button>
       </div>
-      <div class="nav">
-        <button class="btn active" onclick="showView('dashboard')"><i class="fas fa-chart-line fa-sm"></i> <span id="dashboardTxt">仪表盘</span></button>
-        <button class="btn" onclick="showView('forge')"><i class="fas fa-hammer fa-sm"></i> <span id="forgeTxt">星核工坊</span></button>
+      <div class="nav-row">
+        <button class="btn active" onclick="showView('dashboard')"><i class="fas fa-chart-line"></i> <span id="dashboardTxt">仪表盘</span></button>
+        <button class="btn" onclick="showView('forge')"><i class="fas fa-hammer"></i> <span id="forgeTxt">星核工坊</span></button>
+        <button id="connectBtn" class="btn" onclick="connectWallet()"><i class="fas fa-wallet"></i> <span id="connectTxt">连接钱包</span></button>
+        <button id="adminBtn" class="btn hidden" onclick="showView('admin')"><i class="fas fa-cogs"></i> <span id="adminBtnTxt">管理员</span></button>
       </div>
-      <button id="connectBtn" class="btn" onclick="connectWallet()"><i class="fas fa-wallet fa-sm"></i> <span id="connectTxt">连接钱包</span></button>
     </div>
 
     <!-- 仪表盘 -->
@@ -54,7 +60,7 @@
       <div class="stat"><i class="fas fa-gift"></i> <span id="unclaimedTxt">未领取</span>: <span id="statUnclaimed">0.00</span> α</div>
       <div class="input-group">
         <label><span id="referLabelTxt">推荐人地址</span></label>
-        <input id="referrerInput" placeholder="0x..."/>
+        <input id="referrerInput" placeholder="0x..." />
         <button class="btn" onclick="setReferrer()"><i class="fas fa-check"></i> <span id="setReferTxt">设置推荐人</span></button>
       </div>
       <button class="btn" onclick="claimRewards()"><i class="fas fa-gift"></i> <span id="claimTxt">领取收益</span></button>
@@ -72,19 +78,19 @@
       </div>
     </div>
 
-    <!-- 管理员面板 -->
-    <div id="adminPanel" class="card hidden" style="display:none">
+    <!-- 管理员面板（独立页面） -->
+    <div id="adminView" class="card hidden">
       <h2><i class="fas fa-cogs"></i> <span id="adminTitleTxt">星核工坊（管理员）</span></h2>
       <button class="btn" onclick="buyAdminTestMachine()"><i class="fas fa-flask"></i> <span id="adminTestTxt">购买迷你星核 (0.0001 BNB)</span></button>
       <div class="input-group">
         <label><span id="addAdminTxt">管理员地址</span></label>
-        <input id="addAdminInput" placeholder="0x..."/>
+        <input id="addAdminInput" placeholder="0x..." />
         <button class="btn" onclick="addAdmin()"><i class="fas fa-user-plus"></i> <span id="addBtnTxt">添加管理员</span></button>
         <button class="btn" onclick="removeAdmin()"><i class="fas fa-user-minus"></i> <span id="removeBtnTxt">移除管理员</span></button>
       </div>
       <div class="input-group">
         <label><span id="withdrawTxt">提取代币数量</span></label>
-        <input id="withdrawAmount" placeholder="100"/>
+        <input id="withdrawAmount" placeholder="100" />
         <button class="btn" onclick="withdrawBNB()"><i class="fas fa-coins"></i> <span id="withdrawBNBTxt">提取BNB</span></button>
         <button class="btn" onclick="withdrawTokens()"><i class="fas fa-coins"></i> <span id="withdrawTokensTxt">提取代币</span></button>
       </div>
@@ -111,101 +117,59 @@
     ];
 
     let provider, signer, contract, userAddress;
+
     const lang = {
       zh: {
-        title: "星链工坊", connect: "连接钱包", dashboard: "仪表盘", forge: "星核工坊",
-        balance: "余额不足", success: "成功", fail: "失败",
+        title: "星链工坊", connect: "连接钱包", dashboard: "仪表盘", forge: "星核工坊", adminBtn: "管理员",
         normal: "普通星核", power: "增强星核", daily: "日产量", unclaimed: "未领取",
         buyInitial: "购买普通星核 (0.01 BNB)", tier0: "增强等级 0", tier1: "增强等级 1", tier2: "增强等级 2", tier3: "增强等级 3",
         refer: "推荐人地址", setRefer: "设置推荐人", claim: "领取收益",
         adminTitle: "星核工坊（管理员）", adminTest: "购买迷你星核 (0.0001 BNB)",
         addAdmin: "管理员地址", addBtn: "添加管理员", removeBtn: "移除管理员",
-        withdraw: "提取代币数量", withdrawBNB: "提取BNB", withdrawTokens: "提取代币",
-        referLabelTxt: "推荐人地址", forgeTitleTxt: "星核工坊"
+        withdraw: "提取代币数量", withdrawBNB: "提取BNB", withdrawTokens: "提取代币"
       },
       en: {
-        title: "StarForge", connect: "Connect Wallet", dashboard: "Dashboard", forge: "Forge",
-        balance: "Insufficient balance", success: "Success", fail: "Failed",
+        title: "StarForge", connect: "Connect Wallet", dashboard: "Dashboard", forge: "Forge", adminBtn: "Admin",
         normal: "Normal Core", power: "Power Core", daily: "Daily Yield", unclaimed: "Unclaimed",
         buyInitial: "Buy Normal Core (0.01 BNB)", tier0: "Tier 0", tier1: "Tier 1", tier2: "Tier 2", tier3: "Tier 3",
         refer: "Referrer Address", setRefer: "Set Referrer", claim: "Claim Rewards",
         adminTitle: "StarForge (Admin)", adminTest: "Buy Mini Core (0.0001 BNB)",
         addAdmin: "Admin Address", addBtn: "Add Admin", removeBtn: "Remove Admin",
-        withdraw: "Withdraw Amount", withdrawBNB: "Withdraw BNB", withdrawTokens: "Withdraw Tokens",
-        referLabelTxt: "Referrer Address", forgeTitleTxt: "StarForge"
+        withdraw: "Withdraw Amount", withdrawBNB: "Withdraw BNB", withdrawTokens: "Withdraw Tokens"
       }
     };
+
     let currentLang = "zh";
-    
-    function t(k) { 
-      return lang[currentLang][k] || k; 
+    function t(k) { return lang[currentLang][k] || k; }
+    function toggleLang() {
+      currentLang = currentLang === "zh" ? "en" : "zh";
+      applyLang();
     }
-    
-    function toggleLang() { 
-      currentLang = currentLang === "zh" ? "en" : "zh"; 
-      applyLang(); 
-    }
-    
     function applyLang() {
       document.getElementById("langBtn").textContent = currentLang === "zh" ? "EN" : "中";
-      
-      // 更新所有文本元素
-      const elements = [
-        "titleTxt", "connectTxt", "dashboardTxt", "forgeTxt", "normalTxt", "powerTxt",
-        "dailyTxt", "unclaimedTxt", "buyInitialTxt", "referLabelTxt", "setReferTxt",
-        "claimTxt", "adminTitleTxt", "adminTestTxt", "addAdminTxt", "addBtnTxt",
-        "removeBtnTxt", "withdrawTxt", "withdrawBNBTxt", "withdrawTokensTxt",
-        "tier0Txt", "tier1Txt", "tier2Txt", "tier3Txt", "forgeTitleTxt"
-      ];
-      
-      elements.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.textContent = t(id.replace("Txt", ""));
+      Object.keys(lang.zh).forEach(k => {
+        const el = document.getElementById(k + "Txt") || document.getElementById(k);
+        if (el) el.textContent = t(k);
       });
     }
 
     function showView(view) {
-      document.getElementById("dashboardView").classList.toggle("hidden", view !== "dashboard");
-      document.getElementById("forgeView").classList.toggle("hidden", view !== "forge");
-      document.querySelectorAll(".nav button").forEach(b => b.classList.remove("active"));
-      document.querySelector(`[onclick="showView('${view}')"]`).classList.add("active");
+      ["dashboardView", "forgeView", "adminView"].forEach(v => {
+        document.getElementById(v).classList.toggle("hidden", v !== view + "View");
+      });
+      document.querySelectorAll(".nav-row .btn").forEach(b => b.classList.remove("active"));
+      document.querySelector(`[onclick="showView('${view}')"]`)?.classList.add("active");
     }
 
     async function connectWallet() {
       try {
         const prov = window.ethereum;
-        if (!prov) {
-          alert("请安装MetaMask或其他Web3钱包");
-          return;
-        }
+        if (!prov) return alert("请安装MetaMask或其他Web3钱包");
 
         await prov.request({ method: "eth_requestAccounts" });
         const chainId = await prov.request({ method: "eth_chainId" });
-        
         if (chainId !== "0x38") {
-          try {
-            await prov.request({
-              method: "wallet_switchEthereumChain",
-              params: [{ chainId: "0x38" }]
-            });
-          } catch (switchError) {
-            if (switchError.code === 4902) {
-              await prov.request({
-                method: "wallet_addEthereumChain",
-                params: [{
-                  chainId: "0x38",
-                  chainName: "Binance Smart Chain",
-                  nativeCurrency: {
-                    name: "BNB",
-                    symbol: "BNB",
-                    decimals: 18
-                  },
-                  rpcUrls: ["https://bsc-dataseed.binance.org/"],
-                  blockExplorerUrls: ["https://bscscan.com/"]
-                }]
-              });
-            }
-          }
+          await prov.request({ method: "wallet_switchEthereumChain", params: [{ chainId: "0x38" }] });
         }
 
         provider = new ethers.providers.Web3Provider(prov);
@@ -213,21 +177,17 @@
         userAddress = await signer.getAddress();
         contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
 
-        document.getElementById("walletAddr").textContent = 
-          userAddress.substring(0, 6) + "..." + userAddress.substring(38);
-        document.getElementById("connectBtn").innerHTML = 
-          `<i class="fas fa-wallet fa-sm"></i> ${userAddress.substring(0, 6)}...`;
+        document.getElementById("walletAddr").textContent =
+          userAddress.substring(0, 6) + "..." + userAddress.slice(-4);
+        document.getElementById("connectBtn").innerHTML =
+          `<i class="fas fa-wallet"></i> ${userAddress.substring(0, 6)}...`;
 
-        // 检查是否是管理员
         const isAdmin = await contract.admin(userAddress);
-        if (isAdmin) {
-          document.getElementById("adminPanel").style.display = "block";
-        }
+        document.getElementById("adminBtn").classList.toggle("hidden", !isAdmin);
 
         await loadData();
-      } catch (error) {
-        console.error("连接钱包失败:", error);
-        alert("连接钱包失败: " + (error.message || "未知错误"));
+      } catch (err) {
+        alert("连接失败: " + err.message);
       }
     }
 
@@ -236,143 +196,94 @@
       try {
         const data = await contract.getUserDashboard(userAddress);
         document.getElementById("statNormal").textContent = data[0].toString();
-        document.getElementById("statPower").textContent = 
-          data[1] ? data[1].reduce((a, b) => a + Number(b), 0) : 0;
-        document.getElementById("statDaily").textContent = 
-          parseFloat(ethers.utils.formatEther(data[4])).toFixed(2);
-        document.getElementById("statUnclaimed").textContent = 
-          parseFloat(ethers.utils.formatEther(data[5])).toFixed(2);
-      } catch (error) {
-        console.error("加载数据失败:", error);
+        document.getElementById("statPower").textContent = data[1].reduce((a, b) => a + Number(b), 0);
+        document.getElementById("statDaily").textContent = parseFloat(ethers.utils.formatEther(data[4])).toFixed(2);
+        document.getElementById("statUnclaimed").textContent = parseFloat(ethers.utils.formatEther(data[5])).toFixed(2);
+      } catch (err) {
+        console.error("加载数据失败:", err);
       }
     }
 
     async function buyInitialMachine() {
       try {
-        if (!contract) return alert(t("connect"));
-        const balance = await provider.getBalance(userAddress);
-        if (balance.lt(ethers.utils.parseEther("0.01"))) return alert(t("balance"));
-        
-        const tx = await contract.buyInitialMachine({ 
-          value: ethers.utils.parseEther("0.01") 
-        });
+        const tx = await contract.buyInitialMachine({ value: ethers.utils.parseEther("0.01") });
         await tx.wait();
-        alert(t("success") + ": " + t("buyInitial"));
-        await loadData();
-      } catch (error) {
-        alert(t("fail") + ": " + error.message);
-      }
+        alert(t("success")); await loadData();
+      } catch (err) { alert(t("fail") + ": " + err.message); }
     }
 
     async function buyAdminTestMachine() {
       try {
-        if (!contract) return alert(t("connect"));
-        const balance = await provider.getBalance(userAddress);
-        if (balance.lt(ethers.utils.parseEther("0.0001"))) return alert(t("balance"));
-        
-        const tx = await contract.buyTestMachine({ 
-          value: ethers.utils.parseEther("0.0001") 
-        });
+        const tx = await contract.buyTestMachine({ value: ethers.utils.parseEther("0.0001") });
         await tx.wait();
-        alert(t("success") + ": " + t("adminTest"));
-        await loadData();
-      } catch (error) {
-        alert(t("fail") + ": " + error.message);
-      }
+        alert(t("success")); await loadData();
+      } catch (err) { alert(t("fail") + ": " + err.message); }
     }
 
     async function buyLevel(level) {
       try {
-        if (!contract) return alert(t("connect"));
         const tx = await contract.buyPowerMachine(level, 1);
         await tx.wait();
-        alert(`${t("success")}: ${t("tier" + level)}`);
-        await loadData();
-      } catch (error) {
-        alert(t("fail") + ": " + error.message);
-      }
+        alert(`等级${level} 购买成功`); await loadData();
+      } catch (err) { alert(t("fail") + ": " + err.message); }
     }
 
     async function setReferrer() {
+      const ref = document.getElementById("referrerInput").value;
+      if (!ethers.utils.isAddress(ref)) return alert("地址格式错误");
       try {
-        const ref = document.getElementById("referrerInput").value;
-        if (!contract) return alert(t("connect"));
-        if (!ethers.utils.isAddress(ref)) return alert("地址格式错误");
-        
         const tx = await contract.setReferrer(ref);
         await tx.wait();
-        alert(t("success") + ": " + t("setRefer"));
-      } catch (error) {
-        alert(t("fail") + ": " + error.message);
-      }
+        alert(t("success"));
+      } catch (err) { alert(t("fail") + ": " + err.message); }
     }
 
     async function claimRewards() {
       try {
-        if (!contract) return alert(t("connect"));
         const tx = await contract.claimRewards();
         await tx.wait();
-        alert(t("success") + ": " + t("claim"));
-        await loadData();
-      } catch (error) {
-        alert(t("fail") + ": " + error.message);
-      }
+        alert(t("success")); await loadData();
+      } catch (err) { alert(t("fail") + ": " + err.message); }
     }
 
     async function addAdmin() {
+      const addr = document.getElementById("addAdminInput").value;
+      if (!ethers.utils.isAddress(addr)) return alert("地址格式错误");
       try {
-        const addr = document.getElementById("addAdminInput").value;
-        if (!contract) return alert(t("connect"));
-        if (!ethers.utils.isAddress(addr)) return alert("地址格式错误");
-        
         const tx = await contract.addAdmin(addr);
         await tx.wait();
-        alert(t("success") + ": " + t("addBtn"));
-      } catch (error) {
-        alert(t("fail") + ": " + error.message);
-      }
+        alert(t("success"));
+      } catch (err) { alert(t("fail") + ": " + err.message); }
     }
 
     async function removeAdmin() {
+      const addr = document.getElementById("addAdminInput").value;
+      if (!ethers.utils.isAddress(addr)) return alert("地址格式错误");
       try {
-        const addr = document.getElementById("addAdminInput").value;
-        if (!contract) return alert(t("connect"));
-        if (!ethers.utils.isAddress(addr)) return alert("地址格式错误");
-        
         const tx = await contract.removeAdmin(addr);
         await tx.wait();
-        alert(t("success") + ": " + t("removeBtn"));
-      } catch (error) {
-        alert(t("fail") + ": " + error.message);
-      }
+        alert(t("success"));
+      } catch (err) { alert(t("fail") + ": " + err.message); }
     }
 
     async function withdrawBNB() {
       try {
-        if (!contract) return alert(t("connect"));
         const tx = await contract.withdrawBNB();
         await tx.wait();
-        alert(t("success") + ": " + t("withdrawBNB"));
-      } catch (error) {
-        alert(t("fail") + ": " + error.message);
-      }
+        alert(t("success"));
+      } catch (err) { alert(t("fail") + ": " + err.message); }
     }
 
     async function withdrawTokens() {
+      const amt = document.getElementById("withdrawAmount").value;
+      if (!amt) return alert("请输入数量");
       try {
-        const amt = document.getElementById("withdrawAmount").value;
-        if (!contract) return alert(t("connect"));
-        if (!amt) return alert("请输入数量");
-        
         const tx = await contract.withdrawTokens(ethers.utils.parseUnits(amt));
         await tx.wait();
-        alert(t("success") + ": " + t("withdrawTokens"));
-      } catch (error) {
-        alert(t("fail") + ": " + error.message);
-      }
+        alert(t("success"));
+      } catch (err) { alert(t("fail") + ": " + err.message); }
     }
 
-    // 初始化
     showView("dashboard");
     applyLang();
   </script>
