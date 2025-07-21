@@ -1,223 +1,1100 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>⭐ 星链工坊 DApp</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>"/>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500&display=swap');
-    :root{--bg:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);--card-bg:rgba(30,41,59,.7);--accent:#3b82f6;--text:#e2e8f0;--radius:12px}
-    *{box-sizing:border-box;margin:0;padding:0;font-family:'Noto Sans SC',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;font-size:14px}
-    body{background:var(--bg);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:10px}
-    .container{max-width:900px;width:100%;display:grid;gap:20px}
-    .header{display:flex;align-items:center;justify-content:space-between}
-    .header h1{font-size:1.5rem;background:linear-gradient(90deg,#60a5fa,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-    .nav{display:flex;gap:6px}
-    .nav button{background:transparent;border:1px solid var(--accent);color:var(--accent);padding:6px 12px;border-radius:var(--radius);cursor:pointer;font-size:0.9rem}
-    .nav button.active{background:var(--accent);color:#fff}
-    .card{background:var(--card-bg);border-radius:var(--radius);padding:16px;border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(8px)}
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
-    .stat{display:flex;align-items:center;gap:8px;font-size:1rem;font-weight:500}
-    .stat i{color:var(--accent)}
-    .btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:10px 16px;border:none;border-radius:var(--radius);font-size:0.9rem;cursor:pointer;background:var(--accent);color:#fff}
-    .input-group{display:flex;flex-direction:column;gap:8px}
-    .input-group input{padding:10px;border-radius:var(--radius);border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.3);color:#fff}
-    .hidden{display:none}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>矿机合约管理平台</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"></script>
+  
+  <!-- Tailwind 配置 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#6366f1', // 主色调：靛蓝色
+            secondary: '#8b5cf6', // 辅助色：紫色
+            accent: '#10b981', // 强调色：绿色
+            dark: '#0f172a', // 深色背景
+            'dark-light': '#1e293b', // 稍浅的深色
+            'dark-lighter': '#334155', // 更浅的深色
+          },
+          fontFamily: {
+            inter: ['Inter', 'sans-serif'],
+          },
+          animation: {
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'float': 'float 6s ease-in-out infinite',
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-10px)' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .text-gradient {
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .bg-grid {
+        background-size: 40px 40px;
+        background-image: 
+          linear-gradient(to right, rgba(99, 102, 241, 0.05) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(99, 102, 241, 0.05) 1px, transparent 1px);
+      }
+      .card-glow {
+        box-shadow: 0 0 15px rgba(99, 102, 241, 0.1);
+      }
+      .card-glow-hover {
+        transition: all 0.3s ease;
+      }
+      .card-glow-hover:hover {
+        box-shadow: 0 0 25px rgba(99, 102, 241, 0.2);
+        transform: translateY(-2px);
+      }
+    }
   </style>
 </head>
-<body>
-  <div class="container">
-    <div class="header">
-      <h1><i class="fas fa-rocket"></i> <span id="titleTxt">星链工坊</span></h1>
-      <div class="nav">
-        <button class="btn active" onclick="showView('dashboard')"><i class="fas fa-chart-line"></i> 仪表盘</button>
-        <button class="btn" onclick="showView('forge')"><i class="fas fa-hammer"></i> 星核工坊</button>
+
+<body class="bg-dark text-gray-100 font-inter bg-grid min-h-screen">
+  <!-- 导航栏 -->
+  <header class="fixed top-0 left-0 right-0 bg-dark-light/80 backdrop-blur-md z-50 border-b border-gray-800">
+    <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center space-x-2">
+        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+          <<i class="fa fa-cubes text-xl"></</i>
+        </div>
+        <h1 class="text-xl font-bold bg-gradient-to-r from-primary to-secondary text-gradient">MineChain</h1>
       </div>
-      <button id="connectBtn" class="btn" onclick="connectWallet()"><i class="fas fa-wallet"></i> <span id="connectTxt">连接钱包</span></button>
+      
+      <nav class="hidden md:flex items-center space-x-8">
+        <a href="#dashboard" class="hover:text-primary transition-colors">仪表盘</a>
+        <a href="#machines" class="hover:text-primary transition-colors">矿机商店</a>
+        <a href="#rewards" class="hover:text-primary transition-colors">奖励中心</a>
+        <a href="#referral" class="hover:text-primary transition-colors">推荐计划</a>
+      </nav>
+      
+      <div class="flex items-center space-x-4">
+        <button id="connectWallet" class="bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white px-4 py-2 rounded-lg transition-all flex items-center">
+          <<i class="fa fa-wallet mr-2"></</i>
+          <span>连接钱包</span>
+        </button>
+        <div class="md:hidden">
+          <button id="mobileMenuBtn" class="text-gray-300 hover:text-white">
+            <<i class="fa fa-bars text-xl"></</i>
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 移动端菜单 -->
+    <div id="mobileMenu" class="hidden md:hidden bg-dark-light border-t border-gray-800">
+      <div class="container mx-auto px-4 py-3 flex flex-col space-y-3">
+        <a href="#dashboard" class="py-2 hover:text-primary transition-colors">仪表盘</a>
+        <a href="#machines" class="py-2 hover:text-primary transition-colors">矿机商店</a>
+        <a href="#rewards" class="py-2 hover:text-primary transition-colors">奖励中心</a>
+        <a href="#referral" class="py-2 hover:text-primary transition-colors">推荐计划</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主内容区 -->
+  <main class="container mx-auto px-4 pt-24 pb-16">
+    <!-- 用户信息栏 -->
+    <div id="userInfoBar" class="hidden mb-8 bg-dark-light rounded-xl p-4 border border-gray-800 flex flex-col md:flex-row justify-between items-center">
+      <div class="flex items-center mb-4 md:mb-0">
+        <div class="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center mr-4">
+          <<i class="fa fa-user text-primary text-xl"></</i>
+        </div>
+        <div>
+          <p class="text-sm text-gray-400">当前账户</p>
+          <p id="walletAddress" class="font-mono text-sm truncate max-w-xs"></p>
+        </div>
+      </div>
+      <div class="flex space-x-4">
+        <div class="text-center">
+          <p class="text-sm text-gray-400">总资产</p>
+          <p id="totalBalance" class="font-bold">0 MINE</p>
+        </div>
+        <div class="text-center">
+          <p class="text-sm text-gray-400">已拥有矿机</p>
+          <p id="totalMachines" class="font-bold">0</p>
+        </div>
+        <div class="text-center">
+          <p class="text-sm text-gray-400">可领取奖励</p>
+          <p id="availableRewards" class="font-bold text-accent">0 MINE</p>
+        </div>
+      </div>
     </div>
 
-    <!-- 仪表盘 -->
-    <div id="dashboardView" class="card grid">
-      <div class="stat"><i class="fas fa-user"></i> <span id="walletAddr">--</span></div>
-      <div class="stat"><i class="fas fa-cog"></i> <span id="normalTxt">普通星核</span>: <span id="statNormal">0</span></div>
-      <div class="stat"><i class="fas fa-rocket"></i> <span id="powerTxt">增强星核</span>: <span id="statPower">0</span></div>
-      <div class="stat"><i class="fas fa-calendar"></i> <span id="dailyTxt">日产量</span>: <span id="statDaily">0.00</span> α</div>
-      <div class="stat"><i class="fas fa-gift"></i> <span id="unclaimedTxt">未领取</span>: <span id="statUnclaimed">0.00</span> α</div>
-      <button class="btn" onclick="claimRewards()"><i class="fas fa-gift"></i> <span id="claimTxt">领取收益</span></button>
-    </div>
-
-    <!-- 星核工坊 -->
-    <div id="forgeView" class="card hidden">
-      <h2><i class="fas fa-hammer"></i> <span id="forgeTitleTxt">星核工坊</span></h2>
-      <div class="grid">
-        <button class="btn" onclick="buyInitialMachine()"><i class="fas fa-plus"></i> <span id="buyInitialTxt">购买普通星核 (0.01 BNB)</span></button>
-        <button class="btn" onclick="buyLevel(0)"><i class="fas fa-star"></i> 增强等级 0</button>
-        <button class="btn" onclick="buyLevel(1)"><i class="fas fa-star"></i> 增强等级 1</button>
-        <button class="btn" onclick="buyLevel(2)"><i class="fas fa-star"></i> 增强等级 2</button>
-        <button class="btn" onclick="buyLevel(3)"><i class="fas fa-star"></i> 增强等级 3</button>
+    <!-- 仪表盘区域 -->
+    <section id="dashboard" class="mb-16">
+      <div class="flex justify-between items-center mb-8">
+        <h2 class="text-2xl md:text-3xl font-bold">矿机仪表盘</h2>
+        <button id="refreshData" class="text-gray-400 hover:text-primary transition-colors">
+          <<i class="fa fa-refresh"></</i>
+          <span class="ml-1">刷新</span>
+        </button>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <!-- 全局算力 -->
+        <div class="bg-dark-light rounded-xl p-6 border border-gray-800 card-glow card-glow-hover">
+          <div class="flex justify-between items-start mb-4">
+            <div>
+              <p class="text-gray-400 text-sm">全网总算力</p>
+              <h3 id="globalPower" class="text-2xl font-bold mt-1">0 GH/s</h3>
+            </div>
+            <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+              <<i class="fa fa-bolt text-primary"></</i>
+            </div>
+          </div>
+          <div class="w-full bg-dark-lighter rounded-full h-2">
+            <div class="bg-gradient-to-r from-primary to-secondary h-2 rounded-full" style="width: 65%"></div>
+          </div>
+          <p class="text-xs text-gray-500 mt-2">较昨日 <span class="text-green-400">+12.5%</span></p>
+        </div>
+        
+        <!-- 活跃用户 -->
+        <div class="bg-dark-light rounded-xl p-6 border border-gray-800 card-glow card-glow-hover">
+          <div class="flex justify-between items-start mb-4">
+            <div>
+              <p class="text-gray-400 text-sm">活跃用户</p>
+              <h3 id="activeUsers" class="text-2xl font-bold mt-1">2,541</h3>
+            </div>
+            <div class="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center">
+              <<i class="fa fa-users text-secondary"></</i>
+            </div>
+          </div>
+          <div class="w-full bg-dark-lighter rounded-full h-2">
+            <div class="bg-gradient-to-r from-secondary to-purple-400 h-2 rounded-full" style="width: 45%"></div>
+          </div>
+          <p class="text-xs text-gray-500 mt-2">较昨日 <span class="text-green-400">+8.2%</span></p>
+        </div>
+        
+        <!-- 每日产出 -->
+        <div class="bg-dark-light rounded-xl p-6 border border-gray-800 card-glow card-glow-hover">
+          <div class="flex justify-between items-start mb-4">
+            <div>
+              <p class="text-gray-400 text-sm">每日产出</p>
+              <h3 id="dailyProduction" class="text-2xl font-bold mt-1">15,842 MINE</h3>
+            </div>
+            <div class="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center">
+              <<i class="fa fa-trophy text-accent"></</i>
+            </div>
+          </div>
+          <div class="w-full bg-dark-lighter rounded-full h-2">
+            <div class="bg-gradient-to-r from-accent to-green-400 h-2 rounded-full" style="width: 75%"></div>
+          </div>
+          <p class="text-xs text-gray-500 mt-2">较昨日 <span class="text-green-400">+5.3%</span></p>
+        </div>
+        
+        <!-- 奖励池余额 -->
+        <div class="bg-dark-light rounded-xl p-6 border border-gray-800 card-glow card-glow-hover">
+          <div class="flex justify-between items-start mb-4">
+            <div>
+              <p class="text-gray-400 text-sm">奖励池余额</p>
+              <h3 id="rewardPool" class="text-2xl font-bold mt-1">256,841 MINE</h3>
+            </div>
+            <div class="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center">
+              <<i class="fa fa-pool text-blue-500"></</i>
+            </div>
+          </div>
+          <div class="w-full bg-dark-lighter rounded-full h-2">
+            <div class="bg-gradient-to-r from-blue-500 to-cyan-400 h-2 rounded-full" style="width: 35%"></div>
+          </div>
+          <p class="text-xs text-gray-500 mt-2">剩余 <span class="text-blue-400">35%</span> 奖励</p>
+        </div>
+      </div>
+      
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- 算力图表 -->
+        <div class="lg:col-span-2 bg-dark-light rounded-xl p-6 border border-gray-800 card-glow">
+          <div class="flex justify-between items-center mb-6">
+            <h3 class="font-bold text-lg">算力与收益趋势</h3>
+            <div class="flex space-x-2">
+              <button class="px-3 py-1 text-xs bg-primary/10 text-primary rounded-full">日</button>
+              <button class="px-3 py-1 text-xs bg-dark-lighter text-gray-400 rounded-full">周</button>
+              <button class="px-3 py-1 text-xs bg-dark-lighter text-gray-400 rounded-full">月</button>
+            </div>
+          </div>
+          <div class="h-64">
+            <canvas id="miningChart"></canvas>
+          </div>
+        </div>
+        
+        <!-- 我的矿机 -->
+        <div class="bg-dark-light rounded-xl p-6 border border-gray-800 card-glow">
+          <h3 class="font-bold text-lg mb-6">我的矿机</h3>
+          <div class="space-y-4">
+            <div class="flex items-center justify-between p-3 bg-dark/50 rounded-lg">
+              <div class="flex items-center">
+                <div class="w-10 h-10 rounded-lg bg-gray-700 flex items-center justify-center mr-3">
+                  <<i class="fa fa-cube text-gray-300"></</i>
+                </div>
+                <div>
+                  <p class="font-medium">初始矿机</p>
+                  <p class="text-sm text-gray-400">基础算力</p>
+                </div>
+              </div>
+              <p id="initialMachineCount" class="font-bold">0 台</p>
+            </div>
+            
+            <div class="flex items-center justify-between p-3 bg-dark/50 rounded-lg">
+              <div class="flex items-center">
+                <div class="w-10 h-10 rounded-lg bg-gray-700 flex items-center justify-center mr-3">
+                  <<i class="fa fa-flask text-gray-300"></</i>
+                </div>
+                <div>
+                  <p class="font-medium">测试矿机</p>
+                  <p class="text-sm text-gray-400">实验性算力</p>
+                </div>
+              </div>
+              <p id="testMachineCount" class="font-bold">0 台</p>
+            </div>
+            
+            <div class="flex items-center justify-between p-3 bg-dark/50 rounded-lg">
+              <div class="flex items-center">
+                <div class="w-10 h-10 rounded-lg bg-gray-700 flex items-center justify-center mr-3">
+                  <<i class="fa fa-rocket text-gray-300"></</i>
+                </div>
+                <div>
+                  <p class="font-medium">功率矿机</p>
+                  <p class="text-sm text-gray-400">高级算力</p>
+                </div>
+              </div>
+              <p id="powerMachineCount" class="font-bold">0 台</p>
+            </div>
+            
+            <div class="pt-4 border-t border-gray-800 mt-2">
+              <div class="flex justify-between mb-2">
+                <p class="text-gray-400">总算力</p>
+                <p id="userTotalPower" class="font-bold">0 GH/s</p>
+              </div>
+              <div class="w-full bg-dark-lighter rounded-full h-2">
+                <div class="bg-gradient-to-r from-accent to-green-400 h-2 rounded-full" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- 矿机商店 -->
+    <section id="machines" class="mb-16">
+      <h2 class="text-2xl md:text-3xl font-bold mb-8">矿机商店</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- 初始矿机 -->
+        <div class="bg-dark-light rounded-xl overflow-hidden border border-gray-800 card-glow card-glow-hover">
+          <div class="h-40 bg-gradient-to-br from-gray-800 to-gray-900 relative overflow-hidden">
+            <div class="absolute inset-0 flex items-center justify-center">
+              <<i class="fa fa-cube text-6xl text-gray-600 animate-float"></</i>
+            </div>
+            <div class="absolute top-4 right-4 bg-primary/90 text-white text-xs px-2 py-1 rounded">
+              入门级
+            </div>
+          </div>
+          <div class="p-6">
+            <h3 class="text-xl font-bold mb-2">初始矿机</h3>
+            <p class="text-gray-400 text-sm mb-4">适合新手的基础矿机，提供稳定的基础算力</p>
+            
+            <div class="space-y-3 mb-6">
+              <div class="flex justify-between">
+                <span class="text-gray-400">算力</span>
+                <span>10 GH/s</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-400">日产量</span>
+                <span>5 MINE</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-400">价格</span>
+                <span class="font-medium">0.1 BNB</span>
+              </div>
+            </div>
+            
+            <button id="buyInitialMachine" class="w-full bg-gradient-to-r from-gray-700 to-gray-800 hover:from-gray-600 hover:to-gray-700 text-white py-3 rounded-lg transition-all font-medium">
+              购买矿机
+            </button>
+          </div>
+        </div>
+        
+        <!-- 测试矿机 -->
+        <div class="bg-dark-light rounded-xl overflow-hidden border border-gray-800 card-glow card-glow-hover">
+          <div class="h-40 bg-gradient-to-br from-blue-900/30 to-indigo-900/20 relative overflow-hidden">
+            <div class="absolute inset-0 flex items-center justify-center">
+              <<i class="fa fa-flask text-6xl text-blue-500/50 animate-float"></</i>
+            </div>
+            <div class="absolute top-4 right-4 bg-blue-500/90 text-white text-xs px-2 py-1 rounded">
+              实验级
+            </div>
+          </div>
+          <div class="p-6">
+            <h3 class="text-xl font-bold mb-2">测试矿机</h3>
+            <p class="text-gray-400 text-sm mb-4">实验性质的矿机，产量不稳定但有惊喜</p>
+            
+            <div class="space-y-3 mb-6">
+              <div class="flex justify-between">
+                <span class="text-gray-400">算力</span>
+                <span>20-50 GH/s</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-400">日产量</span>
+                <span>8-20 MINE</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-400">价格</span>
+                <span class="font-medium">0.3 BNB</span>
+              </div>
+            </div>
+            
+            <button id="buyTestMachine" class="w-full bg-gradient-to-r from-blue-700 to-indigo-800 hover:from-blue-600 hover:to-indigo-700 text-white py-3 rounded-lg transition-all font-medium">
+              购买矿机
+            </button>
+          </div>
+        </div>
+        
+        <!-- 功率矿机 -->
+        <div class="bg-dark-light rounded-xl overflow-hidden border border-gray-800 card-glow card-glow-hover">
+          <div class="h-40 bg-gradient-to-br from-primary/20 to-secondary/20 relative overflow-hidden">
+            <div class="absolute inset-0 flex items-center justify-center">
+              <<i class="fa fa-rocket text-6xl text-primary/60 animate-float"></</i>
+            </div>
+            <div class="absolute top-4 right-4 bg-secondary/90 text-white text-xs px-2 py-1 rounded">
+              高级版
+            </div>
+          </div>
+          <div class="p-6">
+            <h3 class="text-xl font-bold mb-2">功率矿机</h3>
+            <p class="text-gray-400 text-sm mb-4">多档位高级矿机，提供强大算力和更高收益</p>
+            
+            <div class="mb-4">
+              <label class="block text-gray-400 text-sm mb-2">选择档位</label>
+              <select id="powerMachineTier" class="w-full bg-dark border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary">
+                <option value="0">档位 1 - 100 GH/s (100 MINE)</option>
+                <option value="1">档位 2 - 500 GH/s (500 MINE)</option>
+                <option value="2">档位 3 - 1000 GH/s (1000 MINE)</option>
+                <option value="3">档位 4 - 5000 GH/s (5000 MINE)</option>
+              </select>
+            </div>
+            
+            <div class="mb-4">
+              <label class="block text-gray-400 text-sm mb-2">购买数量</label>
+              <div class="flex">
+                <button id="decreaseCount" class="bg-dark w-10 h-10 flex items-center justify-center border border-gray-700 rounded-l-lg">
+                  <<i class="fa fa-minus"></</i>
+                </button>
+                <input id="machineCount" type="number" min="1" value="1" class="w-full bg-dark border-y border-gray-700 px-3 py-2 text-center focus:outline-none">
+                <button id="increaseCount" class="bg-dark w-10 h-10 flex items-center justify-center border border-gray-700 rounded-r-lg">
+                  <<i class="fa fa-plus"></</i>
+                </button>
+              </div>
+            </div>
+            
+            <button id="buyPowerMachine" class="w-full bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white py-3 rounded-lg transition-all font-medium">
+              购买矿机
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- 奖励中心 -->
+    <section id="rewards" class="mb-16">
+      <h2 class="text-2xl md:text-3xl font-bold mb-8">奖励中心</h2>
+      
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- 我的奖励 -->
+        <div class="lg:col-span-2 bg-dark-light rounded-xl p-6 border border-gray-800 card-glow">
+          <h3 class="text-xl font-bold mb-6">我的奖励</h3>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div class="bg-dark/50 rounded-lg p-5">
+              <p class="text-gray-400 mb-2">可领取奖励</p>
+              <div class="flex items-end">
+                <span id="claimableRewards" class="text-3xl font-bold">0</span>
+                <span class="text-gray-400 ml-2 mb-1">MINE</span>
+              </div>
+              <button id="claimRewards" class="mt-4 w-full bg-accent hover:bg-accent/90 text-white py-2 rounded-lg transition-all">
+                领取奖励
+              </button>
+            </div>
+            
+            <div class="bg-dark/50 rounded-lg p-5">
+              <p class="text-gray-400 mb-2">累计获得奖励</p>
+              <div class="flex items-end">
+                <span id="totalRewardsEarned" class="text-3xl font-bold">0</span>
+                <span class="text-gray-400 ml-2 mb-1">MINE</span>
+              </div>
+              <p class="mt-4 text-sm text-gray-500">
+                <<i class="fa fa-info-circle mr-1"></</i>
+                最后领取: <span id="lastClaimTime">从未领取</span>
+              </p>
+            </div>
+          </div>
+          
+          <h4 class="font-bold mb-4">奖励历史</h4>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gray-800">
+                  <<th class="text-left py-3 px-4 text-gray-400">日期</</th>
+                  <<th class="text-left py-3 px-4 text-gray-400">类型</</th>
+                  <<th class="text-right py-3 px-4 text-gray-400">数量 (MINE)</</th>
+                  <<th class="text-right py-3 px-4 text-gray-400">状态</</th>
+                </tr>
+              </thead>
+              <tbody id="rewardsHistory">
+                <tr>
+                  <td colspan="4" class="py-8 text-center text-gray-500">
+                    暂无奖励记录
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        
+        <!-- 奖励说明 -->
+        <div class="bg-dark-light rounded-xl p-6 border border-gray-800 card-glow">
+          <h3 class="text-xl font-bold mb-6">奖励说明</h3>
+          
+          <div class="space-y-5">
+            <div>
+              <h4 class="font-medium flex items-center mb-2">
+                <<i class="fa fa-info-circle text-primary mr-2"></</i>
+                奖励计算方式
+              </h4>
+              <p class="text-gray-400 text-sm">
+                奖励根据您拥有的矿机总算力和全网算力比例计算，每区块产生一次奖励。
+              </p>
+            </div>
+            
+            <div>
+              <h4 class="font-medium flex items-center mb-2">
+                <<i class="fa fa-clock-o text-primary mr-2"></</i>
+                奖励周期
+              </h4>
+              <p class="text-gray-400 text-sm">
+                奖励实时累计，您可以随时领取。建议积累一定数量后再领取，以节省Gas费用。
+              </p>
+            </div>
+            
+            <div>
+              <h4 class="font-medium flex items-center mb-2">
+                <<i class="fa fa-gift text-primary mr-2"></</i>
+                额外奖励
+              </h4>
+              <p class="text-gray-400 text-sm">
+                邀请好友加入可获得其算力产出的10%作为推荐奖励，无上限。
+              </p>
+            </div>
+            
+            <div class="pt-4 border-t border-gray-800">
+              <div class="flex justify-between items-center mb-2">
+                <span class="text-gray-400">当前区块</span>
+                <span id="currentBlock" class="font-mono text-sm">0</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-400">下一次奖励</span>
+                <span id="nextRewardBlock" class="font-mono text-sm">0</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 推荐奖励 -->
+        <div id="referral" class="bg-dark-light rounded-xl p-6 border border-gray-800 card-glow">
+          <h3 class="text-xl font-bold mb-6">推荐计划</h3>
+          
+          <div class="bg-dark/50 rounded-lg p-5 mb-6">
+            <p class="text-gray-400 mb-3">您的推荐链接</p>
+            <div class="flex">
+              <input id="referralLink" type="text" value="https://minechain.app/?ref=0x0000..." readonly class="flex-1 bg-dark-lighter border border-gray-700 rounded-l-lg px-3 py-2 text-sm focus:outline-none text-gray-300">
+              <button id="copyReferralLink" class="bg-primary hover:bg-primary/90 text-white px-3 py-2 rounded-r-lg transition-all">
+                <<i class="fa fa-copy"></</i>
+              </button>
+            </div>
+            <p class="text-xs text-gray-500 mt-2">
+              邀请好友加入，获得其算力产出的10%作为奖励
+            </p>
+          </div>
+          
+          <div class="mb-6">
+            <h4 class="font-medium mb-3">推荐统计</h4>
+            <div class="grid grid-cols-2 gap-4">
+              <div class="bg-dark/50 rounded-lg p-4 text-center">
+                <p class="text-gray-400 text-sm mb-1">推荐人数</p>
+                <p id="referralCount" class="text-2xl font-bold">0</p>
+              </div>
+              <div class="bg-dark/50 rounded-lg p-4 text-center">
+                <p class="text-gray-400 text-sm mb-1">推荐奖励</p>
+                <p id="referralRewards" class="text-2xl font-bold text-accent">0 MINE</p>
+              </div>
+            </div>
+          </div>
+          
+          <h4 class="font-medium mb-3">推荐奖励历史</h4>
+          <div id="referralHistory" class="space-y-3 max-h-48 overflow-y-auto pr-2">
+            <div class="text-center text-gray-500 text-sm py-8">
+              暂无推荐奖励记录
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- 管理员区域 (默认隐藏) -->
+    <section id="adminSection" class="mb-16 hidden">
+      <h2 class="text-2xl md:text-3xl font-bold mb-8">管理员中心</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-dark-light rounded-xl p-6 border border-gray-800 card-glow">
+          <h3 class="text-xl font-bold mb-6">奖励管理</h3>
+          
+          <div class="mb-4">
+            <label class="block text-gray-400 text-sm mb-2">添加奖励代币</label>
+            <div class="flex">
+              <input id="addTokensAmount" type="number" min="0" step="0.01" class="flex-1 bg-dark border border-gray-700 rounded-l-lg px-3 py-2 focus:outline-none">
+              <span class="bg-dark-lighter border-t border-b border-gray-700 px-3 py-2 text-sm flex items-center">MINE</span>
+            </div>
+          </div>
+          <button id="addRewardTokens" class="w-full bg-primary hover:bg-primary/90 text-white py-2 rounded-lg transition-all">
+            添加到奖励池
+          </button>
+          
+          <div class="mt-6 pt-6 border-t border-gray-800">
+            <label class="block text-gray-400 text-sm mb-2">提取BNB (到国库)</label>
+            <button id="withdrawBNB" class="w-full bg-gray-700 hover:bg-gray-600 text-white py-2 rounded-lg transition-all">
+              提取所有BNB
+            </button>
+          </div>
+        </div>
+        
+        <div class="bg-dark-light rounded-xl p-6 border border-gray-800 card-glow">
+          <h3 class="text-xl font-bold mb-6">用户管理</h3>
+          
+          <div class="mb-6">
+            <label class="block text-gray-400 text-sm mb-2">添加管理员</label>
+            <div class="flex">
+              <input id="addAdminAddress" type="text" placeholder="0x..." class="flex-1 bg-dark border border-gray-700 rounded-l-lg px-3 py-2 text-sm focus:outline-none">
+              <button id="addAdmin" class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-r-lg transition-all">
+                添加
+              </button>
+            </div>
+          </div>
+          
+          <div class="mb-6">
+            <label class="block text-gray-400 text-sm mb-2">添加到黑名单</label>
+            <div class="flex">
+              <input id="blocklistAddress" type="text" placeholder="0x..." class="flex-1 bg-dark border border-gray-700 rounded-l-lg px-3 py-2 text-sm focus:outline-none">
+              <button id="addToBlocklist" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-r-lg transition-all">
+                拉黑
+              </button>
+            </div>
+          </div>
+          
+          <div>
+            <label class="block text-gray-400 text-sm mb-2">从黑名单移除</label>
+            <div class="flex">
+              <input id="unblockAddress" type="text" placeholder="0x..." class="flex-1 bg-dark border border-gray-700 rounded-l-lg px-3 py-2 text-sm focus:outline-none">
+              <button id="removeFromBlocklist" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-r-lg transition-all">
+                移除
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  
+  <!-- 页脚 -->
+  <footer class="bg-dark-light border-t border-gray-800">
+    <div class="container mx-auto px-4 py-10">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div>
+          <div class="flex items-center space-x-2 mb-4">
+            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+              <<i class="fa fa-cubes"></</i>
+            </div>
+            <h3 class="text-lg font-bold bg-gradient-to-r from-primary to-secondary text-gradient">MineChain</h3>
+          </div>
+          <p class="text-gray-400 text-sm">
+            基于区块链技术的去中心化矿机算力平台，为用户提供透明、高效的挖矿体验。
+          </p>
+        </div>
+        
+        <div>
+          <h4 class="font-bold mb-4">快速链接</h4>
+          <ul class="space-y-2 text-gray-400">
+            <li><a href="#" class="hover:text-primary transition-colors">关于我们</a></li>
+            <li><a href="#" class="hover:text-primary transition-colors">帮助中心</a></li>
+            <li><a href="#" class="hover:text-primary transition-colors">矿机说明</a></li>
+            <li><a href="#" class="hover:text-primary transition-colors">奖励机制</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h4 class="font-bold mb-4">法律</h4>
+          <ul class="space-y-2 text-gray-400">
+            <li><a href="#" class="hover:text-primary transition-colors">服务条款</a></li>
+            <li><a href="#" class="hover:text-primary transition-colors">隐私政策</a></li>
+            <li><a href="#" class="hover:text-primary transition-colors">免责声明</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h4 class="font-bold mb-4">联系我们</h4>
+          <ul class="space-y-2 text-gray-400">
+            <li class="flex items-center">
+              <<i class="fa fa-envelope mr-2"></</i>
+              <a href="mailto:support@minechain.app" class="hover:text-primary transition-colors">support@minechain.app</a>
+            </li>
+            <li class="flex items-center">
+              <<i class="fa fa-twitter mr-2"></</i>
+              <a href="#" class="hover:text-primary transition-colors">@MineChain</a>
+            </li>
+            <li class="flex items-center">
+              <<i class="fa fa-telegram mr-2"></</i>
+              <a href="#" class="hover:text-primary transition-colors">MineChainOfficial</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="mt-10 pt-6 border-t border-gray-800 text-center text-gray-500 text-sm">
+        <p>© 2023 MineChain. 保留所有权利。</p>
       </div>
     </div>
-
-    <!-- 管理员面板 -->
-    <div id="adminPanel" class="card hidden">
-      <h2><i class="fas fa-cogs"></i> <span id="adminTitleTxt">星核工坊（管理员）</span></h2>
-      <button class="btn" onclick="buyAdminTestMachine()"><i class="fas fa-flask"></i> <span id="adminTestTxt">购买迷你星核 (0.0001 BNB)</span></button>
-      <div class="input-group">
-        <label><span id="addAdminTxt">管理员地址</span></label><input id="addAdminInput" placeholder="0x..."/>
-        <button class="btn" onclick="addAdmin()"><i class="fas fa-user-plus"></i> <span id="addBtnTxt">添加管理员</span></button>
-        <button class="btn" onclick="removeAdmin()"><i class="fas fa-user-minus"></i> <span id="removeBtnTxt">移除管理员</span></button>
+  </footer>
+  
+  <!-- 通知弹窗 -->
+  <div id="notification" class="fixed bottom-6 right-6 bg-dark-light border border-gray-800 rounded-lg p-4 shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 z-50 max-w-sm">
+    <div class="flex">
+      <div id="notificationIcon" class="mr-3 mt-1 text-accent">
+        <<i class="fa fa-check-circle text-xl"></</i>
       </div>
+      <div>
+        <h4 id="notificationTitle" class="font-bold"></h4>
+        <p id="notificationMessage" class="text-gray-400 text-sm mt-1"></p>
+      </div>
+      <button id="closeNotification" class="ml-auto text-gray-500 hover:text-gray-300">
+        <<i class="fa fa-times"></</i>
+      </button>
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
   <script>
-    const CONTRACT_ADDRESS = "0x9dCcEd4Ef738856D2c289D4116cD219c698B22ba";
-    const TOKEN_ADDRESS = "0x877f23dcFBa91cadd7d35565Da452c9673C27A33";
-    const CONTRACT_ABI = [
-      "function buyInitialMachine() payable",
-      "function buyTestMachine() payable",
-      "function buyPowerMachine(uint256,uint256)",
-      "function setReferrer(address)",
-      "function claimRewards()",
-      "function addAdmin(address)",
-      "function removeAdmin(address)",
-      "function withdrawBNB()",
-      "function withdrawTokens(uint256)",
-      "function admin(address) view returns(bool)",
-      "function getUserDashboard(address) view returns(uint256,uint256,uint256[4],uint256,uint256,uint256,uint256)"
-    ];
-
-    let provider, signer, contract, userAddress;
-    const lang = {
-      zh: {
-        title: "星链工坊", connect: "连接钱包", balance: "余额不足", success: "成功", fail: "失败",
-        normal: "普通星核", power: "增强星核", daily: "日产量", unclaimed: "未领取",
-        buyInitial: "购买普通星核 (0.01 BNB)", buyPower: "购买增强星核", claim: "领取收益",
-        adminTitle: "星核工坊（管理员）", adminTest: "购买迷你星核 (0.0001 BNB)",
-        addAdmin: "管理员地址", addBtn: "添加管理员", removeBtn: "移除管理员"
+    // 初始化图表
+    const ctx = document.getElementById('miningChart').getContext('2d');
+    const miningChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00', '现在'],
+        datasets: [
+          {
+            label: '算力 (GH/s)',
+            data: [0, 0, 0, 0, 0, 0, 0],
+            borderColor: '#6366f1',
+            backgroundColor: 'rgba(99, 102, 241, 0.1)',
+            tension: 0.4,
+            fill: true,
+            yAxisID: 'y'
+          },
+          {
+            label: '收益 (MINE)',
+            data: [0, 0, 0, 0, 0, 0, 0],
+            borderColor: '#10b981',
+            backgroundColor: 'transparent',
+            tension: 0.4,
+            yAxisID: 'y1'
+          }
+        ]
       },
-      en: {
-        title: "StarForge", connect: "Connect Wallet", balance: "Insufficient balance", success: "Success", fail: "Failed",
-        normal: "Normal Core", power: "Power Core", daily: "Daily Yield", unclaimed: "Unclaimed",
-        buyInitial: "Buy Normal Core (0.01 BNB)", buyPower: "Buy Power Core", claim: "Claim Rewards",
-        adminTitle: "StarForge (Admin)", adminTest: "Buy Mini Core (0.0001 BNB)",
-        addAdmin: "Admin Address", addBtn: "Add Admin", removeBtn: "Remove Admin"
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'top',
+            labels: {
+              color: '#e5e7eb'
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: {
+              color: 'rgba(255, 255, 255, 0.05)'
+            },
+            ticks: {
+              color: '#9ca3af'
+            }
+          },
+          y: {
+            type: 'linear',
+            display: true,
+            position: 'left',
+            title: {
+              display: true,
+              text: '算力 (GH/s)',
+              color: '#9ca3af'
+            },
+            grid: {
+              color: 'rgba(255, 255, 255, 0.05)'
+            },
+            ticks: {
+              color: '#9ca3af'
+            }
+          },
+          y1: {
+            type: 'linear',
+            display: true,
+            position: 'right',
+            title: {
+              display: true,
+              text: '收益 (MINE)',
+              color: '#9ca3af'
+            },
+            grid: {
+              drawOnChartArea: false
+            },
+            ticks: {
+              color: '#9ca3af'
+            }
+          }
+        }
       }
-    };
-    let currentLang = "zh";
+    });
 
-    // 界面切换
-    function showView(view) {
-      document.getElementById("dashboardView").classList.toggle("hidden", view !== "dashboard");
-      document.getElementById("forgeView").classList.toggle("hidden", view !== "forge");
-      document.querySelectorAll(".nav button").forEach(b => b.classList.remove("active"));
-      document.querySelector(`[onclick="showView('${view}')"]`).classList.add("active");
+    // DOM 元素
+    const connectWalletBtn = document.getElementById('connectWallet');
+    const userInfoBar = document.getElementById('userInfoBar');
+    const walletAddress = document.getElementById('walletAddress');
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const decreaseCountBtn = document.getElementById('decreaseCount');
+    const increaseCountBtn = document.getElementById('increaseCount');
+    const machineCountInput = document.getElementById('machineCount');
+    const notification = document.getElementById('notification');
+    const notificationTitle = document.getElementById('notificationTitle');
+    const notificationMessage = document.getElementById('notificationMessage');
+    const notificationIcon = document.getElementById('notificationIcon');
+    const closeNotification = document.getElementById('closeNotification');
+    const copyReferralLinkBtn = document.getElementById('copyReferralLink');
+    
+    // 矿机合约ABI和地址
+    const mineContractABI = [{"inputs":[{"internalType":"address","name":"_rewardToken","type":"address"},{"internalType":"address","name":"_treasury","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"newAdmin","type":"address"}],"name":"AdminAdded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"oldAdmin","type":"address"}],"name":"AdminRemoved","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"receiver","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"BNBWithdrawn","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"price","type":"uint256"}],"name":"InitialMachinePurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"tierId","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"count","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"totalPrice","type":"uint256"}],"name":"PowerMachinePurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"referrer","type":"address"},{"indexed":true,"internalType":"address","name":"referee","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"ReferralRewardPaid","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"claimer","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"RewardsClaimed","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"price","type":"uint256"}],"name":"TestMachinePurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"adder","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"TokensAdded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"receiver","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"TokensWithdrawn","type":"event"},{"inputs":[],"name":"BLOCKS_PER_DAY","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"INITIAL_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_BUY_COUNT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"REFERRAL_PERCENT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TEST_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TREASURY","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"addAdmin","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"addRewardTokens","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"addToBlocklist","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"admin","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"baseRewardPerBlockPerPower","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"blocklist","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"buyInitialMachine","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"tierId","type":"uint256"},{"internalType":"uint256","name":"count","type":"uint256"}],"name":"buyPowerMachine","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"buyTestMachine","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"claimRewards","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"usr","type":"address"}],"name":"dailyRewardOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getGlobalDashboard","outputs":[{"internalType":"uint256","name":"baseReward","type":"uint256"},{"internalType":"uint256","name":"totalMines","type":"uint256"},{"internalType":"uint256","name":"currentBlock","type":"uint256"},{"internalType":"uint256","name":"poolBalance","type":"uint256"},{"internalType":"uint256","name":"networkPower","type":"uint256"},{"internalType":"uint256","name":"dailyProduction","type":"uint256"},{"internalType":"uint256","name":"totalRefRewards","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getUserDashboard","outputs":[{"internalType":"uint256","name":"normal","type":"uint256"},{"internalType":"uint256","name":"test","type":"uint256"},{"internalType":"uint256[4]","name":"power","type":"uint256[4]"},{"internalType":"uint256","name":"dailyReward","type":"uint256"},{"internalType":"uint256","name":"unclaimed","type":"uint256"},{"internalType":"uint256","name":"totalRefReward","type":"uint256"},{"internalType":"uint256","name":"totalPower","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"machineTiers","outputs":[{"internalType":"uint256","name":"priceToken","type":"uint256"},{"internalType":"uint256","name":"powerMultiplier","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"pause","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"referralRecords","outputs":[{"internalType":"address","name":"referrer","type":"address"},{"internalType":"address","name":"referee","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"uint256","name":"timestamp","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"removeAdmin","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"removeFromBlocklist","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"rewardPool","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"rewardToken","outputs":[{"internalType":"contract IERC20","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"referrer","type":"address"}],"name":"setReferrer","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"startBlock","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalMachines","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalNetworkPower","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalReferralRewards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalTokensMinted","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalUsers","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"unpause","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"userInfo","outputs":[{"internalType":"uint256","name":"normalMachineCount","type":"uint256"},{"internalType":"uint256","name":"testMachineCount","type":"uint256"},{"internalType":"uint256","name":"rewardStartBlock","type":"uint256"},{"internalType":"address","name":"referrer","type":"address"},{"internalType":"uint256","name":"referralRewards","type":"uint256"},{"internalType":"bool","name":"hasBoughtInitial","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"withdrawBNB","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdrawTokens","outputs":[],"stateMutability":"nonpayable","type":"function"}];
+    const mineContractAddress = '0x9dcced4ef738856d2c289d4116cd219c698b22ba';
+    const tokenContractAddress = '0x877f23dcFBa91cadd7d35565Da452c9673C27A33';
+    
+    // 全局变量
+    let provider;
+    let signer;
+    let mineContract;
+    let userAddress = null;
+    let isAdmin = false;
+    
+    // 工具函数 - 格式化地址
+    function formatAddress(address) {
+      return address ? address.slice(0, 6) + '...' + address.slice(-4) : '未连接';
     }
-
-    // 钱包连接
+    
+    // 工具函数 - 显示通知
+    function showNotification(title, message, type = 'success') {
+      notificationTitle.textContent = title;
+      notificationMessage.textContent = message;
+      
+      // 设置图标和颜色
+      if (type === 'success') {
+        notificationIcon.innerHTML = '<<i class="fa fa-check-circle text-xl"></</i>';
+        notificationIcon.className = 'mr-3 mt-1 text-accent';
+      } else if (type === 'error') {
+        notificationIcon.innerHTML = '<<i class="fa fa-exclamation-circle text-xl"></</i>';
+        notificationIcon.className = 'mr-3 mt-1 text-red-500';
+      } else if (type === 'info') {
+        notificationIcon.innerHTML = '<<i class="fa fa-info-circle text-xl"></</i>';
+        notificationIcon.className = 'mr-3 mt-1 text-primary';
+      }
+      
+      // 显示通知
+      notification.classList.remove('translate-y-20', 'opacity-0');
+      notification.classList.add('translate-y-0', 'opacity-100');
+      
+      // 5秒后自动关闭
+      setTimeout(() => {
+        hideNotification();
+      }, 5000);
+    }
+    
+    // 隐藏通知
+    function hideNotification() {
+      notification.classList.remove('translate-y-0', 'opacity-100');
+      notification.classList.add('translate-y-20', 'opacity-0');
+    }
+    
+    // 连接钱包
     async function connectWallet() {
-      const prov = window.ethereum || window.tp || window.okexchain || window.bitkeep?.ethereum;
-      if (!prov) return alert(t("connect"));
-
-      try {
-        await prov.request({ method: "eth_requestAccounts" });
-        const chain = await prov.request({ method: "eth_chainId" });
-        if (chain !== "0x38") return alert("请切换到BSC主网");
-
-        provider = new ethers.providers.Web3Provider(prov);
-        signer = provider.getSigner();
-        userAddress = await signer.getAddress();
-        contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
-
-        // 授权一次即可
-        const token = new ethers.Contract(TOKEN_ADDRESS, ["function allowance(address,address) view returns (uint256)","function approve(address,uint256) returns (bool)"], signer);
-        const allowance = await token.allowance(userAddress, CONTRACT_ADDRESS);
-        if (allowance.eq(0)) await token.approve(CONTRACT_ADDRESS, ethers.constants.MaxUint256);
-
-        document.getElementById("walletAddr").textContent = userAddress.substring(0, 6) + "..." + userAddress.substring(38);
-        document.getElementById("connectBtn").textContent = userAddress.substring(0, 6) + "...";
-
-        const isAdmin = await contract.admin(userAddress);
-        if (isAdmin) document.getElementById("adminPanel").style.display = "block";
-
-        await loadData();
-        applyLang();
-      } catch (err) {
-        alert(t("fail") + ": " + err.message);
+      if (window.ethereum) {
+        try {
+          // 请求账户访问权限
+          const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+          userAddress = accounts[0];
+          
+          // 初始化Provider和合约
+          provider = new ethers.providers.Web3Provider(window.ethereum);
+          signer = provider.getSigner();
+          mineContract = new ethers.Contract(mineContractAddress, mineContractABI, signer);
+          
+          // 更新UI
+          updateWalletUI();
+          loadDashboardData();
+          loadUserMachineData();
+          loadRewardData();
+          
+          // 检查是否为管理员
+          checkAdminStatus();
+          
+          // 监听账户变化
+          window.ethereum.on('accountsChanged', (accounts) => {
+            if (accounts.length === 0) {
+              // 用户断开连接
+              userAddress = null;
+              updateWalletUI();
+              showNotification('已断开连接', '钱包连接已断开', 'info');
+            } else {
+              userAddress = accounts[0];
+              updateWalletUI();
+              loadDashboardData();
+              loadUserMachineData();
+              loadRewardData();
+              checkAdminStatus();
+            }
+          });
+          
+          showNotification('连接成功', `已连接到 ${formatAddress(userAddress)}`);
+        } catch (error) {
+          console.error('连接钱包失败:', error);
+          showNotification('连接失败', '无法连接到钱包，请重试', 'error');
+        }
+      } else {
+        showNotification('未检测到钱包', '请安装MetaMask或其他以太坊钱包', 'error');
       }
     }
-
-    async function loadData() {
-      if (!contract) return;
-      const data = await contract.getUserDashboard(userAddress);
-      ["statNormal", "statPower"].forEach((id, i) => {
-        const val = id === "statPower" ? (data.power ? data.power.reduce((a, b) => a + Number(b), 0) : 0) : data[i];
-        document.getElementById(id).textContent = val.toString();
-      });
-      ["statDaily", "statUnclaimed"].forEach((id, i) => {
-        document.getElementById(id).textContent = parseFloat(ethers.utils.formatUnits(data[i + 4])).toFixed(2);
-      });
+    
+    // 更新钱包UI
+    function updateWalletUI() {
+      if (userAddress) {
+        connectWalletBtn.innerHTML = `
+          <<i class="fa fa-user mr-2"></</i>
+          <span>${formatAddress(userAddress)}</span>
+        `;
+        userInfoBar.classList.remove('hidden');
+        walletAddress.textContent = userAddress;
+        
+        // 更新推荐链接
+        document.getElementById('referralLink').value = `https://minechain.app/?ref=${userAddress}`;
+      } else {
+        connectWalletBtn.innerHTML = `
+          <<i class="fa fa-wallet mr-2"></</i>
+          <span>连接钱包</span>
+        `;
+        userInfoBar.classList.add('hidden');
+        document.getElementById('adminSection').classList.add('hidden');
+      }
     }
-
-    // 购买
+    
+    // 检查管理员状态
+    async function checkAdminStatus() {
+      if (!userAddress || !mineContract) return;
+      
+      try {
+        isAdmin = await mineContract.admin(userAddress);
+        if (isAdmin) {
+          document.getElementById('adminSection').classList.remove('hidden');
+        } else {
+          document.getElementById('adminSection').classList.add('hidden');
+        }
+      } catch (error) {
+        console.error('检查管理员状态失败:', error);
+      }
+    }
+    
+    // 加载仪表盘数据
+    async function loadDashboardData() {
+      if (!mineContract) return;
+      
+      try {
+        // 获取全局数据
+        const globalData = await mineContract.getGlobalDashboard();
+        const [baseReward, totalMines, currentBlock, poolBalance, networkPower, dailyProduction, totalRefRewards] = globalData;
+        
+        // 更新全局数据UI
+        document.getElementById('globalPower').textContent = formatNumber(networkPower.toNumber()) + ' GH/s';
+        document.getElementById('activeUsers').textContent = formatNumber(await mineContract.totalUsers());
+        document.getElementById('dailyProduction').textContent = formatNumber(dailyProduction.toNumber()) + ' MINE';
+        document.getElementById('rewardPool').textContent = formatNumber(poolBalance.toNumber()) + ' MINE';
+        document.getElementById('currentBlock').textContent = currentBlock.toNumber();
+        document.getElementById('nextRewardBlock').textContent = currentBlock.toNumber() + 10;
+        
+        // 更新图表数据（模拟数据）
+        const hours = ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00', '现在'];
+        const powerData = [10, 15, 12, 20, 18, 25, 30];
+        const rewardData = [5, 8, 6, 10, 9, 13, 15];
+        
+        miningChart.data.labels = hours;
+        miningChart.data.datasets[0].data = powerData;
+        miningChart.data.datasets[1].data = rewardData;
+        miningChart.update();
+        
+      } catch (error) {
+        console.error('加载仪表盘数据失败:', error);
+        showNotification('数据加载失败', '无法加载仪表盘数据，请重试', 'error');
+      }
+    }
+    
+    // 加载用户矿机数据
+    async function loadUserMachineData() {
+      if (!userAddress || !mineContract) return;
+      
+      try {
+        const userData = await mineContract.getUserDashboard(userAddress);
+        const [normal, test, power, dailyReward, unclaimed, totalRefReward, totalPower] = userData;
+        
+        // 更新矿机计数
+        document.getElementById('initialMachineCount').textContent = normal.toNumber() + ' 台';
+        document.getElementById('testMachineCount').textContent = test.toNumber() + ' 台';
+        
+        const powerTotal = power.reduce((sum, val) => sum + val.toNumber(), 0);
+        document.getElementById('powerMachineCount').textContent = powerTotal + ' 台';
+        document.getElementById('totalMachines').textContent = (normal.toNumber() + test.toNumber() + powerTotal).toString();
+        
+        // 更新算力
+        document.getElementById('userTotalPower').textContent = formatNumber(totalPower.toNumber()) + ' GH/s';
+        
+        // 更新可领取奖励
+        document.getElementById('availableRewards').textContent = formatNumber(unclaimed.toNumber()) + ' MINE';
+        document.getElementById('claimableRewards').textContent = formatNumber(unclaimed.toNumber());
+        
+      } catch (error) {
+        console.error('加载用户矿机数据失败:', error);
+      }
+    }
+    
+    // 加载奖励数据
+    async function loadRewardData() {
+      if (!userAddress || !mineContract) return;
+      
+      try {
+        // 获取用户推荐奖励
+        const userInfo = await mineContract.userInfo(userAddress);
+        document.getElementById('referralRewards').textContent = formatNumber(userInfo.referralRewards.toNumber()) + ' MINE';
+        
+        // 模拟推荐人数
+        document.getElementById('referralCount').textContent = '0';
+        
+      } catch (error) {
+        console.error('加载奖励数据失败:', error);
+      }
+    }
+    
+    // 格式化数字
+    function formatNumber(num) {
+      if (num >= 1000000) {
+        return (num / 1000000).toFixed(2) + 'M';
+      } else if (num >= 1000) {
+        return (num / 1000).toFixed(1) + 'K';
+      } else {
+        return num.toFixed(0);
+      }
+    }
+    
+    // 购买初始矿机
     async function buyInitialMachine() {
-      if (!signer) return alert(t("connect"));
-      const balance = await provider.getBalance(userAddress);
-      if (balance.lt(ethers.utils.parseEther("0.01"))) return alert(t("balance"));
-      await contract.buyInitialMachine({ value: ethers.utils.parseEther("0.01") });
-      alert(t("buyInitial") + " ✅"); await loadData();
+      if (!userAddress || !mineContract) {
+        showNotification('未连接钱包', '请先连接钱包', 'error');
+        return;
+      }
+      
+      try {
+        // 获取初始矿机价格
+        const price = await mineContract.INITIAL_MACHINE_PRICE_BNB();
+        
+        // 发送交易
+        const tx = await mineContract.buyInitialMachine({ value: price });
+        showNotification('交易处理中', '购买初始矿机的交易已发送', 'info');
+        
+        // 等待交易确认
+        const receipt = await tx.wait();
+        showNotification('购买成功', '您已成功购买初始矿机', 'success');
+        
+        // 刷新数据
+        loadUserMachineData();
+        
+      } catch (error) {
+        console.error('购买初始矿机失败:', error);
+        showNotification('购买失败', '交易被取消或失败', 'error');
+      }
     }
-
-    async function buyLevel(level) {
-      if (!signer) return alert(t("connect"));
-      await contract.buyPowerMachine(level, 1);
-      alert(`等级${level} ✅`); await loadData();
+    
+    // 购买测试矿机
+    async function buyTestMachine() {
+      if (!userAddress || !mineContract) {
+        showNotification('未连接钱包', '请先连接钱包', 'error');
+        return;
+      }
+      
+      try {
+        // 获取测试矿机价格
+        const price = await mineContract.TEST_MACHINE_PRICE_BNB();
+        
+        // 发送交易
+        const tx = await mineContract.buyTestMachine({ value: price });
+        showNotification('交易处理中', '购买测试矿机的交易已发送', 'info');
+        
+        // 等待交易确认
+        const receipt = await tx.wait();
+        showNotification('购买成功', '您已成功购买测试矿机', 'success');
+        
+        // 刷新数据
+        loadUserMachineData();
+        
+      } catch (error) {
+        console.error('购买测试矿机失败:', error);
+        showNotification('购买失败', '交易被取消或失败', 'error');
+      }
     }
-
-    async function buyAdminTestMachine() {
-      if (!signer) return alert(t("connect"));
-      const balance = await provider.getBalance(userAddress);
-      if (balance.lt(ethers.utils.parseEther("0.0001"))) return alert(t("balance"));
-      await contract.buyTestMachine({ value: ethers.utils.parseEther("0.0001") });
-      alert(t("adminTest") + " ✅"); await loadData();
-    }
-
-    async function setReferrer() {
-      const ref = document.getElementById("referrerInput").value;
-      if (!signer) return alert(t("connect"));
-      if (!ethers.utils.isAddress(ref)) return alert("地址格式错误");
-      await contract.setReferrer(ref);
-      alert(t("setRefer") + " ✅");
-    }
-
-    async function claimRewards() {
-      if (!signer) return alert(t("connect"));
-      await contract.claimRewards();
-      alert(t("claim") + " ✅"); await loadData();
-    }
-
-    // 管理员功能
-    async function addAdmin() {
-      const addr = document.getElementById("addAdminInput").value;
-      if (!signer) return alert(t("connect"));
-      if (!ethers.utils.isAddress(addr)) return alert("地址格式错误");
-      await contract.addAdmin(addr);
-      alert(t("addBtn") + " ✅");
-    }
-
-    async function removeAdmin() {
-      const addr = document.getElementById("addAdminInput").value;
-      if (!signer) return alert(t("connect"));
-      if (!ethers.utils.isAddress(addr)) return alert("地址格式错误");
-      await contract.removeAdmin(addr);
-      alert(t("removeBtn") + " ✅");
-    }
-
-    // 初始化
-    showView("dashboard");
-  </script>
-</body>
-</html>
+    
+    // 购买功率矿机
+    async function buyPowerMachine() {
+      if (!userAddress || !mineContract) {
+        showNotification('未连接钱包', '请先连接钱包', 'error');
+        return;
+      }
+      
+      try {
+        const tierId = parseInt(document.getElementById('powerMachineTier').value);
+        const count = parseInt(document.getElementById('machineCount').value);
+        
+        // 发送交易
+        const tx = await mineContract.buyPowerMachine(tierId, count);
+        showNotification('交易处理中', '购买功率矿机的交易已发送', 'info');
+        
+        // 等待交易确认
+        const receipt = await tx.wait();
+        showNotification('购买成功', `您已成功购买 ${count} 台 ${tierId + 1} 档功率矿机`, 'success');
