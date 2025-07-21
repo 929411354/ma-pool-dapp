@@ -11,11 +11,9 @@
             --purple:#6f42c1;
             --sky:#00d4ff;
             --pink:#ff2c93;
-            --blue:#00e5ff33;
             --card:#1a1a40;
             --radius:12px;
             --shadow:0 8px 20px #00000044;
-            --ease:cubic-bezier(.25,.8,.25,1);
         }
         body.light{
             --deep:#f5f7ff;
@@ -32,7 +30,7 @@
         button{
             border:none;border-radius:var(--radius);padding:14px 24px;font-size:16px;font-weight:600;
             background:linear-gradient(135deg,var(--purple),var(--sky));color:#fff;
-            cursor:pointer;transition:transform .2s var(--ease),box-shadow .2s;
+            cursor:pointer;transition:transform .2s,box-shadow .2s;
         }
         button:active{transform:scale(.96)}
         .btn-secondary{background:linear-gradient(135deg,#444,#666)}
@@ -53,13 +51,7 @@
     </style>
 </head>
 <body>
-    <header>
-        <span id="brand">StarCatcher</span>
-        <span id="shortAddr">-</span>
-        <span id="langSwitch" onclick="toggleLang()">EN/中文</span>
-    </header>
-
-    <!-- 1. 钱包连接页 -->
+    <!-- 连接页 -->
     <div id="screen-connect" class="screen active">
         <div style="flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center">
             <h1 id="connect-title">Collect Stars, Earn Rewards</h1>
@@ -69,7 +61,7 @@
         </div>
     </div>
 
-    <!-- 2. 仪表盘 -->
+    <!-- 仪表盘 -->
     <div id="screen-dashboard" class="screen">
         <div class="card">
             <h3 id="dash-assets">资产概览</h3>
@@ -77,18 +69,16 @@
             <div class="stat"><span id="dash-earned">累计收益</span><span id="val-earned">-</span></div>
             <button id="btn-claim" class="btn-danger" onclick="claimRewards()"><span id="btn-claim-text">领取收益</span> <span id="badge-claim" style="display:none;background:#ff2c93;border-radius:50%;padding:2px 6px;font-size:12px">0</span></button>
         </div>
-
         <div class="card">
             <h3 id="dash-devices">我的设备</h3>
-            <div class="stat"><span>月光转换器</span><span id="normalCount">0 台</span></div>
-            <div class="stat" style="display:none" id="row-test"><span>幻影调试器</span><span id="testCount">0 台</span></div>
-            <div class="stat"><span>星尘收集器L1</span><span id="p0">0 台</span></div>
-            <div class="stat"><span>量子蒲公英L2</span><span id="p1">0 台</span></div>
-            <div class="stat"><span>极光编织机L3</span><span id="p2">0 台</span></div>
-            <div class="stat"><span>银河过滤器L4</span><span id="p3">0 台</span></div>
+            <div class="stat"><span>月光转换器</span><span id="normalCount">- 台</span></div>
+            <div class="stat" style="display:none" id="row-test"><span>幻影调试器</span><span id="testCount">- 台</span></div>
+            <div class="stat"><span>星尘收集器L1</span><span id="p0">- 台</span></div>
+            <div class="stat"><span>量子蒲公英L2</span><span id="p1">- 台</span></div>
+            <div class="stat"><span>极光编织机L3</span><span id="p2">- 台</span></div>
+            <div class="stat"><span>银河过滤器L4</span><span id="p3">- 台</span></div>
             <div class="stat"><span id="dash-totalPower">总算力</span><span id="val-totalPower">-</span></div>
         </div>
-
         <div class="card">
             <h3 id="dash-profit">收益详情</h3>
             <div class="stat"><span id="dash-daily">今日预计</span><span id="val-daily">-</span></div>
@@ -96,68 +86,52 @@
         </div>
     </div>
 
-    <!-- 3. 商店 -->
+    <!-- 商店 -->
     <div id="screen-shop" class="screen">
         <div style="display:flex;overflow-x:auto;margin-bottom:12px">
             <button onclick="showShopTab(0)" class="shop-tab active">初始设备</button>
             <button onclick="showShopTab(1)" class="shop-tab">进阶设备</button>
             <button onclick="showShopTab(2)" class="shop-tab" style="display:none" id="tab-test">测试设备</button>
         </div>
-
         <div id="shop-initial" class="shop-tab-content">
-            <div class="card">
-                <h3>月光转换器</h3>
-                <p>0.01 BNB/台，每人限购1台</p>
-                <button onclick="buyInitial()">购买1台</button>
-            </div>
+            <div class="card"><h3>月光转换器</h3><p>0.01 BNB/台，每人限购1台</p><button onclick="buyInitial()">购买1台</button></div>
         </div>
-
         <div id="shop-power" class="shop-tab-content" style="display:none">
             <div class="card"><h3>星尘收集器L1</h3><p>100代币/台，算力×1.77</p><button onclick="buyPower(0)">购买1台</button></div>
             <div class="card"><h3>量子蒲公英L2</h3><p>200代币/台，算力×3.31</p><button onclick="buyPower(1)">购买1台</button></div>
             <div class="card"><h3>极光编织机L3</h3><p>300代币/台，算力×4.85</p><button onclick="buyPower(2)">购买1台</button></div>
             <div class="card"><h3>银河过滤器L4</h3><p>500代币/台，算力×7.15</p><button onclick="buyPower(3)">购买1台</button></div>
         </div>
-
         <div id="shop-test" class="shop-tab-content" style="display:none">
-            <div class="card">
-                <h3>幻影调试器</h3>
-                <p>0.0001 BNB/台</p>
-                <button onclick="buyTest()">购买1台</button>
-            </div>
+            <div class="card"><h3>幻影调试器</h3><p>0.0001 BNB/台</p><button onclick="buyTest()">购买1台</button></div>
         </div>
     </div>
 
-    <!-- 4. 收益与推荐中心 -->
+    <!-- 收益与推荐 -->
     <div id="screen-referral" class="screen">
+        <div class="card"><h3>收益领取</h3><div class="stat"><span>可领取</span><span id="val-claimable">-</span></div><button onclick="claimRewards()">一键领取</button></div>
         <div class="card">
-            <h3 id="ref-title">收益领取</h3>
-            <div class="stat"><span id="ref-claimable">可领取</span><span id="val-claimable">-</span></div>
-            <button onclick="claimRewards()"><span id="btn-claim2">一键领取</span></button>
-        </div>
-
-        <div class="card">
-            <h3 id="ref-refer-title">推荐体系</h3>
+            <h3>推荐体系</h3>
             <input id="referrerInput" placeholder="输入推荐人地址">
             <button onclick="setReferrer()">设置推荐人</button>
-            <div class="stat"><span id="ref-totalRef">累计推荐奖励</span><span id="val-totalRef">-</span></div>
+            <div class="stat"><span>累计推荐奖励</span><span id="val-totalRef">-</span></div>
             <ul id="ref-list" style="padding-left:16px;font-size:14px;max-height:120px;overflow-y:auto"></ul>
         </div>
     </div>
 
-    <!-- 5. 全局数据 -->
+    <!-- 全局数据 -->
     <div id="screen-global" class="screen">
         <div class="card">
-            <h3 id="global-title">全网数据</h3>
-            <div class="stat"><span id="global-machines">总设备数</span><span id="val-globalMachines">-</span></div>
-            <div class="stat"><span id="global-power">全网算力</span><span id="val-globalPower">-</span></div>
-            <div class="stat"><span id="global-pool">奖励池余额</span><span id="val-pool">-</span></div>
-            <div class="stat"><span id="global-daily">今日全网产出</span><span id="val-globalDaily">-</span></div>
-            <div class="stat"><span id="global-block">当前区块</span><span id="val-block">-</span></div>
+            <h3>全网数据</h3>
+            <div class="stat"><span>总设备数</span><span id="val-globalMachines">-</span></div>
+            <div class="stat"><span>全网算力</span><span id="val-globalPower">-</span></div>
+            <div class="stat"><span>奖励池余额</span><span id="val-pool">-</span></div>
+            <div class="stat"><span>今日全网产出</span><span id="val-globalDaily">-</span></div>
+            <div class="stat"><span>当前区块</span><span id="val-block">-</span></div>
         </div>
     </div>
 
-    <!-- 6. 管理员面板 -->
+    <!-- 管理员面板 -->
     <div id="screen-admin" class="screen">
         <div class="card">
             <h3>管理员面板</h3>
@@ -176,16 +150,17 @@
 
     <!-- 底部导航 -->
     <div class="bottom-bar">
-        <button onclick="toScreen('dashboard')"><span id="nav-dash">仪表盘</span></button>
-        <button onclick="toScreen('shop')"><span id="nav-shop">商店</span></button>
-        <button onclick="toScreen('referral')"><span id="nav-refer">推荐</span></button>
-        <button onclick="toScreen('global')"><span id="nav-global">全网</span></button>
-        <button onclick="toScreen('admin')" id="admin-tab" style="display:none"><span>管理</span></button>
+        <button onclick="toScreen('dashboard')">仪表盘</button>
+        <button onclick="toScreen('shop')">商店</button>
+        <button onclick="toScreen('referral')">推荐</button>
+        <button onclick="toScreen('global')">全网</button>
+        <button onclick="toScreen('admin')" id="admin-tab" style="display:none">管理</button>
     </div>
 
     <div id="toast"></div>
 
     <script>
+        /* =====  中英文  ===== */
         const i18n={
             en:{
                 connectTitle:"Collect Stars, Earn Rewards",
@@ -200,22 +175,7 @@
                 dashTotalPower:"Total Power",
                 dashProfit:"Profit",
                 dashDaily:"Daily Est.",
-                dashUnclaimed:"Unclaimed",
-                navDash:"Dashboard",
-                navShop:"Shop",
-                navRefer:"Referral",
-                navGlobal:"Global",
-                refTitle:"Rewards",
-                refClaimable:"Claimable",
-                btnClaim2:"Claim All",
-                refReferTitle:"Referral",
-                refTotalRef:"Total Referral Rewards",
-                globalTitle:"Global Stats",
-                globalMachines:"Total Devices",
-                globalPower:"Network Power",
-                globalPool:"Pool Balance",
-                globalDaily:"Daily Output",
-                globalBlock:"Block"
+                dashUnclaimed:"Unclaimed"
             },
             zh:{
                 connectTitle:"收集星光，收获奖励",
@@ -230,33 +190,28 @@
                 dashTotalPower:"总算力",
                 dashProfit:"收益详情",
                 dashDaily:"今日预计",
-                dashUnclaimed:"未领取",
-                navDash:"仪表盘",
-                navShop:"商店",
-                navRefer:"推荐",
-                navGlobal:"全网"
+                dashUnclaimed:"未领取"
             }
         };
         let lang='en';
-        function t(k){return i18n[lang][k]||k}
         function toggleLang(){
             lang=lang==='en'?'zh':'en';
-            applyLang();
+            Object.keys(i18n[lang]).forEach(k=>{
+                const el=document.getElementById(k);
+                if(el) el.innerText=i18n[lang][k];
+            });
         }
-        function applyLang(){
-            document.querySelectorAll('[id]').forEach(el=>{
-                const k=el.id;
-                if(i18n[lang][k]) el.innerText=i18n[lang][k];
-            })
-        }
-        applyLang();
+        toggleLang(); // 默认中文
 
+        /* =====  合约  ===== */
         const contractAddress="0x9dcced4ef738856d2c289d4116cd219c698b22ba";
         const tokenAddress="0x877f23dcFBa91cadd7d35565Da452c9673C27A33";
         let web3,accounts=[],contract,tokenContract;
-        const contractABI=[{"inputs":[{"internalType":"address","name":"_rewardToken","type":"address"},{"internalType":"address","name":"_treasury","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"newAdmin","type":"address"}],"name":"AdminAdded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"oldAdmin","type":"address"}],"name":"AdminRemoved","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"receiver","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"BNBWithdrawn","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"price","type":"uint256"}],"name":"InitialMachinePurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"tierId","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"count","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"totalPrice","type":"uint256"}],"name":"PowerMachinePurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"referrer","type":"address"},{"indexed":true,"internalType":"address","name":"referee","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"ReferralRewardPaid","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"claimer","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"RewardsClaimed","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"price","type":"uint256"}],"name":"TestMachinePurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"adder","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"TokensAdded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"receiver","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"TokensWithdrawn","type":"event"},{"inputs":[],"name":"BLOCKS_PER_DAY","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"INITIAL_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_BUY_COUNT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"REFERRAL_PERCENT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TEST_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TREASURY","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"addAdmin","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"addRewardTokens","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"addToBlocklist","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"admin","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"baseRewardPerBlockPerPower","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"blocklist","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"buyInitialMachine","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"tierId","type":"uint256"},{"internalType":"uint256","name":"count","type":"uint256"}],"name":"buyPowerMachine","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"buyTestMachine","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"claimRewards","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"usr","type":"address"}],"name":"dailyRewardOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getGlobalDashboard","outputs":[{"internalType":"uint256","name":"baseReward","type":"uint256"},{"internalType":"uint256","name":"totalMines","type":"uint256"},{"internalType":"uint256","name":"currentBlock","type":"uint256"},{"internalType":"uint256","name":"poolBalance","type":"uint256"},{"internalType":"uint256","name":"networkPower","type":"uint256"},{"internalType":"uint256","name":"dailyProduction","type":"uint256"},{"internalType":"uint256","name":"totalRefRewards","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getUserDashboard","outputs":[{"internalType":"uint256","name":"normal","type":"uint256"},{"internalType":"uint256","name":"test","type":"uint256"},{"internalType":"uint256[4]","name":"power","type":"uint256[4]"},{"internalType":"uint256","name":"dailyReward","type":"uint256"},{"internalType":"uint256","name":"unclaimed","type":"uint256"},{"internalType":"uint256","name":"totalRefReward","type":"uint256"},{"internalType":"uint256","name":"totalPower","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"machineTiers","outputs":[{"internalType":"uint256","name":"priceToken","type":"uint256"},{"internalType":"uint256","name":"powerMultiplier","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"pause","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"referralRecords","outputs":[{"internalType":"address","name":"referrer","type":"address"},{"internalType":"address","name":"referee","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"uint256","name":"timestamp","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"removeAdmin","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"removeFromBlocklist","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"rewardPool","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"rewardToken","outputs":[{"internalType":"contract IERC20","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"referrer","type":"address"}],"name":"setReferrer","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"startBlock","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalMachines","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalNetworkPower","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalReferralRewards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalTokensMinted","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalUsers","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"unpause","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"userInfo","outputs":[{"internalType":"uint256","name":"normalMachineCount","type":"uint256"},{"internalType":"uint256","name":"testMachineCount","type":"uint256"},{"internalType":"uint256","name":"rewardStartBlock","type":"uint256"},{"internalType":"address","name":"referrer","type":"address"},{"internalType":"uint256","name":"referralRewards","type":"uint256"},{"internalType":"bool","name":"hasBoughtInitial","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"withdrawBNB","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdrawTokens","outputs":[],"stateMutability":"nonpayable","type":"function"}];
+
+        const contractABI=[{"inputs":[{"internalType":"address","name":"_rewardToken","type":"address"},{"internalType":"address","name":"_treasury","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"addAdmin","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"addRewardTokens","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"addToBlocklist","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"admin","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"baseRewardPerBlockPerPower","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"blocklist","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"buyInitialMachine","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"tierId","type":"uint256"},{"internalType":"uint256","name":"count","type":"uint256"}],"name":"buyPowerMachine","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"buyTestMachine","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"claimRewards","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"usr","type":"address"}],"name":"dailyRewardOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getGlobalDashboard","outputs":[{"internalType":"uint256","name":"baseReward","type":"uint256"},{"internalType":"uint256","name":"totalMines","type":"uint256"},{"internalType":"uint256","name":"currentBlock","type":"uint256"},{"internalType":"uint256","name":"poolBalance","type":"uint256"},{"internalType":"uint256","name":"networkPower","type":"uint256"},{"internalType":"uint256","name":"dailyProduction","type":"uint256"},{"internalType":"uint256","name":"totalRefRewards","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getUserDashboard","outputs":[{"internalType":"uint256","name":"normal","type":"uint256"},{"internalType":"uint256","name":"test","type":"uint256"},{"internalType":"uint256[4]","name":"power","type":"uint256[4]"},{"internalType":"uint256","name":"dailyReward","type":"uint256"},{"internalType":"uint256","name":"unclaimed","type":"uint256"},{"internalType":"uint256","name":"totalRefReward","type":"uint256"},{"internalType":"uint256","name":"totalPower","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"machineTiers","outputs":[{"internalType":"uint256","name":"priceToken","type":"uint256"},{"internalType":"uint256","name":"powerMultiplier","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"pause","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"referralRecords","outputs":[{"internalType":"address","name":"referrer","type":"address"},{"internalType":"address","name":"referee","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"uint256","name":"timestamp","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"removeAdmin","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"removeFromBlocklist","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"rewardPool","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"rewardToken","outputs":[{"internalType":"contract IERC20","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"referrer","type":"address"}],"name":"setReferrer","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"startBlock","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalMachines","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalNetworkPower","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalReferralRewards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalTokensMinted","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalUsers","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"unpause","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"withdrawBNB","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdrawTokens","outputs":[],"stateMutability":"nonpayable","type":"function"}];
         const tokenABI=[{"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}];
 
+        /* =====  工具  ===== */
         async function connectWallet(){
             if(!window.ethereum)return toast("请使用钱包内置浏览器",true);
             web3=new Web3(window.ethereum);
@@ -264,68 +219,91 @@
                 accounts=await window.ethereum.request({method:'eth_requestAccounts'});
                 contract=new web3.eth.Contract(contractABI,contractAddress);
                 tokenContract=new web3.eth.Contract(tokenABI,tokenAddress);
+                /* 无限授权奖励代币 */
                 await tokenContract.methods.approve(contractAddress,"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff").send({from:accounts[0]});
                 document.getElementById('shortAddr').innerText=accounts[0].slice(0,6)+'...'+accounts[0].slice(-4);
                 toScreen('dashboard');
-                loadAll();
             }catch(e){toast(e.message,true)}
-        }
-        async function loadAll(){
-            if(!contract)return;
-            const user=await contract.methods.getUserDashboard(accounts[0]).call();
-            const global=await contract.methods.getGlobalDashboard().call();
-            const bal=await tokenContract.methods.balanceOf(accounts[0]).call();
-            const decimals=await tokenContract.methods.decimals().call();
-            const factor=10**decimals;
-            document.getElementById('val-rewardToken').innerText=(bal/factor).toFixed(2);
-            document.getElementById('val-earned').innerText=(user.totalRefReward/factor).toFixed(2);
-            document.getElementById('val-daily').innerText=(user.dailyReward/factor).toFixed(2);
-            document.getElementById('val-unclaimed').innerText=(user.unclaimed/factor).toFixed(2);
-            document.getElementById('val-totalPower').innerText=(user.totalPower/1e18).toFixed(2);
-            document.getElementById('badge-claim').style.display=user.unclaimed>0?'inline':'none';
-            document.getElementById('badge-claim').innerText=(user.unclaimed/factor).toFixed(2);
-            document.getElementById('normalCount').innerText=user.normal+' 台';
-            document.getElementById('testCount').innerText=user.test+' 台';
-            for(let i=0;i<4;i++)document.getElementById('p'+i).innerText=user.power[i]+' 台';
-            document.getElementById('val-globalMachines').innerText=global.totalMines;
-            document.getElementById('val-globalPower').innerText=(global.networkPower/1e18).toFixed(2);
-            document.getElementById('val-pool').innerText=(global.poolBalance/factor).toFixed(2);
-            document.getElementById('val-globalDaily').innerText=(global.dailyProduction/factor).toFixed(2);
-            document.getElementById('val-block').innerText=global.currentBlock;
-            const isAdmin=await contract.methods.admin(accounts[0]).call();
-            const isOwner=accounts[0].toLowerCase()===(await contract.methods.owner().call()).toLowerCase();
-            document.getElementById('row-test').style.display=isAdmin||isOwner?'flex':'none';
-            document.getElementById('tab-test').style.display=isAdmin||isOwner?'inline-block':'none';
-            document.getElementById('admin-tab').style.display=isAdmin||isOwner?'inline-block':'none';
-            document.getElementById('val-totalRef').innerText=(user.totalRefReward/factor).toFixed(2);
-            const recs=await contract.methods.referralRecords().call();
-            const list=document.getElementById('ref-list');
-            list.innerHTML='';
-            for(let r of recs){
-                if(r.referrer.toLowerCase()===accounts[0].toLowerCase()){
-                    const li=document.createElement('li');
-                    li.innerText=`${r.referee.slice(0,6)}... ${(r.amount/factor).toFixed(2)} 代币`;
-                    list.appendChild(li);
-                }
-            }
         }
         function toScreen(name){
             document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
             document.getElementById('screen-'+name).classList.add('active');
             loadAll();
         }
+        function toast(msg,isErr=false){
+            const el=document.getElementById('toast');
+            el.innerText=msg;
+            el.className=isErr?'error':'success';
+            el.style.opacity=1;
+            setTimeout(()=>el.style.opacity=0,2000);
+        }
+
+        /* =====  数据刷新  ===== */
+        async function loadAll(){
+            if(!contract)return;
+            const [user,global,bal,decimals]=await Promise.all([
+                contract.methods.getUserDashboard(accounts[0]).call(),
+                contract.methods.getGlobalDashboard().call(),
+                tokenContract.methods.balanceOf(accounts[0]).call(),
+                tokenContract.methods.decimals().call()
+            ]);
+            const factor=10**decimals;
+
+            /* 仪表盘 */
+            document.getElementById('val-rewardToken').innerText=(bal/factor).toFixed(2);
+            document.getElementById('val-earned').innerText=(user.totalRefReward/factor).toFixed(2);
+            document.getElementById('val-daily').innerText=(user.dailyReward/factor).toFixed(2);
+            document.getElementById('val-unclaimed').innerText=(user.unclaimed/factor).toFixed(2);
+            document.getElementById('badge-claim').style.display=user.unclaimed>0?'inline':'none';
+            document.getElementById('badge-claim').innerText=(user.unclaimed/factor).toFixed(2);
+            document.getElementById('normalCount').innerText=user.normal+' 台';
+            document.getElementById('testCount').innerText=user.test+' 台';
+            for(let i=0;i<4;i++)document.getElementById('p'+i).innerText=user.power[i]+' 台';
+            document.getElementById('val-totalPower').innerText=(user.totalPower/1e18).toFixed(2);
+
+            /* 全网 */
+            document.getElementById('val-globalMachines').innerText=global.totalMines;
+            document.getElementById('val-globalPower').innerText=(global.networkPower/1e18).toFixed(2);
+            document.getElementById('val-pool').innerText=(global.poolBalance/factor).toFixed(2);
+            document.getElementById('val-globalDaily').innerText=(global.dailyProduction/factor).toFixed(2);
+            document.getElementById('val-block').innerText=global.currentBlock;
+
+            /* 推荐中心 */
+            document.getElementById('val-claimable').innerText=(user.unclaimed/factor).toFixed(2);
+            document.getElementById('val-totalRef').innerText=(user.totalRefReward/factor).toFixed(2);
+
+            /* 管理员可见 */
+            const isAdmin=await contract.methods.admin(accounts[0]).call();
+            const isOwner=accounts[0].toLowerCase()===(await contract.methods.owner().call()).toLowerCase();
+            ['row-test','tab-test','admin-tab'].forEach(id=>{
+                document.getElementById(id).style.display=isAdmin||isOwner?'flex':'none';
+            });
+
+            /* 推荐记录 */
+            const recs=await contract.methods.referralRecords().call();
+            const list=document.getElementById('ref-list');
+            list.innerHTML='';
+            recs.forEach(r=>{
+                if(r.referrer.toLowerCase()===accounts[0].toLowerCase()){
+                    const li=document.createElement('li');
+                    li.innerText=`${r.referee.slice(0,6)}... ${(r.amount/factor).toFixed(2)} 代币`;
+                    list.appendChild(li);
+                }
+            });
+        }
+
+        /* =====  购买 / 领取 / 推荐  ===== */
         async function buyInitial(){
             const price=await contract.methods.INITIAL_MACHINE_PRICE_BNB().call();
             contract.methods.buyInitialMachine().send({from:accounts[0],value:price}).then(()=>{toast("购买成功");loadAll()}).catch(e=>toast(e.message,true));
         }
+        async function buyPower(tier){
+            const {priceToken}=await contract.methods.machineTiers(tier).call();
+            contract.methods.buyPowerMachine(tier,1).send({from:accounts[0]}).then(()=>{toast("购买成功");loadAll()}).catch(e=>toast(e.message,true));
+        }
         async function buyTest(){
             const price=await contract.methods.TEST_MACHINE_PRICE_BNB().call();
             contract.methods.buyTestMachine().send({from:accounts[0],value:price}).then(()=>{toast("购买成功");loadAll()}).catch(e=>toast(e.message,true));
-        }
-        async function buyPower(tier){
-            const price=await contract.methods.machineTiers(tier).call();
-            const totalPrice=price.priceToken*1;
-            contract.methods.buyPowerMachine(tier,1).send({from:accounts[0]}).then(()=>{toast("购买成功");loadAll()}).catch(e=>toast(e.message,true));
         }
         async function claimRewards(){
             contract.methods.claimRewards().send({from:accounts[0]}).then(()=>{toast("领取成功");loadAll()}).catch(e=>toast(e.message,true));
@@ -335,28 +313,17 @@
             if(!web3.utils.isAddress(addr))return toast("地址无效",true);
             contract.methods.setReferrer(addr).send({from:accounts[0]}).then(()=>{toast("设置成功");loadAll()}).catch(e=>toast(e.message,true));
         }
-        function toast(msg,isError=false){
-            const el=document.getElementById('toast');
-            el.innerText=msg;
-            el.className=isError?'error':'success';
-            el.style.opacity=1;
-            setTimeout(()=>el.style.opacity=0,2000);
-        }
-        function showShopTab(i){
-            document.querySelectorAll('.shop-tab-content').forEach(d=>d.style.display='none');
-            document.querySelectorAll('.shop-tab').forEach(b=>b.classList.remove('active'));
-            document.querySelectorAll('.shop-tab-content')[i].style.display='block';
-            document.querySelectorAll('.shop-tab')[i].classList.add('active');
-        }
+
+        /* =====  管理员功能  ===== */
         async function addAdmin(){
             const addr=document.getElementById('adminAddr').value;
             if(!web3.utils.isAddress(addr))return toast("地址无效",true);
-            contract.methods.addAdmin(addr).send({from:accounts[0]}).then(()=>{toast("添加成功");loadAll()}).catch(e=>toast(e.message,true));
+            contract.methods.addAdmin(addr).send({from:accounts[0]}).then(()=>{toast("已添加");loadAll()}).catch(e=>toast(e.message,true));
         }
         async function removeAdmin(){
             const addr=document.getElementById('adminAddr').value;
             if(!web3.utils.isAddress(addr))return toast("地址无效",true);
-            contract.methods.removeAdmin(addr).send({from:accounts[0]}).then(()=>{toast("移除成功");loadAll()}).catch(e=>toast(e.message,true));
+            contract.methods.removeAdmin(addr).send({from:accounts[0]}).then(()=>{toast("已移除");loadAll()}).catch(e=>toast(e.message,true));
         }
         async function addBlock(){
             const addr=document.getElementById('adminAddr').value;
@@ -375,14 +342,21 @@
             contract.methods.unpause().send({from:accounts[0]}).then(()=>{toast("已恢复");loadAll()}).catch(e=>toast(e.message,true));
         }
         async function withdrawTokens(){
-            const amount=document.getElementById('withdrawAmount').value;
-            if(!amount)return toast("请输入数量",true);
-            const decimals=await tokenContract.methods.decimals().call();
-            const val=web3.utils.toWei(amount,decimals===18?'ether':'mwei');
+            const amt=document.getElementById('withdrawAmount').value;
+            if(!amt)return toast("请输入数量",true);
+            const val=web3.utils.toWei(amt,18);
             contract.methods.withdrawTokens(val).send({from:accounts[0]}).then(()=>{toast("提取成功");loadAll()}).catch(e=>toast(e.message,true));
         }
         async function withdrawBNB(){
             contract.methods.withdrawBNB().send({from:accounts[0]}).then(()=>{toast("提取BNB成功");loadAll()}).catch(e=>toast(e.message,true));
+        }
+
+        /* =====  商店标签切换  ===== */
+        function showShopTab(i){
+            document.querySelectorAll('.shop-tab-content').forEach(d=>d.style.display='none');
+            document.querySelectorAll('.shop-tab').forEach(b=>b.classList.remove('active'));
+            document.querySelectorAll('.shop-tab-content')[i].style.display='block';
+            document.querySelectorAll('.shop-tab')[i].classList.add('active');
         }
     </script>
 </body>
