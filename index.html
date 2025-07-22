@@ -2,380 +2,674 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-    <title>StarCatcher DApp</title>
-    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
-    <style>
-        :root{--deep:#0d0d2b;--purple:#6f42c1;--sky:#00d4ff;--pink:#ff2c93;--card:#1a1a40}
-        html,body{margin:0;height:100%;font-size:16px;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC",Arial;color:#fff;background:linear-gradient(135deg,var(--deep),#1a1a40)}
-        .screen{display:none;flex:1;flex-direction:column;padding:16px}.screen.active{display:flex}
-        header{position:sticky;top:0;z-index:9;background:#00000033;backdrop-filter:blur(8px);padding:12px 16px;display:flex;justify-content:space-between;font-size:16px}
-        button{border:none;border-radius:12px;padding:14px 24px;background:linear-gradient(135deg,var(--purple),var(--sky));color:#fff;font-size:18px;font-weight:600;cursor:pointer;margin:8px 0}
-        .bottom-bar{position:fixed;bottom:0;left:0;right:0;display:flex;background:#1a1a40;border-top:1px solid #ffffff22}
-        .bottom-bar button{flex:1;border-radius:0;background:transparent;color:#fff;font-size:16px;padding:12px 0}
-        .card{background:#1a1a40;border-radius:12px;padding:16px;margin-bottom:16px}
-        #toast{position:fixed;top:20%;left:50%;transform:translate(-50%,-50%);padding:12px 20px;border-radius:12px;color:#fff;font-weight:600;z-index:999;opacity:0;transition:.3s}
-        #toast.success{background:#00c851} #toast.error{background:#ff2c93}
-        input{width:100%;padding:12px;border-radius:12px;border:1px solid #666;background:transparent;color:#fff;margin-bottom:12px}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Stellar Collector - Blockchain DApp</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#7C3AED', // 深紫
+                        secondary: '#0EA5E9', // 天蓝
+                        accent: '#EC4899', // 荧光粉
+                        ice: '#BAE6FD', // 冰蓝
+                        dark: '#1E1B4B',
+                        light: '#F8FAFC'
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'sans-serif'],
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'number-grow': 'numberGrow 1.5s ease-out forwards',
+                        'float': 'float 6s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        numberGrow: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                },
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .gradient-bg {
+                background: linear-gradient(135deg, #7C3AED 0%, #0EA5E9 100%);
+            }
+            .card-shadow {
+                box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            }
+            .neon-border {
+                box-shadow: 0 0 10px rgba(124, 58, 237, 0.5), 0 0 20px rgba(14, 165, 233, 0.3);
+            }
+            .text-gradient {
+                background-clip: text;
+                -webkit-background-clip: text;
+                color: transparent;
+                background-image: linear-gradient(90deg, #7C3AED, #0EA5E9);
+            }
+            .ripple {
+                position: relative;
+                overflow: hidden;
+            }
+            .ripple:after {
+                content: "";
+                display: block;
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                top: 0;
+                left: 0;
+                pointer-events: none;
+                background-image: radial-gradient(circle, #fff 10%, transparent 10.01%);
+                background-repeat: no-repeat;
+                background-position: 50%;
+                transform: scale(10, 10);
+                opacity: 0;
+                transition: transform 0.5s, opacity 0.3s;
+            }
+            .ripple:active:after {
+                transform: scale(0, 0);
+                opacity: 0.3;
+                transition: 0s;
+            }
+        }
     </style>
 </head>
-<body>
-
-<!-- 连接页 -->
-<div id="screen-connect" class="screen active">
-    <div style="flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center">
-        <h1 data-en="Collect Stars, Earn Rewards" data-zh="收集星光，收获奖励">收集星光，收获奖励</h1>
-        <p data-en="Connect TP Wallet" data-zh="连接 TP 钱包">连接 TP 钱包开始探索区块链宇宙</p>
-        <button onclick="connectWallet()"><span data-en="Connect TP Wallet" data-zh="连接 TP 钱包">连接 TP 钱包</span></button>
-        <small style="margin-top:12px;opacity:.7" data-en="Make sure BSC network" data-zh="请确保已切换至 BSC 网络">请确保已切换至 BSC 网络</small>
+<body class="bg-gray-50 dark:bg-gray-900 font-inter text-gray-800 dark:text-gray-100 min-h-screen transition-colors duration-300">
+    <!-- 钱包连接页 -->
+    <div id="wallet-connect" class="min-h-screen flex flex-col">
+        <div class="gradient-bg flex-1 p-6 flex flex-col items-center justify-center text-white">
+            <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiMyMDIwMjAiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTEgMUg1OUwxIDU5VjF6TTYgNlY1NEw1NCA1NFY2SDZ6TTExIDExVjQ5TDQ5IDQ5VjExTDExIDExeiIvPjwvZz48cGF0aCBkPSJNMjEgMTFWNDVMMzkgNDVWMTFIMjF6TTI2IDE2VjQwTDM0IDQwVjE2SDI2eiIvPjwvZz48L3N2Zz4=')] opacity-20"></div>
+            <div class="text-center z-10">
+                <h1 class="text-[clamp(2rem,5vw,3rem)] font-bold mb-2 animate-float">Collect Stars</h1>
+                <p class="text-[clamp(1rem,2vw,1.25rem)] mb-12">Earn Rewards in the Blockchain Galaxy</p>
+                <div class="w-32 h-32 mx-auto mb-10 relative">
+                    <div class="absolute inset-0 rounded-full border-4 border-white/20 animate-pulse-slow"></div>
+                    <div class="absolute inset-4 rounded-full border-4 border-white/30 animate-pulse-slow" style="animation-delay: 0.5s"></div>
+                    <div class="absolute inset-8 rounded-full gradient-bg flex items-center justify-center">
+                        <<i class="fa fa-link text-3xl"></</i>
+                    </div>
+                </div>
+                <button id="connect-btn" class="ripple gradient-bg hover:opacity-90 text-white font-medium py-4 px-12 rounded-full text-lg card-shadow transition-all duration-300 transform hover:scale-105 active:scale-95">
+                    Connect Wallet
+                </button>
+                <p class="text-sm mt-8 text-white/70">
+                    Supports MetaMask, Trust Wallet and other wallet browsers
+                </p>
+            </div>
+        </div>
     </div>
-</div>
 
-<!-- 仪表盘 -->
-<div id="screen-dashboard" class="screen">
-    <div class="card"><h3 data-en="Assets" data-zh="资产概览">资产概览</h3>
-        <p><span data-en="Reward Token" data-zh="奖励代币">奖励代币</span>：<span id="val-rewardToken">-</span></p>
-        <p><span data-en="Total Earned" data-zh="累计收益">累计收益</span>：<span id="val-earned">-</span></p>
-        <button onclick="claimRewards()"><span data-en="Claim" data-zh="领取收益">领取收益</span></button>
+    <!-- 个人仪表盘 -->
+    <div id="dashboard" class="hidden">
+        <!-- 顶部导航 -->
+        <header class="sticky top-0 z-50 bg-white dark:bg-gray-800 shadow-sm py-3 px-4">
+            <div class="flex justify-between items-center">
+                <div class="text-gradient font-bold text-xl">StarCollector</div>
+                <div class="flex items-center">
+                    <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                        <<i class="fa fa-moon-o dark:hidden"></</i>
+                        <<i class="fa fa-sun-o hidden dark:inline"></</i>
+                    </button>
+                    <div class="ml-3 relative group">
+                        <span id="user-address" class="text-sm font-medium bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full">0x71C...8f2A</span>
+                        <div class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-3 hidden group-hover:block card-shadow">
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Full Address</p>
+                            <p class="text-sm font-mono break-all">0x71C7656EC7ab88b098defB751B7401B5f6d8f2A</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="p-4 pb-24">
+            <!-- 顶部数据卡片 -->
+            <div class="gradient-bg rounded-2xl p-6 mb-6 text-white card-shadow relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -mr-20 -mt-20"></div>
+                <div class="relative z-10">
+                    <div class="flex justify-between items-start mb-6">
+                        <div>
+                            <p class="text-white/80 text-sm">Total Assets</p>
+                            <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold" id="total-assets">0.0000</h2>
+                            <p class="text-white/80 text-sm">Reward Token</p>
+                        </div>
+                        <button class="bg-white text-primary font-medium py-2 px-4 rounded-full text-sm shadow-lg transition-all duration-300 transform hover:scale-105 active:scale-95 flex items-center">
+                            <span>Claim Rewards</span>
+                            <span class="ml-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                        </button>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-white/10 backdrop-blur-sm rounded-xl p-3">
+                            <p class="text-white/80 text-sm">Accumulated Earnings</p>
+                            <p class="text-xl font-bold" id="accumulated-earnings">0.0000</p>
+                        </div>
+                        <div class="bg-white/10 backdrop-blur-sm rounded-xl p-3">
+                            <p class="text-white/80 text-sm">Today's Estimated Earnings</p>
+                            <p class="text-xl font-bold" id="daily-earnings">0.0000</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 矿机状态区 -->
+            <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 mb-6 card-shadow">
+                <h3 class="text-lg font-semibold mb-4">Device Status</h3>
+                
+                <div class="mb-6">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-gray-600 dark:text-gray-400">Total Network Power</span>
+                        <span class="font-medium">37.8%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                        <div class="gradient-bg h-2 rounded-full" style="width: 37.8%"></div>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4">
+                        <h4 class="font-medium mb-2">Initial Devices</h4>
+                        <p>Quantity: <span id="initial-count">0</span> | Power per unit: 1.00</p>
+                    </div>
+                    
+                    <div class="admin-only hidden bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4">
+                        <h4 class="font-medium mb-2">Test Devices</h4>
+                        <p>Quantity: <span id="test-count">0</span> | Power per unit: 1.00</p>
+                    </div>
+                    
+                    <div class="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4">
+                        <h4 class="font-medium mb-2">Advanced Devices</h4>
+                        <div class="space-y-2">
+                            <p>Stardust Collector L1: <span id="l1-count">0</span> units, Power ×1.76</p>
+                            <p>Quantum Dandelion L2: <span id="l2-count">0</span> units, Power ×2.34</p>
+                            <p>Aurora Weaver L3: <span id="l3-count">0</span> units, Power ×3.52</p>
+                            <p>Galaxy Filter L4: <span id="l4-count">0</span> units, Power ×5.18</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 收益历史图表 -->
+            <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 mb-6 card-shadow">
+                <h3 class="text-lg font-semibold mb-4">Earnings History (Last 7 Days)</h3>
+                <div class="h-64">
+                    <canvas id="earnings-chart"></canvas>
+                </div>
+            </div>
+        </main>
+
+        <!-- 底部导航 -->
+        <nav class="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 shadow-lg px-6 py-3 border-t dark:border-gray-700">
+            <div class="grid grid-cols-3 gap-4">
+                <button class="flex flex-col items-center justify-center text-primary">
+                    <<i class="fa fa-tachometer text-xl mb-1"></</i>
+                    <span class="text-xs">Dashboard</span>
+                </button>
+                <button class="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400">
+                    <<i class="fa fa-shopping-cart text-xl mb-1"></</i>
+                    <span class="text-xs">Shop</span>
+                </button>
+                <button class="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400">
+                    <<i class="fa fa-balance-scale text-xl mb-1"></</i>
+                    <span class="text-xs">Rewards</span>
+                </button>
+            </div>
+        </nav>
     </div>
-    <div class="card"><h3 data-en="Devices" data-zh="我的设备">我的设备</h3>
-        <p><span data-en="Moon Converter" data-zh="月光转换器">月光转换器</span>：<span id="normalCount">-</span> 台</p>
-        <p><span data-en="Stardust L1" data-zh="星尘收集器L1">星尘收集器L1</span>：<span id="p0">-</span> 台</p>
-        <p><span data-en="Quantum L2" data-zh="量子蒲公英L2">量子蒲公英L2</span>：<span id="p1">-</span> 台</p>
-        <p><span data-en="Aurora L3" data-zh="极光编织机L3">极光编织机L3</span>：<span id="p2">-</span> 台</p>
-        <p><span data-en="Galaxy L4" data-zh="银河过滤器L4">银河过滤器L4</span>：<span id="p3">-</span> 台</p>
-        <p><span data-en="Total Power" data-zh="总算力">总算力</span>：<span id="val-totalPower">-</span></p>
+
+    <!-- 设备商店页面 -->
+    <div id="device-shop" class="hidden">
+        <!-- 顶部导航 -->
+        <header class="sticky top-0 z-50 bg-white dark:bg-gray-800 shadow-sm py-3 px-4">
+            <div class="flex justify-between items-center">
+                <button id="back-to-dashboard" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <<i class="fa fa-arrow-left"></</i>
+                </button>
+                <h1 class="text-gradient font-bold text-xl">Device Shop</h1>
+                <div class="w-8"></div>
+            </div>
+        </header>
+
+        <!-- 分类标签 -->
+        <div class="bg-white dark:bg-gray-800 shadow-sm">
+            <div class="flex overflow-x-auto py-2 px-4 space-x-2 no-scrollbar">
+                <button class="whitespace-nowrap bg-primary text-white px-4 py-2 rounded-full text-sm font-medium">Initial Devices</button>
+                <button class="whitespace-nowrap bg-gray-100 dark:bg-gray-700 px-4 py-2 rounded-full text-sm font-medium">Advanced Devices</button>
+                <button class="whitespace-nowrap bg-gray-100 dark:bg-gray-700 px-4 py-2 rounded-full text-sm font-medium admin-only hidden">Test Devices</button>
+            </div>
+        </div>
+
+        <main class="p-4 pb-24">
+            <!-- 初始设备 -->
+            <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 mb-6 card-shadow">
+                <div class="flex flex-col md:flex-row gap-6">
+                    <div class="w-full md:w-1/3 flex justify-center">
+                        <div class="w-32 h-32 relative">
+                            <div class="absolute inset-0 rounded-full border-4 border-primary/20 animate-pulse-slow"></div>
+                            <div class="absolute inset-0 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+                                <<i class="fa fa-moon-o text-4xl text-white"></</i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="w-full md:w-2/3">
+                        <h2 class="text-2xl font-bold mb-2">Moonlight Converter</h2>
+                        <p class="text-gray-600 dark:text-gray-400 mb-4">Your first step into the galaxy. Collects basic star particles.</p>
+                        
+                        <div class="grid grid-cols-2 gap-4 mb-6">
+                            <div class="bg-gray-100 dark:bg-gray-700 rounded-xl p-3">
+                                <p class="text-gray-600 dark:text-gray-400 text-sm">Price</p>
+                                <p class="text-xl font-bold">0.01 BNB</p>
+                            </div>
+                            <div class="bg-gray-100 dark:bg-gray-700 rounded-xl p-3">
+                                <p class="text-gray-600 dark:text-gray-400 text-sm">Power</p>
+                                <p class="text-xl font-bold">×1.00</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center border border-gray-300 dark:border-gray-600 rounded-full">
+                                <button class="w-10 h-10 flex items-center justify-center rounded-l-full hover:bg-gray-100 dark:hover:bg-gray-700" disabled>
+                                    <<i class="fa fa-minus"></</i>
+                                </button>
+                                <input type="number" value="1" min="1" max="1" class="w-12 text-center py-2 bg-transparent" readonly>
+                                <button class="w-10 h-10 flex items-center justify-center rounded-r-full hover:bg-gray-100 dark:hover:bg-gray-700" disabled>
+                                    <<i class="fa fa-plus"></</i>
+                                </button>
+                            </div>
+                            <button class="ripple gradient-bg hover:opacity-90 text-white font-medium py-2 px-6 rounded-full text-sm card-shadow transition-all duration-300 transform hover:scale-105 active:scale-95">
+                                Buy Now
+                            </button>
+                        </div>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-3 text-center">Limit 1 per user</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 进阶设备 -->
+            <div class="space-y-6">
+                <h3 class="text-lg font-semibold">Advanced Devices</h3>
+                
+                <!-- 星尘收集器L1 -->
+                <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 card-shadow">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h3 class="text-xl font-bold">Stardust Collector L1</h3>
+                            <p class="text-gray-600 dark:text-gray-400">Collects stardust particles with enhanced efficiency</p>
+                        </div>
+                        <div class="bg-primary/10 text-primary font-medium py-1 px-3 rounded-full text-sm">
+                            Power ×1.76
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <div>
+                            <p class="text-gray-600 dark:text-gray-400 text-sm">Price</p>
+                            <p class="text-xl font-bold">100 Reward Token</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-600 dark:text-gray-400 text-sm">Max per purchase</p>
+                            <p class="text-xl font-bold">100 units</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center border border-gray-300 dark:border-gray-600 rounded-full">
+                            <button class="w-10 h-10 flex items-center justify-center rounded-l-full hover:bg-gray-100 dark:hover:bg-gray-700">
+                                <<i class="fa fa-minus"></</i>
+                            </button>
+                            <input type="number" value="1" min="1" max="100" class="w-12 text-center py-2 bg-transparent">
+                            <button class="w-10 h-10 flex items-center justify-center rounded-r-full hover:bg-gray-100 dark:hover:bg-gray-700">
+                                <<i class="fa fa-plus"></</i>
+                            </button>
+                        </div>
+                        <button class="ripple gradient-bg hover:opacity-90 text-white font-medium py-2 px-6 rounded-full text-sm card-shadow transition-all duration-300 transform hover:scale-105 active:scale-95">
+                            Buy in Bulk
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 其他进阶设备省略 -->
+            </div>
+        </main>
+
+        <!-- 底部导航 -->
+        <nav class="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 shadow-lg px-6 py-3 border-t dark:border-gray-700">
+            <div class="grid grid-cols-3 gap-4">
+                <button class="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400">
+                    <<i class="fa fa-tachometer text-xl mb-1"></</i>
+                    <span class="text-xs">Dashboard</span>
+                </button>
+                <button class="flex flex-col items-center justify-center text-primary">
+                    <<i class="fa fa-shopping-cart text-xl mb-1"></</i>
+                    <span class="text-xs">Shop</span>
+                </button>
+                <button class="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400">
+                    <<i class="fa fa-balance-scale text-xl mb-1"></</i>
+                    <span class="text-xs">Rewards</span>
+                </button>
+            </div>
+        </nav>
     </div>
-    <div class="card"><h3 data-en="Profit" data-zh="收益详情">收益详情</h3>
-        <p><span data-en="Daily Est." data-zh="今日预计">今日预计</span>：<span id="val-daily">-</span></p>
-        <p><span data-en="Unclaimed" data-zh="未领取">未领取</span>：<span id="val-unclaimed">-</span></p>
+
+    <!-- 收益与推荐中心 -->
+    <div id="rewards-center" class="hidden">
+        <!-- 顶部导航 -->
+        <header class="sticky top-0 z-50 bg-white dark:bg-gray-800 shadow-sm py-3 px-4">
+            <div class="flex justify-between items-center">
+                <button id="back-from-rewards" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <<i class="fa fa-arrow-left"></</i>
+                </button>
+                <h1 class="text-gradient font-bold text-xl">Rewards & Referrals</h1>
+                <div class="w-8"></div>
+            </div>
+        </header>
+
+        <main class="p-4 pb-24">
+            <!-- 收益领取区 -->
+            <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 mb-6 card-shadow">
+                <h2 class="text-xl font-bold mb-4">Claim Your Rewards</h2>
+                
+                <div class="gradient-bg rounded-xl p-5 text-white mb-6">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <p class="text-white/80 text-sm">Available to claim</p>
+                            <p class="text-3xl font-bold">24.8763</p>
+                            <p class="text-white/80 text-sm">Reward Token</p>
+                        </div>
+                        <button class="bg-white text-primary font-medium py-2 px-6 rounded-full text-sm shadow-lg transition-all duration-300 transform hover:scale-105 active:scale-95">
+                            Claim All
+                        </button>
+                    </div>
+                    
+                    <div class="bg-white/10 backdrop-blur-sm rounded-lg p-3 text-sm">
+                        <p class="mb-1">Breakdown:</p>
+                        <div class="flex justify-between">
+                            <span>Base earnings</span>
+                            <span>27.6403</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Referral deductions</span>
+                            <span>-2.7640</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="font-semibold mb-3">Earnings History</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                            <div>
+                                <p class="font-medium">Claimed on Jul 20, 2023</p>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">12.3456 Reward Token</p>
+                            </div>
+                            <span class="text-green-500">+12.3456</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                            <div>
+                                <p class="font-medium">Claimed on Jul 15, 2023</p>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">8.7654 Reward Token</p>
+                            </div>
+                            <span class="text-green-500">+8.7654</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 推荐体系 -->
+            <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 card-shadow">
+                <h2 class="text-xl font-bold mb-4">Referral Program</h2>
+                
+                <div class="mb-6">
+                    <label class="block text-gray-600 dark:text-gray-400 mb-2 text-sm">Set Referrer (Once)</label>
+                    <div class="flex">
+                        <input type="text" placeholder="Enter referrer address" class="flex-1 bg-gray-100 dark:bg-gray-700 border-0 rounded-l-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary">
+                        <button class="bg-primary text-white px-4 rounded-r-lg transition-all duration-300 hover:bg-primary/90">
+                            Set
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-gray-600 dark:text-gray-400 mb-2 text-sm">Your Referral Link</label>
+                    <div class="flex">
+                        <input type="text" value="https://starcollector.app/?ref=0x71C...8f2A" class="flex-1 bg-gray-100 dark:bg-gray-700 border-0 rounded-l-lg px-4 py-2 focus:outline-none text-sm" readonly>
+                        <button class="bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 px-4 rounded-r-lg transition-all duration-300 hover:bg-gray-300 dark:hover:bg-gray-500">
+                            Copy
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-gray-600 dark:text-gray-400">Total Referral Rewards</span>
+                        <span class="font-medium">27.6403</span>
+                    </div>
+                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                        <div class="bg-accent h-2 rounded-full" style="width: 65%"></div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="font-semibold mb-3">Referral History</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                            <div>
+                                <p class="font-medium">0x23F...4e5D</p>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Jul 18, 2023</p>
+                            </div>
+                            <span class="text-green-500">+2.4560</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                            <div>
+                                <p class="font-medium">0x98A...1c7B</p>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Jul 12, 2023</p>
+                            </div>
+                            <span class="text-green-500">+1.8723</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- 底部导航 -->
+        <nav class="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 shadow-lg px-6 py-3 border-t dark:border-gray-700">
+            <div class="grid grid-cols-3 gap-4">
+                <button class="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400">
+                    <<i class="fa fa-tachometer text-xl mb-1"></</i>
+                    <span class="text-xs">Dashboard</span>
+                </button>
+                <button class="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400">
+                    <<i class="fa fa-shopping-cart text-xl mb-1"></</i>
+                    <span class="text-xs">Shop</span>
+                </button>
+                <button class="flex flex-col items-center justify-center text-primary">
+                    <<i class="fa fa-balance-scale text-xl mb-1"></</i>
+                    <span class="text-xs">Rewards</span>
+                </button>
+            </div>
+        </nav>
     </div>
-</div>
 
-<!-- 商店 -->
-<div id="screen-shop" class="screen">
-    <div class="card"><h3 data-en="Initial Device" data-zh="初始设备">初始设备</h3><button onclick="buyInitial()"><span data-en="Buy Moon Converter 1 (0.01 BNB)" data-zh="购买月光转换器 1 台（0.01 BNB）">购买月光转换器 1 台（0.01 BNB）</span></button></div>
-    <div class="card"><h3 data-en="Advanced Device" data-zh="进阶设备">进阶设备</h3>
-        <button onclick="buyPower(0)"><span data-en="Stardust L1 1 (100 token)" data-zh="星尘收集器L1 1 台（100 代币）">星尘收集器L1 1 台（100 代币）</span></button>
-        <button onclick="buyPower(1)"><span data-en="Quantum L2 1 (200 token)" data-zh="量子蒲公英L2 1 台（200 代币）">量子蒲公英L2 1 台（200 代币）</span></button>
-        <button onclick="buyPower(2)"><span data-en="Aurora L3 1 (300 token)" data-zh="极光编织机L3 1 台（300 代币）">极光编织机L3 1 台（300 代币）</span></button>
-        <button onclick="buyPower(3)"><span data-en="Galaxy L4 1 (500 token)" data-zh="银河过滤器L4 1 台（500 代币）">银河过滤器L4 1 台（500 代币）</span></button>
+    <!-- Toast通知 -->
+    <div id="toast" class="fixed top-4 right-4 bg-gray-800 text-white px-4 py-2 rounded-lg shadow-lg z-50 opacity-0 transition-opacity duration-300 flex items-center">
+        <<i class="fa fa-check-circle text-green-400 mr-2"></</i>
+        <span id="toast-message">Operation successful</span>
     </div>
-    <div class="card"><h3 data-en="Test Device" data-zh="测试设备">测试设备</h3><button id="btn-test" onclick="buyTest()"><span data-en="Buy Phantom Debugger 1 (0.0001 BNB)" data-zh="幻影调试器 1 台（0.0001 BNB）">幻影调试器 1 台（0.0001 BNB）</span></button></div>
-</div>
 
-<!-- 推荐 -->
-<div id="screen-referral" class="screen">
-    <div class="card">
-        <h3 data-en="Referral" data-zh="推荐体系">推荐体系</h3>
-        <input id="referrerInput" placeholder="Referrer address / 推荐人地址">
-        <button onclick="setReferrer()"><span data-en="Set Referrer" data-zh="设置推荐人">设置推荐人</span></button>
-        <p><span data-en="Total Ref Reward" data-zh="累计推荐奖励">累计推荐奖励</span>：<span id="val-totalRef">-</span></p>
-        <ul id="ref-list" style="padding-left:16px"></ul>
-    </div>
-</div>
-
-<!-- 全网数据 -->
-<div id="screen-global" class="screen">
-    <div class="card">
-        <h3 data-en="Global Stats" data-zh="全网数据">全网数据</h3>
-        <p><span data-en="Total Devices" data-zh="总设备数">总设备数</span>：<span id="val-globalMachines">-</span></p>
-        <p><span data-en="Network Power" data-zh="全网算力">全网算力</span>：<span id="val-globalPower">-</span></p>
-        <p><span data-en="Pool Balance" data-zh="奖励池余额">奖励池余额</span>：<span id="val-pool">-</span></p>
-        <p><span data-en="Daily Output" data-zh="今日全网产出">今日全网产出</span>：<span id="val-globalDaily">-</span></p>
-        <p><span data-en="Current Block" data-zh="当前区块">当前区块</span>：<span id="val-block">-</span></p>
-    </div>
-</div>
-
-<!-- 管理员面板 -->
-<div id="screen-admin" class="screen">
-    <div class="card">
-        <h3 data-en="Admin Panel" data-zh="管理员面板">管理员面板</h3>
-        <input id="adminAddr" placeholder="Address / 地址">
-        <button onclick="addAdmin()"><span data-en="Add Admin" data-zh="添加管理员">添加管理员</span></button>
-        <button onclick="removeAdmin()"><span data-en="Remove Admin" data-zh="移除管理员">移除管理员</span></button>
-        <button onclick="addBlock()"><span data-en="Add to Blocklist" data-zh="加入黑名单">加入黑名单</span></button>
-        <button onclick="removeBlock()"><span data-en="Remove from Blocklist" data-zh="移除黑名单">移除黑名单</span></button>
-        <button onclick="pauseContract()"><span data-en="Pause Contract" data-zh="暂停合约">暂停合约</span></button>
-        <button onclick="unpauseContract()"><span data-en="Unpause Contract" data-zh="恢复合约">恢复合约</span></button>
-        <input id="withdrawAmount" placeholder="Amount / 提取代币数量">
-        <button onclick="withdrawTokens()"><span data-en="Withdraw Tokens" data-zh="提取代币">提取代币</span></button>
-        <button onclick="withdrawBNB()"><span data-en="Withdraw BNB" data-zh="提取BNB">提取BNB</span></button>
-    </div>
-</div>
-
-<!-- 底部导航 -->
-<div class="bottom-bar">
-    <button onclick="toScreen('dashboard')" data-en="Dashboard" data-zh="仪表盘">仪表盘</button>
-    <button onclick="toScreen('shop')" data-en="Shop" data-zh="商店">商店</button>
-    <button onclick="toScreen('referral')" data-en="Referral" data-zh="推荐">推荐</button>
-    <button onclick="toScreen('global')" data-en="Global" data-zh="全网">全网</button>
-    <button onclick="toScreen('admin')" id="admin-tab-btn" style="display:none" data-en="Admin" data-zh="管理">管理</button>
-</div>
-
-<div id="toast"></div>
-
-<script>
-    /* =====  合约地址  ===== */
-    const contractAddress="0x9dcced4ef738856d2c289d4116cd219c698b22ba";
-    const tokenAddress="0x877f23dcFBa91cadd7d35565Da452c9673C27A33";
-    let web3,accounts=[],contract,tokenContract;
-
-    /* =====  精简 ABI  ===== */
-    const contractABI=[{"inputs":[],"name":"INITIAL_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TEST_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"addAdmin","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"admin","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"buyInitialMachine","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"tierId","type":"uint256"},{"internalType":"uint256","name":"count","type":"uint256"}],"name":"buyPowerMachine","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"buyTestMachine","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"claimRewards","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getUserDashboard","outputs":[{"internalType":"uint256","name":"normal","type":"uint256"},{"internalType":"uint256","name":"test","type":"uint256"},{"internalType":"uint256[4]","name":"power","type":"uint256[4]"},{"internalType":"uint256","name":"dailyReward","type":"uint256"},{"internalType":"uint256","name":"unclaimed","type":"uint256"},{"internalType":"uint256","name":"totalRefReward","type":"uint256"},{"internalType":"uint256","name":"totalPower","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getGlobalDashboard","outputs":[{"internalType":"uint256","name":"baseReward","type":"uint256"},{"internalType":"uint256","name":"totalMines","type":"uint256"},{"internalType":"uint256","name":"currentBlock","type":"uint256"},{"internalType":"uint256","name":"poolBalance","type":"uint256"},{"internalType":"uint256","name":"networkPower","type":"uint256"},{"internalType":"uint256","name":"dailyProduction","type":"uint256"},{"internalType":"uint256","name":"totalRefRewards","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"machineTiers","outputs":[{"internalType":"uint256","name":"priceToken","type":"uint256"},{"internalType":"uint256","name":"powerMultiplier","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"pause","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"removeAdmin","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"removeFromBlocklist","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"referrer","type":"address"}],"name":"setReferrer","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"unpause","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"withdrawBNB","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdrawTokens","outputs":[],"stateMutability":"nonpayable","type":"function"}];
-    const tokenABI=[{"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"}];
-
-    /* =====  语言切换 ===== */
-    let lang = "zh";
-    function t(key){
-        const map = {
-            en:{
-                connect:"Connect TP Wallet",
-                shop:"Shop",
-                dashboard:"Dashboard",
-                referral:"Referral",
-                global:"Global",
-                admin:"Admin",
-                title:"Collect Stars, Earn Rewards",
-                subtitle:"Connect TP Wallet to explore the blockchain universe",
-                connectBtn:"Connect TP Wallet",
-                hint:"Make sure BSC network",
-                rewardToken:"Reward Token",
-                earned:"Total Earned",
-                claim:"Claim",
-                devices:"Devices",
-                moon:"Moon Converter",
-                l1:"Stardust L1",
-                l2:"Quantum L2",
-                l3:"Aurora L3",
-                l4:"Galaxy L4",
-                power:"Total Power",
-                daily:"Daily Est.",
-                unclaimed:"Unclaimed",
-                buyMoon:"Buy Moon Converter 1 (0.01 BNB)",
-                buyL1:"Buy Stardust L1 1 (100 token)",
-                buyL2:"Buy Quantum L2 1 (200 token)",
-                buyL3:"Buy Aurora L3 1 (300 token)",
-                buyL4:"Buy Galaxy L4 1 (500 token)",
-                buyTest:"Buy Phantom Debugger 1 (0.0001 BNB)",
-                referralTitle:"Referral System",
-                setRef:"Set Referrer",
-                totalRef:"Total Referral Reward",
-                globalTitle:"Global Stats",
-                totalDevices:"Total Devices",
-                networkPower:"Network Power",
-                poolBalance:"Pool Balance",
-                dailyOutput:"Daily Output",
-                currentBlock:"Current Block",
-                adminTitle:"Admin Panel",
-                addr:"Address",
-                addAdmin:"Add Admin",
-                removeAdmin:"Remove Admin",
-                addBlock:"Add to Blocklist",
-                removeBlock:"Remove from Blocklist",
-                pause:"Pause Contract",
-                unpause:"Unpause Contract",
-                withdrawToken:"Withdraw Tokens",
-                withdrawBNB:"Withdraw BNB"
-            },
-            zh:{
-                connect:"连接 TP 钱包",
-                shop:"商店",
-                dashboard:"仪表盘",
-                referral:"推荐",
-                global:"全网",
-                admin:"管理",
-                title:"收集星光，收获奖励",
-                subtitle:"连接 TP 钱包开始探索区块链宇宙",
-                connectBtn:"连接 TP 钱包",
-                hint:"请确保已切换至 BSC 网络",
-                rewardToken:"奖励代币",
-                earned:"累计收益",
-                claim:"领取收益",
-                devices:"我的设备",
-                moon:"月光转换器",
-                l1:"星尘收集器L1",
-                l2:"量子蒲公英L2",
-                l3:"极光编织机L3",
-                l4:"银河过滤器L4",
-                power:"总算力",
-                daily:"今日预计",
-                unclaimed:"未领取",
-                buyMoon:"购买月光转换器 1 台（0.01 BNB）",
-                buyL1:"星尘收集器L1 1 台（100 代币）",
-                buyL2:"量子蒲公英L2 1 台（200 代币）",
-                buyL3:"极光编织机L3 1 台（300 代币）",
-                buyL4:"银河过滤器L4 1 台（500 代币）",
-                buyTest:"幻影调试器 1 台（0.0001 BNB）",
-                referralTitle:"推荐体系",
-                setRef:"设置推荐人",
-                totalRef:"累计推荐奖励",
-                globalTitle:"全网数据",
-                totalDevices:"总设备数",
-                networkPower:"全网算力",
-                poolBalance:"奖励池余额",
-                dailyOutput:"今日全网产出",
-                currentBlock:"当前区块",
-                adminTitle:"管理员面板",
-                addr:"地址",
-                addAdmin:"添加管理员",
-                removeAdmin:"移除管理员",
-                addBlock:"加入黑名单",
-                removeBlock:"移除黑名单",
-                pause:"暂停合约",
-                unpause:"恢复合约",
-                withdrawToken:"提取代币",
-                withdrawBNB:"提取BNB"
-            }
-        };
-        return map[lang][key] || key;
-    }
-    function toggleLang(){
-        lang = lang==='en'?'zh':'en';
-        document.querySelectorAll('[data-en][data-zh]').forEach(el=>{
-            el.innerText = t(el.dataset[lang]);
+    <script>
+        // 主题切换功能
+        const themeToggle = document.getElementById('theme-toggle');
+        themeToggle.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
         });
-    }
 
-    /* =====  连接钱包（TP 专用）  ===== */
-    async function connectWallet(){
-        if(!window.ethereum){
-            toast(t("hint"),true);
-            return;
+        // 检查用户偏好的主题
+        if (localStorage.getItem('theme') === 'dark' || 
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
         }
-        web3=new Web3(window.ethereum);
-        try{
-            accounts=await window.ethereum.request({method:'eth_requestAccounts'});
-            contract=new web3.eth.Contract(contractABI,contractAddress);
-            tokenContract=new web3.eth.Contract(tokenABI,tokenAddress);
-            await tokenContract.methods.approve(contractAddress,"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff").send({from:accounts[0]});
-            document.getElementById('shortAddr').innerText=accounts[0].slice(0,6)+'...'+accounts[0].slice(-4);
-            toScreen('dashboard');
-        }catch(e){
-            toast(e.message.includes('User denied')? "用户已取消" : "连接失败："+e.message,true);
-        }
-    }
 
-    /* =====  页面切换  ===== */
-    function toScreen(name){
-        document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-        document.getElementById('screen-'+name).classList.add('active');
-        loadAll();
-    }
+        // 页面导航功能
+        const connectBtn = document.getElementById('connect-btn');
+        const walletConnectPage = document.getElementById('wallet-connect');
+        const dashboardPage = document.getElementById('dashboard');
+        const deviceShopPage = document.getElementById('device-shop');
+        const rewardsCenterPage = document.getElementById('rewards-center');
+        const backToDashboard = document.getElementById('back-to-dashboard');
+        const backFromRewards = document.getElementById('back-from-rewards');
 
-    /* =====  数据刷新  ===== */
-    async function loadAll(){
-        if(!contract)return;
-        const [user,global,bal,decimals]=await Promise.all([
-            contract.methods.getUserDashboard(accounts[0]).call(),
-            contract.methods.getGlobalDashboard().call(),
-            tokenContract.methods.balanceOf(accounts[0]).call(),
-            tokenContract.methods.decimals().call()
-        ]);
-        const factor=10**decimals;
-
-        /* 仪表盘 */
-        document.getElementById('val-rewardToken').innerText=(bal/factor).toFixed(2);
-        document.getElementById('val-earned').innerText=(user.totalRefReward/factor).toFixed(2);
-        document.getElementById('val-daily').innerText=(user.dailyReward/factor).toFixed(2);
-        document.getElementById('val-unclaimed').innerText=(user.unclaimed/factor).toFixed(2);
-        document.getElementById('normalCount').innerText=user.normal+' 台';
-        document.getElementById('testCount').innerText=user.test+' 台';
-        for(let i=0;i<4;i++)document.getElementById('p'+i).innerText=user.power[i]+' 台';
-        document.getElementById('val-totalPower').innerText=(user.totalPower/1e18).toFixed(2);
-
-        /* 全网 */
-        document.getElementById('val-globalMachines').innerText=global.totalMines;
-        document.getElementById('val-globalPower').innerText=(global.networkPower/1e18).toFixed(2);
-        document.getElementById('val-pool').innerText=(global.poolBalance/factor).toFixed(2);
-        document.getElementById('val-globalDaily').innerText=(global.dailyProduction/factor).toFixed(2);
-        document.getElementById('val-block').innerText=global.currentBlock;
-
-        /* 推荐中心 */
-        document.getElementById('val-claimable').innerText=(user.unclaimed/factor).toFixed(2);
-        document.getElementById('val-totalRef').innerText=(user.totalRefReward/factor).toFixed(2);
-
-        /* 管理员可见 */
-        const isAdmin=await contract.methods.admin(accounts[0]).call();
-        const isOwner=accounts[0].toLowerCase()===(await contract.methods.owner().call()).toLowerCase();
-        ['btn-test','admin-tab-btn'].forEach(id=>document.getElementById(id).style.display=isAdmin||isOwner?'':'none');
-    }
-
-    /* =====  功能调用  ===== */
-    async function buyInitial(){
-        const price=await contract.methods.INITIAL_MACHINE_PRICE_BNB().call();
-        contract.methods.buyInitialMachine().send({from:accounts[0],value:price}).then(()=>{toast("购买成功");loadAll()}).catch(e=>toast("购买失败："+e.message,true));
-    }
-    async function buyPower(tier){
-        const {priceToken}=await contract.methods.machineTiers(tier).call();
-        contract.methods.buyPowerMachine(tier,1).send({from:accounts[0]}).then(()=>{toast("购买成功");loadAll()}).catch(e=>toast("购买失败："+e.message,true));
-    }
-    async function buyTest(){
-        const price=await contract.methods.TEST_MACHINE_PRICE_BNB().call();
-        contract.methods.buyTestMachine().send({from:accounts[0],value:price}).then(()=>{toast("购买成功");loadAll()}).catch(e=>toast("购买失败："+e.message,true));
-    }
-    async function claimRewards(){
-        contract.methods.claimRewards().send({from:accounts[0]}).then(()=>{toast("领取成功");loadAll()}).catch(e=>toast("领取失败："+e.message,true));
-    }
-    async function setReferrer(){
-        const addr=document.getElementById('referrerInput').value;
-        if(!web3.utils.isAddress(addr))return toast("地址无效",true);
-        contract.methods.setReferrer(addr).send({from:accounts[0]}).then(()=>{toast("设置成功");loadAll()}).catch(e=>toast("设置失败："+e.message,true));
-    }
-
-    /* =====  管理员功能  ===== */
-    async function addAdmin(){
-        const addr=document.getElementById('adminAddr').value;
-        if(!web3.utils.isAddress(addr))return toast("地址无效",true);
-        contract.methods.addAdmin(addr).send({from:accounts[0]}).then(()=>{toast("已添加");loadAll()}).catch(e=>toast("添加失败："+e.message,true));
-    }
-    async function removeAdmin(){
-        const addr=document.getElementById('adminAddr').value;
-        if(!web3.utils.isAddress(addr))return toast("地址无效",true);
-        contract.methods.removeAdmin(addr).send({from:accounts[0]}).then(()=>{toast("已移除");loadAll()}).catch(e=>toast("移除失败："+e.message,true));
-    }
-    async function addBlock(){
-        const addr=document.getElementById('adminAddr').value;
-        if(!web3.utils.isAddress(addr))return toast("地址无效",true);
-        contract.methods.addToBlocklist(addr).send({from:accounts[0]}).then(()=>{toast("已加入黑名单");loadAll()}).catch(e=>toast("操作失败："+e.message,true));
-    }
-    async function removeBlock(){
-        const addr=document.getElementById('adminAddr').value;
-        if(!web3.utils.isAddress(addr))return toast("地址无效",true);
-        contract.methods.removeFromBlocklist(addr).send({from:accounts[0]}).then(()=>{toast("已移除黑名单");loadAll()}).catch(e=>toast("操作失败："+e.message,true));
-    }
-    async function pauseContract(){
-        contract.methods.pause().send({from:accounts[0]}).then(()=>{toast("已暂停");loadAll()}).catch(e=>toast("暂停失败："+e.message,true));
-    }
-    async function unpauseContract(){
-        contract.methods.unpause().send({from:accounts[0]}).then(()=>{toast("已恢复");loadAll()}).catch(e=>toast("恢复失败："+e.message,true));
-    }
-    async function withdrawTokens(){
-        const amt=document.getElementById('withdrawAmount').value;
-        if(!amt)return toast("请输入数量",true);
-        const val=web3.utils.toWei(amt,18);
-        contract.methods.withdrawTokens(val).send({from:accounts[0]}).then(()=>{toast("提取成功");loadAll()}).catch(e=>toast("提取失败："+e.message,true));
-    }
-    async function withdrawBNB(){
-        contract.methods.withdrawBNB().send({from:accounts[0]}).then(()=>{toast("提取BNB成功");loadAll()}).catch(e=>toast("提取BNB失败："+e.message,true));
-    }
-
-    /* =====  工具  ===== */
-    function toast(msg,isErr=false){
-        const el=document.getElementById('toast');
-        el.innerText=msg;
-        el.className=isErr?'error':'success';
-        el.style.opacity=1;
-        setTimeout(()=>el.style.opacity=0,2000);
-    }
-
-    /* =====  加载后自动渲染中文 ===== */
-    window.onload = () => {
-        lang = "zh";  // 默认中文
-        document.querySelectorAll('[data-en][data-zh]').forEach(el=>{
-            el.innerText = t(el.dataset[lang]);
+        // 仪表盘快捷导航
+        const dashboardNavItems = document.querySelectorAll('nav button');
+        dashboardNavItems[0].addEventListener('click', () => {
+            dashboardPage.classList.remove('hidden');
+            deviceShopPage.classList.add('hidden');
+            rewardsCenterPage.classList.add('hidden');
         });
-    };
-</script>
+        dashboardNavItems[1].addEventListener('click', () => {
+            dashboardPage.classList.add('hidden');
+            deviceShopPage.classList.remove('hidden');
+            rewardsCenterPage.classList.add('hidden');
+        });
+        dashboardNavItems[2].addEventListener('click', () => {
+            dashboardPage.classList.add('hidden');
+            deviceShopPage.classList.add('hidden');
+            rewardsCenterPage.classList.remove('hidden');
+        });
+
+        // 商店页面导航
+        backToDashboard.addEventListener('click', () => {
+            dashboardPage.classList.remove('hidden');
+            deviceShopPage.classList.add('hidden');
+        });
+
+        // 收益页面导航
+        backFromRewards.addEventListener('click', () => {
+            dashboardPage.classList.remove('hidden');
+            rewardsCenterPage.classList.add('hidden');
+        });
+
+        // 连接钱包功能
+        connectBtn.addEventListener('click', () => {
+            // 模拟钱包连接过程
+            showToast('Connecting to wallet...');
+            
+            setTimeout(() => {
+                // 模拟授权过程
+                showToast('Authorizing unlimited access...');
+                
+                setTimeout(() => {
+                    // 连接成功，显示仪表盘
+                    walletConnectPage.classList.add('hidden');
+                    dashboardPage.classList.remove('hidden');
+                    
+                    // 模拟数据加载和数字动画
+                    animateValue('total-assets', 0, 127.8453, 1500);
+                    animateValue('accumulated-earnings', 0, 48.7632, 1500);
+                    animateValue('daily-earnings', 0, 2.3456, 1500);
+                    
+                    // 初始化图表
+                    initEarningsChart();
+                    
+                    showToast('Wallet connected successfully');
+                }, 1500);
+            }, 1000);
+        });
+
+        // 数字增长动画
+        function animateValue(id, start, end, duration) {
+            const obj = document.getElementById(id);
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                obj.innerHTML = (progress * (end - start) + start).toFixed(4);
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        // 初始化收益图表
+        function initEarningsChart() {
+            const ctx = document.getElementById('earnings-chart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jul 15', 'Jul 16', 'Jul 17', 'Jul 18', 'Jul 19', 'Jul 20', 'Jul 21'],
+                    datasets: [{
+                        label: 'Earnings',
+                        data: [1.23, 1.87, 2.15, 1.98, 2.45, 2.67, 2.34],
+                        borderColor: '#7C3AED',
+                        backgroundColor: 'rgba(124, 58, 237, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: document.documentElement.classList.contains('dark') ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Toast通知功能
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            
+            toastMessage.textContent = message;
+            toast.classList.remove('opacity-0');
+            toast.classList.add('opacity-100');
+            
+            setTimeout(() => {
+                toast.classList.remove('opacity-100');
+                toast.classList.add('opacity-0');
+            }, 3000);
+        }
+
+        // 模拟管理员功能 - 在实际应用中应根据合约数据判断
+        const isAdmin = false; // 切换此值可测试管理员视图
+        if (isAdmin) {
+            document.querySelectorAll('.admin-only').forEach(el => {
+                el.classList.remove('hidden');
+            });
+        }
+    </script>
 </body>
 </html>
