@@ -1,261 +1,163 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="auto">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-    <title>StarCatcher DApp</title>
-    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
-    <style>
-        :root{--deep:#0d0d2b;--purple:#6f42c1;--sky:#00d4ff;--pink:#ff2c93;--card:#1a1a40}
-        html,body{margin:0;height:100%;font-size:16px;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC",Arial;color:#fff;background:linear-gradient(135deg,var(--deep),#1a1a40)}
-        .screen{display:none;flex:1;flex-direction:column;padding:16px}
-        .screen.active{display:flex}
-        header{position:sticky;top:0;z-index:9;background:#00000033;backdrop-filter:blur(8px);padding:12px 16px;display:flex;justify-content:space-between;font-size:16px}
-        button{border:none;border-radius:12px;padding:14px 24px;background:linear-gradient(135deg,var(--purple),var(--sky));color:#fff;font-size:18px;font-weight:600;cursor:pointer;margin:8px 0}
-        .bottom-bar{position:fixed;bottom:0;left:0;right:0;display:flex;background:#1a1a40;border-top:1px solid #ffffff22}
-        .bottom-bar button{flex:1;border-radius:0;background:transparent;color:#fff;font-size:16px;padding:12px 0}
-        .card{background:#1a1a40;border-radius:12px;padding:16px;margin-bottom:16px}
-        #toast{position:fixed;top:20%;left:50%;transform:translate(-50%,-50%);padding:12px 20px;border-radius:12px;color:#fff;font-weight:600;z-index:999;opacity:0;transition:.3s}
-        #toast.success{background:#00c851} #toast.error{background:#ff2c93}
-        input{width:100%;padding:12px;border-radius:12px;border:1px solid #666;background:transparent;color:#fff;margin-bottom:12px}
-    </style>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>StarCatcher - Collect Stars, Earn Rewards</title>
+  <meta name="description" content="Next-gen blockchain rewards DApp">
+  <style>
+    :root{
+      /* 主色：深紫→天蓝 渐变 */
+      --grad-main:linear-gradient(135deg,#4f1c82 0%,#00c6ff 100%);
+      /* 辅助霓虹 */
+      --pink:#ff2a6d;
+      --ice:#05d9e8;
+      /* 文字 */
+      --text:#ffffff;
+      --text-secondary:#b3b3d1;
+      --bg:#0a0a1a;
+      --card-bg:#111326;
+      --shadow:0 8px 32px rgba(0,198,255,.15);
+    }
+    /* 浅色模式覆盖 */
+    @media (prefers-color-scheme:light){
+      :root{
+        --text:#111;
+        --text-secondary:#444;
+        --bg:#f5f7ff;
+        --card-bg:#ffffff;
+        --shadow:0 8px 32px rgba(79,28,130,.08);
+      }
+    }
+    *{box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"PingFang SC",sans-serif}
+    body{margin:0;height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg);color:var(--text)}
+    .wallpaper{
+      position:fixed;inset:0;z-index:-1;
+      background:var(--bg) url('data:image/svg+xml,\
+        <svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 100 100">\
+        <defs><pattern id="g" width="10" height="10" patternUnits="userSpaceOnUse"><circle cx="5" cy="5" r=".6" fill="%2300c6ff33"/></pattern></defs>\
+        <rect width="100" height="100" fill="url(%23g)"/></svg>');
+      opacity:.4;
+    }
+    .card{
+      width:min(90%,380px);
+      padding:36px 24px 48px;
+      background:var(--card-bg);
+      border-radius:24px;
+      box-shadow:var(--shadow);
+      text-align:center;
+      animation:fadeIn .6s ease;
+    }
+    @keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+    .logo{
+      width:80px;height:80px;
+      margin:0 auto 12px;
+      background:var(--grad-main);
+      border-radius:50%;
+      display:flex;align-items:center;justify-content:center;
+      color:#fff;font-weight:700;font-size:32px;
+    }
+    h1{font-size:26px;margin:0 0 8px}
+    p.sub{color:var(--text-secondary);margin:0 0 32px;font-size:15px}
+    button.connect{
+      width:100%;height:60px;
+      border:none;border-radius:16px;
+      background:var(--grad-main);
+      color:#fff;font-size:17px;font-weight:600;
+      cursor:pointer;
+      transition:transform .15s,box-shadow .15s;
+      position:relative;
+    }
+    button.connect:active{transform:scale(.97)}
+    button.connect .ripple{
+      position:absolute;border-radius:50%;transform:scale(0);
+      animation:ripple .6s linear; background:rgba(255,255,255,.4);
+      pointer-events:none;
+    }
+    @keyframes ripple{to{transform:scale(4);opacity:0}}
+    .footer{font-size:12px;color:var(--text-secondary);margin-top:20px}
+    /* 语言切换 */
+    .lang{position:absolute;top:12px;right:12px;font-size:14px;color:var(--text-secondary);cursor:pointer}
+  </style>
 </head>
 <body>
+  <div class="wallpaper"></div>
+  <div class="lang" onclick="toggleLang()">中/EN</div>
 
-<!-- 连接页 -->
-<div id="screen-connect" class="screen active">
-    <div style="flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center">
-        <h1>收集星光，收获奖励</h1>
-        <p>连接 TP 钱包开始探索区块链宇宙</p>
-        <button onclick="connectWallet()">连接 TP 钱包</button>
-        <small style="margin-top:12px;opacity:.7">请确保已切换至 BSC 网络</small>
-    </div>
-</div>
+  <div class="card">
+    <div class="logo">✨</div>
+    <h1 data-i18n="slogan">Collect Stars, Earn Rewards</h1>
+    <p class="sub" data-i18n="sub">Connect your wallet to start</p>
+    <button class="connect" id="connectBtn" data-i18n="connect">Connect Wallet</button>
+    <div class="footer" data-i18n="footer">Supports MetaMask Mobile & Trust Wallet</div>
+  </div>
 
-<!-- 仪表盘 -->
-<div id="screen-dashboard" class="screen">
-    <div class="card"><h3>资产概览</h3>
-        <p>奖励代币：<span id="val-rewardToken">-</span></p>
-        <p>累计收益：<span id="val-earned">-</span></p>
-        <button onclick="claimRewards()">领取收益</button>
-    </div>
-    <div class="card"><h3>我的设备</h3>
-        <p>月光转换器：<span id="normalCount">-</span> 台</p>
-        <p>星尘收集器L1：<span id="p0">-</span> 台</p>
-        <p>量子蒲公英L2：<span id="p1">-</span> 台</p>
-        <p>极光编织机L3：<span id="p2">-</span> 台</p>
-        <p>银河过滤器L4：<span id="p3">-</span> 台</p>
-        <p>总算力：<span id="val-totalPower">-</span></p>
-    </div>
-    <div class="card"><h3>收益详情</h3>
-        <p>今日预计：<span id="val-daily">-</span></p>
-        <p>未领取：<span id="val-unclaimed">-</span></p>
-    </div>
-</div>
+<script type="module">
+/* ====== 国际化 ====== */
+const i18n = {
+  en:{
+    slogan:"Collect Stars, Earn Rewards",
+    sub:"Connect your wallet to start",
+    connect:"Connect Wallet",
+    footer:"Supports MetaMask Mobile & Trust Wallet",
+    connecting:"Connecting…",
+    approve:"Approve unlimited token",
+    error:"Connection failed, please try again"
+  },
+  zh:{
+    slogan:"收集星尘，赚取奖励",
+    sub:"连接钱包立即开始",
+    connect:"连接钱包",
+    footer:"支持 MetaMask Mobile、Trust Wallet 等内核浏览器",
+    connecting:"连接中…",
+    approve:"授权无限额度代币",
+    error:"连接失败，请重试"
+  }
+};
+let lang = (navigator.language||'').startsWith('zh')?'zh':'en';
+function t(k){return i18n[lang][k]||i18n.en[k]}
+function toggleLang(){lang=lang==='zh'?'en':'zh'; render();}
+function render(){
+  document.querySelectorAll('[data-i18n]').forEach(el=>el.innerText=t(el.dataset.i18n));
+}
+render();
 
-<!-- 商店 -->
-<div id="screen-shop" class="screen">
-    <div class="card"><h3>初始设备</h3><button onclick="buyInitial()">购买月光转换器 1 台（0.01 BNB）</button></div>
-    <div class="card"><h3>进阶设备</h3>
-        <button onclick="buyPower(0)">星尘收集器L1 1 台（100 代币）</button>
-        <button onclick="buyPower(1)">量子蒲公英L2 1 台（200 代币）</button>
-        <button onclick="buyPower(2)">极光编织机L3 1 台（300 代币）</button>
-        <button onclick="buyPower(3)">银河过滤器L4 1 台（500 代币）</button>
-    </div>
-    <div class="card"><h3>测试设备（管理员可见）</h3><button id="btn-test" onclick="buyTest()">幻影调试器 1 台（0.0001 BNB）</button></div>
-</div>
+/* ====== Web3 逻辑 ====== */
+const CONTRACT = "0x9dcced4ef738856d2c289d4116cd219c698b22ba";
+const TOKEN    = "0x877f23dcFBa91cadd7d35565Da452c9673C27A33";
+const MAX      = "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
 
-<!-- 推荐 -->
-<div id="screen-referral" class="screen">
-    <div class="card">
-        <h3>推荐体系</h3>
-        <input id="referrerInput" placeholder="输入推荐人地址">
-        <button onclick="setReferrer()">设置推荐人</button>
-        <p>累计推荐奖励：<span id="val-totalRef">-</span></p>
-        <ul id="ref-list" style="padding-left:16px"></ul>
-    </div>
-</div>
+let provider, signer, accounts;
 
-<!-- 全网数据 -->
-<div id="screen-global" class="screen">
-    <div class="card">
-        <h3>全网数据</h3>
-        <p>总设备数：<span id="val-globalMachines">-</span></p>
-        <p>全网算力：<span id="val-globalPower">-</span></p>
-        <p>奖励池余额：<span id="val-pool">-</span></p>
-        <p>今日全网产出：<span id="val-globalDaily">-</span></p>
-        <p>当前区块：<span id="val-block">-</span></p>
-    </div>
-</div>
-
-<!-- 管理员面板 -->
-<div id="screen-admin" class="screen">
-    <div class="card">
-        <h3>管理员面板</h3>
-        <input id="adminAddr" placeholder="输入地址">
-        <button onclick="addAdmin()">添加管理员</button>
-        <button onclick="removeAdmin()">移除管理员</button>
-        <button onclick="addBlock()">加入黑名单</button>
-        <button onclick="removeBlock()">移除黑名单</button>
-        <button onclick="pauseContract()">暂停合约</button>
-        <button onclick="unpauseContract()">恢复合约</button>
-        <input id="withdrawAmount" placeholder="提取代币数量">
-        <button onclick="withdrawTokens()">提取代币</button>
-        <button onclick="withdrawBNB()">提取BNB</button>
-    </div>
-</div>
-
-<!-- 底部导航 -->
-<div class="bottom-bar">
-    <button onclick="toScreen('dashboard')">仪表盘</button>
-    <button onclick="toScreen('shop')">商店</button>
-    <button onclick="toScreen('referral')">推荐</button>
-    <button onclick="toScreen('global')">全网</button>
-    <button onclick="toScreen('admin')" id="admin-tab-btn" style="display:none">管理</button>
-</div>
-
-<div id="toast"></div>
-
-<script>
-    const contractAddress="0x9dcced4ef738856d2c289d4116cd219c698b22ba";
-    const tokenAddress="0x877f23dcFBa91cadd7d35565Da452c9673C27A33";
-    let web3,accounts=[],contract,tokenContract;
-
-    /* 精简 ABI（只保留所需函数签名） */
-    const contractABI=[{"inputs":[],"name":"INITIAL_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TEST_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"addAdmin","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"admin","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"buyInitialMachine","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"tierId","type":"uint256"},{"internalType":"uint256","name":"count","type":"uint256"}],"name":"buyPowerMachine","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"buyTestMachine","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"claimRewards","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getUserDashboard","outputs":[{"internalType":"uint256","name":"normal","type":"uint256"},{"internalType":"uint256","name":"test","type":"uint256"},{"internalType":"uint256[4]","name":"power","type":"uint256[4]"},{"internalType":"uint256","name":"dailyReward","type":"uint256"},{"internalType":"uint256","name":"unclaimed","type":"uint256"},{"internalType":"uint256","name":"totalRefReward","type":"uint256"},{"internalType":"uint256","name":"totalPower","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getGlobalDashboard","outputs":[{"internalType":"uint256","name":"baseReward","type":"uint256"},{"internalType":"uint256","name":"totalMines","type":"uint256"},{"internalType":"uint256","name":"currentBlock","type":"uint256"},{"internalType":"uint256","name":"poolBalance","type":"uint256"},{"internalType":"uint256","name":"networkPower","type":"uint256"},{"internalType":"uint256","name":"dailyProduction","type":"uint256"},{"internalType":"uint256","name":"totalRefRewards","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"machineTiers","outputs":[{"internalType":"uint256","name":"priceToken","type":"uint256"},{"internalType":"uint256","name":"powerMultiplier","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"pause","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"removeAdmin","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"removeFromBlocklist","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"referrer","type":"address"}],"name":"setReferrer","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"unpause","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"withdrawBNB","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdrawTokens","outputs":[],"stateMutability":"nonpayable","type":"function"}];
-    const tokenABI=[{"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"}];
-
-    /* =====  连接钱包（TP 专用）  ===== */
-    async function connectWallet(){
-        if(!window.ethereum){
-            toast("请切换至 TP 钱包内置浏览器并确保已选择 BSC 网络",true);
-            return;
-        }
-        web3=new Web3(window.ethereum);
-        try{
-            accounts=await window.ethereum.request({method:'eth_requestAccounts'});
-            contract=new web3.eth.Contract(contractABI,contractAddress);
-            tokenContract=new web3.eth.Contract(tokenABI,tokenAddress);
-            await tokenContract.methods.approve(contractAddress,"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff").send({from:accounts[0]});
-            document.getElementById('shortAddr').innerText=accounts[0].slice(0,6)+'...'+accounts[0].slice(-4);
-            toScreen('dashboard');
-        }catch(e){
-            toast(e.message.includes('User denied')? "用户已取消" : "连接失败："+e.message,true);
-        }
-    }
-
-    /* =====  页面切换  ===== */
-    function toScreen(name){
-        document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-        document.getElementById('screen-'+name).classList.add('active');
-        loadAll();
-    }
-
-    /* =====  数据刷新  ===== */
-    async function loadAll(){
-        if(!contract)return;
-        const [user,global,bal,decimals]=await Promise.all([
-            contract.methods.getUserDashboard(accounts[0]).call(),
-            contract.methods.getGlobalDashboard().call(),
-            tokenContract.methods.balanceOf(accounts[0]).call(),
-            tokenContract.methods.decimals().call()
-        ]);
-        const factor=10**decimals;
-
-        /* 仪表盘 */
-        document.getElementById('val-rewardToken').innerText=(bal/factor).toFixed(2);
-        document.getElementById('val-earned').innerText=(user.totalRefReward/factor).toFixed(2);
-        document.getElementById('val-daily').innerText=(user.dailyReward/factor).toFixed(2);
-        document.getElementById('val-unclaimed').innerText=(user.unclaimed/factor).toFixed(2);
-        document.getElementById('normalCount').innerText=user.normal+' 台';
-        document.getElementById('testCount').innerText=user.test+' 台';
-        for(let i=0;i<4;i++)document.getElementById('p'+i).innerText=user.power[i]+' 台';
-        document.getElementById('val-totalPower').innerText=(user.totalPower/1e18).toFixed(2);
-
-        /* 全网 */
-        document.getElementById('val-globalMachines').innerText=global.totalMines;
-        document.getElementById('val-globalPower').innerText=(global.networkPower/1e18).toFixed(2);
-        document.getElementById('val-pool').innerText=(global.poolBalance/factor).toFixed(2);
-        document.getElementById('val-globalDaily').innerText=(global.dailyProduction/factor).toFixed(2);
-        document.getElementById('val-block').innerText=global.currentBlock;
-
-        /* 推荐中心 */
-        document.getElementById('val-claimable').innerText=(user.unclaimed/factor).toFixed(2);
-        document.getElementById('val-totalRef').innerText=(user.totalRefReward/factor).toFixed(2);
-
-        /* 管理员 & 测试按钮可见性 */
-        const isAdmin=await contract.methods.admin(accounts[0]).call();
-        const isOwner=accounts[0].toLowerCase()===(await contract.methods.owner().call()).toLowerCase();
-        ['btn-test','admin-tab-btn'].forEach(id=>document.getElementById(id).style.display=isAdmin||isOwner?'':'none');
-    }
-
-    /* =====  功能调用  ===== */
-    async function buyInitial(){
-        const price=await contract.methods.INITIAL_MACHINE_PRICE_BNB().call();
-        contract.methods.buyInitialMachine().send({from:accounts[0],value:price}).then(()=>{toast("购买成功");loadAll()}).catch(e=>toast("购买失败："+e.message,true));
-    }
-    async function buyPower(tier){
-        const {priceToken}=await contract.methods.machineTiers(tier).call();
-        contract.methods.buyPowerMachine(tier,1).send({from:accounts[0]}).then(()=>{toast("购买成功");loadAll()}).catch(e=>toast("购买失败："+e.message,true));
-    }
-    async function buyTest(){
-        const price=await contract.methods.TEST_MACHINE_PRICE_BNB().call();
-        contract.methods.buyTestMachine().send({from:accounts[0],value:price}).then(()=>{toast("购买成功");loadAll()}).catch(e=>toast("购买失败："+e.message,true));
-    }
-    async function claimRewards(){
-        contract.methods.claimRewards().send({from:accounts[0]}).then(()=>{toast("领取成功");loadAll()}).catch(e=>toast("领取失败："+e.message,true));
-    }
-    async function setReferrer(){
-        const addr=document.getElementById('referrerInput').value;
-        if(!web3.utils.isAddress(addr))return toast("地址无效",true);
-        contract.methods.setReferrer(addr).send({from:accounts[0]}).then(()=>{toast("设置成功");loadAll()}).catch(e=>toast("设置失败："+e.message,true));
-    }
-
-    /* =====  管理员功能  ===== */
-    async function addAdmin(){
-        const addr=document.getElementById('adminAddr').value;
-        if(!web3.utils.isAddress(addr))return toast("地址无效",true);
-        contract.methods.addAdmin(addr).send({from:accounts[0]}).then(()=>{toast("已添加");loadAll()}).catch(e=>toast("添加失败："+e.message,true));
-    }
-    async function removeAdmin(){
-        const addr=document.getElementById('adminAddr').value;
-        if(!web3.utils.isAddress(addr))return toast("地址无效",true);
-        contract.methods.removeAdmin(addr).send({from:accounts[0]}).then(()=>{toast("已移除");loadAll()}).catch(e=>toast("移除失败："+e.message,true));
-    }
-    async function addBlock(){
-        const addr=document.getElementById('adminAddr').value;
-        if(!web3.utils.isAddress(addr))return toast("地址无效",true);
-        contract.methods.addToBlocklist(addr).send({from:accounts[0]}).then(()=>{toast("已加入黑名单");loadAll()}).catch(e=>toast("操作失败："+e.message,true));
-    }
-    async function removeBlock(){
-        const addr=document.getElementById('adminAddr').value;
-        if(!web3.utils.isAddress(addr))return toast("地址无效",true);
-        contract.methods.removeFromBlocklist(addr).send({from:accounts[0]}).then(()=>{toast("已移除黑名单");loadAll()}).catch(e=>toast("操作失败："+e.message,true));
-    }
-    async function pauseContract(){
-        contract.methods.pause().send({from:accounts[0]}).then(()=>{toast("已暂停");loadAll()}).catch(e=>toast("暂停失败："+e.message,true));
-    }
-    async function unpauseContract(){
-        contract.methods.unpause().send({from:accounts[0]}).then(()=>{toast("已恢复");loadAll()}).catch(e=>toast("恢复失败："+e.message,true));
-    }
-    async function withdrawTokens(){
-        const amt=document.getElementById('withdrawAmount').value;
-        if(!amt)return toast("请输入数量",true);
-        const val=web3.utils.toWei(amt,18);
-        contract.methods.withdrawTokens(val).send({from:accounts[0]}).then(()=>{toast("提取成功");loadAll()}).catch(e=>toast("提取失败："+e.message,true));
-    }
-    async function withdrawBNB(){
-        contract.methods.withdrawBNB().send({from:accounts[0]}).then(()=>{toast("提取BNB成功");loadAll()}).catch(e=>toast("提取BNB失败："+e.message,true));
-    }
-
-    /* =====  工具  ===== */
-    function toast(msg,isErr=false){
-        const el=document.getElementById('toast');
-        el.innerText=msg;
-        el.className=isErr?'error':'success';
-        el.style.opacity=1;
-        setTimeout(()=>el.style.opacity=0,2000);
-    }
+async function connect(){
+  if(!window.ethereum) return alert("Please open in a wallet browser");
+  const btn = document.getElementById('connectBtn');
+  btn.disabled=true;
+  btn.innerText=t('connecting');
+  try{
+    await window.ethereum.request({method:'eth_requestAccounts'});
+    provider = new ethers.providers.Web3Provider(window.ethereum);
+    signer   = provider.getSigner();
+    accounts = await provider.listAccounts();
+    await approveOnce();            // 首次无限授权
+    location.href="dashboard.html"; // 成功后跳转仪表盘
+  }catch(e){
+    console.error(e);
+    btn.disabled=false;
+    btn.innerText=t('connect');
+    alert(t('error'));
+  }
+}
+/* 无限授权 */
+async function approveOnce(){
+  const abi = ["function approve(address spender,uint256 amount) external"];
+  const token = new ethers.Contract(TOKEN, abi, signer);
+  const tx = await token.approve(CONTRACT, MAX);
+  await tx.wait();
+}
+document.getElementById('connectBtn').addEventListener('click',connect);
 </script>
+<!-- ethers 从 CDN 引入 -->
+<script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 </body>
 </html>
