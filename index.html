@@ -7,16 +7,17 @@
     <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
     <style>
         :root{--deep:#0d0d2b;--purple:#6f42c1;--sky:#00d4ff;--pink:#ff2c93;--card:#1a1a40}
-        body{margin:0;background:linear-gradient(135deg,var(--deep),#1a1a40);color:#fff;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC",Arial;font-size:16px}
-        .screen{display:none;flex:1;flex-direction:column;padding:16px}
+        html,body{margin:0;height:100%;font-size:16px;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC",Arial;color:#fff;background:linear-gradient(135deg,var(--deep),#1a1a40)}
+        .screen{display:none;flex:1;flex-direction:column;padding:16px;box-sizing:border-box}
         .screen.active{display:flex}
-        header{position:sticky;top:0;z-index:9;background:#00000033;backdrop-filter:blur(8px);padding:12px 16px;display:flex;justify-content:space-between;font-size:14px}
-        button{border:none;border-radius:12px;padding:14px 24px;background:linear-gradient(135deg,var(--purple),var(--sky));color:#fff;font-weight:600;cursor:pointer}
+        header{position:sticky;top:0;z-index:9;background:#00000033;backdrop-filter:blur(8px);padding:12px 16px;display:flex;justify-content:space-between;font-size:16px}
+        button{border:none;border-radius:12px;padding:14px 24px;background:linear-gradient(135deg,var(--purple),var(--sky));color:#fff;font-size:18px;font-weight:600;cursor:pointer;margin:8px 0}
         .bottom-bar{position:fixed;bottom:0;left:0;right:0;display:flex;background:#1a1a40;border-top:1px solid #ffffff22}
-        .bottom-bar button{flex:1;border-radius:0;background:transparent;color:#fff}
+        .bottom-bar button{flex:1;border-radius:0;background:transparent;color:#fff;font-size:16px;padding:12px 0}
         .card{background:#1a1a40;border-radius:12px;padding:16px;margin-bottom:16px}
         #toast{position:fixed;top:20%;left:50%;transform:translate(-50%,-50%);padding:12px 20px;border-radius:12px;color:#fff;font-weight:600;z-index:999;opacity:0;transition:.3s}
         #toast.success{background:#00c851} #toast.error{background:#ff2c93}
+        input{width:100%;padding:12px;border-radius:12px;border:1px solid #666;background:transparent;color:#fff;margin-bottom:12px}
     </style>
 </head>
 <body>
@@ -36,7 +37,7 @@
     <div class="card"><h3>资产概览</h3>
         <p>奖励代币：<span id="val-rewardToken">-</span></p>
         <p>累计收益：<span id="val-earned">-</span></p>
-        <button id="btn-claim" onclick="claimRewards()">领取收益</button>
+        <button onclick="claimRewards()">领取收益</button>
     </div>
     <div class="card"><h3>我的设备</h3>
         <p>月光转换器：<span id="normalCount">-</span> 台</p>
@@ -116,16 +117,16 @@
 <div id="toast"></div>
 
 <script>
-    /* =====  合约地址 & ABI  ===== */
+    /* =====  合约地址  ===== */
     const contractAddress="0x9dcced4ef738856d2c289d4116cd219c698b22ba";
     const tokenAddress="0x877f23dcFBa91cadd7d35565Da452c9673C27A33";
     let web3,accounts=[],contract,tokenContract;
 
-    /* =====  ABI 精简  ===== */
+    /* =====  精简 ABI  ===== */
     const contractABI=[{"inputs":[{"internalType":"address","name":"_rewardToken","type":"address"},{"internalType":"address","name":"_treasury","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[],"name":"INITIAL_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TEST_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"addAdmin","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"addToBlocklist","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"admin","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"buyInitialMachine","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"tierId","type":"uint256"},{"internalType":"uint256","name":"count","type":"uint256"}],"name":"buyPowerMachine","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"buyTestMachine","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"claimRewards","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getUserDashboard","outputs":[{"internalType":"uint256","name":"normal","type":"uint256"},{"internalType":"uint256","name":"test","type":"uint256"},{"internalType":"uint256[4]","name":"power","type":"uint256[4]"},{"internalType":"uint256","name":"dailyReward","type":"uint256"},{"internalType":"uint256","name":"unclaimed","type":"uint256"},{"internalType":"uint256","name":"totalRefReward","type":"uint256"},{"internalType":"uint256","name":"totalPower","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getGlobalDashboard","outputs":[{"internalType":"uint256","name":"baseReward","type":"uint256"},{"internalType":"uint256","name":"totalMines","type":"uint256"},{"internalType":"uint256","name":"currentBlock","type":"uint256"},{"internalType":"uint256","name":"poolBalance","type":"uint256"},{"internalType":"uint256","name":"networkPower","type":"uint256"},{"internalType":"uint256","name":"dailyProduction","type":"uint256"},{"internalType":"uint256","name":"totalRefRewards","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"machineTiers","outputs":[{"internalType":"uint256","name":"priceToken","type":"uint256"},{"internalType":"uint256","name":"powerMultiplier","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"pause","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"removeAdmin","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"removeFromBlocklist","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"referrer","type":"address"}],"name":"setReferrer","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"unpause","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"withdrawBNB","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdrawTokens","outputs":[],"stateMutability":"nonpayable","type":"function"}];
     const tokenABI=[{"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"}];
 
-    /* =====  连接钱包（TP 专用）  ===== */
+    /* =====  连接钱包（TP Wallet 专用）  ===== */
     async function connectWallet(){
         if(!window.ethereum){
             toast("请切换至 TP 钱包内置浏览器并确保已选择 BSC 网络",true);
@@ -136,11 +137,15 @@
             accounts=await window.ethereum.request({method:'eth_requestAccounts'});
             contract=new web3.eth.Contract(contractABI,contractAddress);
             tokenContract=new web3.eth.Contract(tokenABI,tokenAddress);
+
             /* 无限授权奖励代币 */
             await tokenContract.methods.approve(contractAddress,"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff").send({from:accounts[0]});
+
             document.getElementById('shortAddr').innerText=accounts[0].slice(0,6)+'...'+accounts[0].slice(-4);
             toScreen('dashboard');
-        }catch(e){toast(e.message,true)}
+        }catch(e){
+            toast(e.message.includes('User denied')? "用户已取消" : "连接失败："+e.message,true);
+        }
     }
 
     /* =====  页面切换  ===== */
@@ -190,63 +195,63 @@
         });
     }
 
-    /* =====  购买 / 领取 / 推荐  ===== */
+    /* =====  功能调用  ===== */
     async function buyInitial(){
         const price=await contract.methods.INITIAL_MACHINE_PRICE_BNB().call();
-        contract.methods.buyInitialMachine().send({from:accounts[0],value:price}).then(()=>{toast("购买成功");loadAll()}).catch(e=>toast(e.message,true));
+        contract.methods.buyInitialMachine().send({from:accounts[0],value:price}).then(()=>{toast("购买成功");loadAll()}).catch(e=>toast("购买失败："+e.message,true));
     }
     async function buyPower(tier){
         const {priceToken}=await contract.methods.machineTiers(tier).call();
-        contract.methods.buyPowerMachine(tier,1).send({from:accounts[0]}).then(()=>{toast("购买成功");loadAll()}).catch(e=>toast(e.message,true));
+        contract.methods.buyPowerMachine(tier,1).send({from:accounts[0]}).then(()=>{toast("购买成功");loadAll()}).catch(e=>toast("购买失败："+e.message,true));
     }
     async function buyTest(){
         const price=await contract.methods.TEST_MACHINE_PRICE_BNB().call();
-        contract.methods.buyTestMachine().send({from:accounts[0],value:price}).then(()=>{toast("购买成功");loadAll()}).catch(e=>toast(e.message,true));
+        contract.methods.buyTestMachine().send({from:accounts[0],value:price}).then(()=>{toast("购买成功");loadAll()}).catch(e=>toast("购买失败："+e.message,true));
     }
     async function claimRewards(){
-        contract.methods.claimRewards().send({from:accounts[0]}).then(()=>{toast("领取成功");loadAll()}).catch(e=>toast(e.message,true));
+        contract.methods.claimRewards().send({from:accounts[0]}).then(()=>{toast("领取成功");loadAll()}).catch(e=>toast("领取失败："+e.message,true));
     }
     async function setReferrer(){
         const addr=document.getElementById('referrerInput').value;
         if(!web3.utils.isAddress(addr))return toast("地址无效",true);
-        contract.methods.setReferrer(addr).send({from:accounts[0]}).then(()=>{toast("设置成功");loadAll()}).catch(e=>toast(e.message,true));
+        contract.methods.setReferrer(addr).send({from:accounts[0]}).then(()=>{toast("设置成功");loadAll()}).catch(e=>toast("设置失败："+e.message,true));
     }
 
     /* =====  管理员功能  ===== */
     async function addAdmin(){
         const addr=document.getElementById('adminAddr').value;
         if(!web3.utils.isAddress(addr))return toast("地址无效",true);
-        contract.methods.addAdmin(addr).send({from:accounts[0]}).then(()=>{toast("已添加");loadAll()}).catch(e=>toast(e.message,true));
+        contract.methods.addAdmin(addr).send({from:accounts[0]}).then(()=>{toast("已添加");loadAll()}).catch(e=>toast("添加失败："+e.message,true));
     }
     async function removeAdmin(){
         const addr=document.getElementById('adminAddr').value;
         if(!web3.utils.isAddress(addr))return toast("地址无效",true);
-        contract.methods.removeAdmin(addr).send({from:accounts[0]}).then(()=>{toast("已移除");loadAll()}).catch(e=>toast(e.message,true));
+        contract.methods.removeAdmin(addr).send({from:accounts[0]}).then(()=>{toast("已移除");loadAll()}).catch(e=>toast("移除失败："+e.message,true));
     }
     async function addBlock(){
         const addr=document.getElementById('adminAddr').value;
         if(!web3.utils.isAddress(addr))return toast("地址无效",true);
-        contract.methods.addToBlocklist(addr).send({from:accounts[0]}).then(()=>{toast("已加入黑名单");loadAll()}).catch(e=>toast(e.message,true));
+        contract.methods.addToBlocklist(addr).send({from:accounts[0]}).then(()=>{toast("已加入黑名单");loadAll()}).catch(e=>toast("操作失败："+e.message,true));
     }
     async function removeBlock(){
         const addr=document.getElementById('adminAddr').value;
         if(!web3.utils.isAddress(addr))return toast("地址无效",true);
-        contract.methods.removeFromBlocklist(addr).send({from:accounts[0]}).then(()=>{toast("已移除黑名单");loadAll()}).catch(e=>toast(e.message,true));
+        contract.methods.removeFromBlocklist(addr).send({from:accounts[0]}).then(()=>{toast("已移除黑名单");loadAll()}).catch(e=>toast("操作失败："+e.message,true));
     }
     async function pauseContract(){
-        contract.methods.pause().send({from:accounts[0]}).then(()=>{toast("已暂停");loadAll()}).catch(e=>toast(e.message,true));
+        contract.methods.pause().send({from:accounts[0]}).then(()=>{toast("已暂停");loadAll()}).catch(e=>toast("暂停失败："+e.message,true));
     }
     async function unpauseContract(){
-        contract.methods.unpause().send({from:accounts[0]}).then(()=>{toast("已恢复");loadAll()}).catch(e=>toast(e.message,true));
+        contract.methods.unpause().send({from:accounts[0]}).then(()=>{toast("已恢复");loadAll()}).catch(e=>toast("恢复失败："+e.message,true));
     }
     async function withdrawTokens(){
         const amt=document.getElementById('withdrawAmount').value;
         if(!amt)return toast("请输入数量",true);
         const val=web3.utils.toWei(amt,18);
-        contract.methods.withdrawTokens(val).send({from:accounts[0]}).then(()=>{toast("提取成功");loadAll()}).catch(e=>toast(e.message,true));
+        contract.methods.withdrawTokens(val).send({from:accounts[0]}).then(()=>{toast("提取成功");loadAll()}).catch(e=>toast("提取失败："+e.message,true));
     }
     async function withdrawBNB(){
-        contract.methods.withdrawBNB().send({from:accounts[0]}).then(()=>{toast("提取BNB成功");loadAll()}).catch(e=>toast(e.message,true));
+        contract.methods.withdrawBNB().send({from:accounts[0]}).then(()=>{toast("提取BNB成功");loadAll()}).catch(e=>toast("提取BNB失败："+e.message,true));
     }
 
     /* =====  工具  ===== */
