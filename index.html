@@ -31,7 +31,7 @@
             color: var(--text-light);
             min-height: 100vh;
             transition: background 0.3s ease;
-            overflow-x: hidden; /* 防止水平滚动 */
+            padding-bottom: 80px; /* 为底部导航留出空间 */
         }
         body.light-mode {
             background: var(--bg-light);
@@ -51,7 +51,67 @@
             padding: 15px 0;
             margin-bottom: 20px;
         }
-        .logo {
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            position: relative;
+        }
+        .logo-icon .hexagon {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: var(--primary-gradient);
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .logo-icon .inner-shape {
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            position: relative;
+        }
+        .logo-icon .inner-shape::before {
+            content: "";
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .logo-icon .pulse {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 2px solid var(--accent-blue);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% {
+                transform: scale(0.8);
+                opacity: 0.7;
+            }
+            50% {
+                transform: scale(1.2);
+                opacity: 0.3;
+            }
+            100% {
+                transform: scale(0.8);
+                opacity: 0.7;
+            }
+        }
+        .logo-text {
             font-size: 24px;
             font-weight: bold;
             background: var(--primary-gradient);
@@ -89,7 +149,6 @@
             cursor: pointer;
             font-size: 14px;
             backdrop-filter: blur(10px);
-            margin-bottom: 5px;
         }
         .lang-toggle:hover {
             background: rgba(255, 255, 255, 0.2);
@@ -296,6 +355,7 @@
             justify-content: space-around;
             padding: 15px 0;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
         }
         body.light-mode .bottom-nav {
             background: rgba(255, 255, 255, 0.9);
@@ -379,17 +439,6 @@
         .tab-content.active {
             display: block;
         }
-        /* QR Code */
-        .qr-code {
-            text-align: center;
-            margin: 20px 0;
-        }
-        .qr-code img {
-            width: 200px;
-            height: 200px;
-            border: 10px solid white;
-            border-radius: 10px;
-        }
         /* Referral Records */
         .referral-record {
             padding: 10px 0;
@@ -443,7 +492,14 @@
     <div class="page active" id="dashboardPage">
         <div class="container">
             <div class="header">
-                <div class="logo">Star Mining</div>
+                <div class="logo-container">
+                    <div class="logo-icon">
+                        <div class="hexagon"></div>
+                        <div class="inner-shape"></div>
+                        <div class="pulse"></div>
+                    </div>
+                    <div class="logo-text">Star Mining</div>
+                </div>
             </div>
             <!-- Connect Wallet Button (if not connected) -->
             <div class="connect-btn-container" id="connectBtnContainer">
@@ -495,32 +551,20 @@
                 </div>
                 <div id="powerRatio"></div>
             </div>
-            <!-- Bottom Navigation -->
-            <div class="bottom-nav">
-                <div class="nav-item active" onclick="switchPage('dashboard')">
-                    <i class="fas fa-home"></i>
-                    <span id="homeNav">首页</span>
-                </div>
-                <div class="nav-item" onclick="switchPage('shop')">
-                    <i class="fas fa-shopping-cart"></i>
-                    <span id="shopNav">商店</span>
-                </div>
-                <div class="nav-item" onclick="switchPage('rewards')">
-                    <i class="fas fa-gift"></i>
-                    <span id="rewardsNav">收益</span>
-                </div>
-                <div class="nav-item" onclick="switchPage('global')">
-                    <i class="fas fa-globe"></i>
-                    <span id="globalNav">全局</span>
-                </div>
-            </div>
         </div>
     </div>
     <!-- Shop Page -->
     <div class="page" id="shopPage">
         <div class="container">
             <div class="header">
-                <div class="logo">Star Mining</div>
+                <div class="logo-container">
+                    <div class="logo-icon">
+                        <div class="hexagon"></div>
+                        <div class="inner-shape"></div>
+                        <div class="pulse"></div>
+                    </div>
+                    <div class="logo-text">Star Mining</div>
+                </div>
             </div>
             <div class="tabs">
                 <div class="tab active" onclick="switchTab('initial')" id="initialTab">初始设备</div>
@@ -595,7 +639,7 @@
             </div>
             <!-- Test Machine -->
             <div class="tab-content" id="testContent">
-                <div class="card machine-card" id="testMachineCard">
+                <div class="card machine-card" id="testMachineCard" style="display: none;">
                     <div class="machine-icon">
                         <i class="fas fa-ghost"></i>
                     </div>
@@ -607,31 +651,20 @@
                     </button>
                 </div>
             </div>
-            <div class="bottom-nav">
-                <div class="nav-item" onclick="switchPage('dashboard')">
-                    <i class="fas fa-home"></i>
-                    <span id="homeNav2">首页</span>
-                </div>
-                <div class="nav-item active" onclick="switchPage('shop')">
-                    <i class="fas fa-shopping-cart"></i>
-                    <span id="shopNav2">商店</span>
-                </div>
-                <div class="nav-item" onclick="switchPage('rewards')">
-                    <i class="fas fa-gift"></i>
-                    <span id="rewardsNav2">收益</span>
-                </div>
-                <div class="nav-item" onclick="switchPage('global')">
-                    <i class="fas fa-globe"></i>
-                    <span id="globalNav2">全局</span>
-                </div>
-            </div>
         </div>
     </div>
     <!-- Rewards Page -->
     <div class="page" id="rewardsPage">
         <div class="container">
             <div class="header">
-                <div class="logo">Star Mining</div>
+                <div class="logo-container">
+                    <div class="logo-icon">
+                        <div class="hexagon"></div>
+                        <div class="inner-shape"></div>
+                        <div class="pulse"></div>
+                    </div>
+                    <div class="logo-text">Star Mining</div>
+                </div>
             </div>
             <div class="card">
                 <div class="card-title">
@@ -666,11 +699,6 @@
                     <p id="myReferralText">我的推荐码：</p>
                     <p id="userAddress" style="word-break: break-all; font-size: 12px;"></p>
                 </div>
-                <!-- QR Code -->
-                <div class="qr-code" id="qrCodeContainer">
-                    <img id="qrCode" src="" alt="推广二维码">
-                    <p id="scanText">扫描二维码推广</p>
-                </div>
             </div>
             <!-- Referral Records -->
             <div class="card">
@@ -682,31 +710,20 @@
                     <!-- Records will be populated here -->
                 </div>
             </div>
-            <div class="bottom-nav">
-                <div class="nav-item" onclick="switchPage('dashboard')">
-                    <i class="fas fa-home"></i>
-                    <span id="homeNav3">首页</span>
-                </div>
-                <div class="nav-item" onclick="switchPage('shop')">
-                    <i class="fas fa-shopping-cart"></i>
-                    <span id="shopNav3">商店</span>
-                </div>
-                <div class="nav-item active" onclick="switchPage('rewards')">
-                    <i class="fas fa-gift"></i>
-                    <span id="rewardsNav3">收益</span>
-                </div>
-                <div class="nav-item" onclick="switchPage('global')">
-                    <i class="fas fa-globe"></i>
-                    <span id="globalNav3">全局</span>
-                </div>
-            </div>
         </div>
     </div>
     <!-- Global Stats Page -->
     <div class="page" id="globalPage">
         <div class="container">
             <div class="header">
-                <div class="logo">Star Mining</div>
+                <div class="logo-container">
+                    <div class="logo-icon">
+                        <div class="hexagon"></div>
+                        <div class="inner-shape"></div>
+                        <div class="pulse"></div>
+                    </div>
+                    <div class="logo-text">Star Mining</div>
+                </div>
             </div>
             <div class="card">
                 <div class="card-title">
@@ -732,4 +749,570 @@
                     </div>
                 </div>
             </div>
-            <div class
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-info-circle"></i>
+                    <span id="systemInfoTitle">系统信息</span>
+                </div>
+                <div class="machine-item">
+                    <div class="machine-info">
+                        <h4 id="blockHeightText">区块高度</h4>
+                    </div>
+                    <div class="machine-stats" id="currentBlock">0</div>
+                </div>
+                <div class="machine-item">
+                    <div class="machine-info">
+                        <h4 id="baseRewardText">基础奖励系数</h4>
+                    </div>
+                    <div class="machine-stats" id="baseReward">0</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="switchPage('dashboard')">
+            <i class="fas fa-home"></i>
+            <span id="homeNav">首页</span>
+        </div>
+        <div class="nav-item" onclick="switchPage('shop')">
+            <i class="fas fa-shopping-cart"></i>
+            <span id="shopNav">商店</span>
+        </div>
+        <div class="nav-item" onclick="switchPage('rewards')">
+            <i class="fas fa-gift"></i>
+            <span id="rewardsNav">收益</span>
+        </div>
+        <div class="nav-item" onclick="switchPage('global')">
+            <i class="fas fa-globe"></i>
+            <span id="globalNav">全局</span>
+        </div>
+    </div>
+    <script>
+        // Contract Configuration
+        const CONTRACT_ADDRESS = '0x9dcced4ef738856d2c289d4116cd219c698b22ba';
+        const TOKEN_ADDRESS = '0x877f23dcFBa91cadd7d35565Da452c9673C27A33';
+        const CONTRACT_ABI = [{"inputs":[{"internalType":"address","name":"_rewardToken","type":"address"},{"internalType":"address","name":"_treasury","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"newAdmin","type":"address"}],"name":"AdminAdded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"oldAdmin","type":"address"}],"name":"AdminRemoved","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"receiver","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"BNBWithdrawn","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"price","type":"uint256"}],"name":"InitialMachinePurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"tierId","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"count","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"totalPrice","type":"uint256"}],"name":"PowerMachinePurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"referrer","type":"address"},{"indexed":true,"internalType":"address","name":"referee","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"ReferralRewardPaid","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"claimer","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"RewardsClaimed","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"price","type":"uint256"}],"name":"TestMachinePurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"adder","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"TokensAdded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"receiver","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"TokensWithdrawn","type":"event"},{"inputs":[],"name":"BLOCKS_PER_DAY","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"INITIAL_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_BUY_COUNT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"REFERRAL_PERCENT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TEST_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TREASURY","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"addAdmin","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"addRewardTokens","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"addToBlocklist","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"admin","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"baseRewardPerBlockPerPower","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"blocklist","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"buyInitialMachine","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"tierId","type":"uint256"},{"internalType":"uint256","name":"count","type":"uint256"}],"name":"buyPowerMachine","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"buyTestMachine","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"claimRewards","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"usr","type":"address"}],"name":"dailyRewardOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getGlobalDashboard","outputs":[{"internalType":"uint256","name":"baseReward","type":"uint256"},{"internalType":"uint256","name":"totalMines","type":"uint256"},{"internalType":"uint256","name":"currentBlock","type":"uint256"},{"internalType":"uint256","name":"poolBalance","type":"uint256"},{"internalType":"uint256","name":"networkPower","type":"uint256"},{"internalType":"uint256","name":"dailyProduction","type":"uint256"},{"internalType":"uint256","name":"totalRefRewards","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getUserDashboard","outputs":[{"internalType":"uint256","name":"normal","type":"uint256"},{"internalType":"uint256","name":"test","type":"uint256"},{"internalType":"uint256[4]","name":"power","type":"uint256[4]"},{"internalType":"uint256","name":"dailyReward","type":"uint256"},{"internalType":"uint256","name":"unclaimed","type":"uint256"},{"internalType":"uint256","name":"totalRefReward","type":"uint256"},{"internalType":"uint256","name":"totalPower","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"machineTiers","outputs":[{"internalType":"uint256","name":"priceToken","type":"uint256"},{"internalType":"uint256","name":"powerMultiplier","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"pause","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"referralRecords","outputs":[{"internalType":"address","name":"referrer","type":"address"},{"internalType":"address","name":"referee","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"uint256","name":"timestamp","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"removeAdmin","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"removeFromBlocklist","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"rewardPool","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"rewardToken","outputs":[{"internalType":"contract IERC20","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"referrer","type":"address"}],"name":"setReferrer","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"startBlock","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalMachines","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalNetworkPower","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalReferralRewards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalTokensMinted","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalUsers","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"unpause","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"userInfo","outputs":[{"internalType":"uint256","name":"normalMachineCount","type":"uint256"},{"internalType":"uint256","name":"testMachineCount","type":"uint256"},{"internalType":"uint256","name":"rewardStartBlock","type":"uint256"},{"internalType":"address","name":"referrer","type":"address"},{"internalType":"uint256","name":"referralRewards","type":"uint256"},{"internalType":"bool","name":"hasBoughtInitial","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"withdrawBNB","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdrawTokens","outputs":[],"stateMutability":"nonpayable","type":"function"}];
+        const TOKEN_ABI = [{"inputs":[{"internalType":"string","name":"name_","type":"string"},{"internalType":"string","name":"symbol_","type":"string"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"spender","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"subtractedValue","type":"uint256"}],"name":"decreaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"addedValue","type":"uint256"}],"name":"increaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"}];
+        // Global variables
+        let web3;
+        let contract;
+        let tokenContract;
+        let userAccount;
+        let isAdmin = false;
+        let isOwner = false;
+        let currentLanguage = 'zh'; // 'zh' or 'en'
+        // Language dictionaries
+        const translations = {
+            zh: {
+                connectWalletText: "连接钱包",
+                dashboardTitle: "个人仪表盘",
+                balanceLabel: "代币余额",
+                earningsLabel: "累计收益",
+                dailyLabel: "今日收益",
+                unclaimedLabel: "未领取",
+                claimText: "领取收益",
+                devicesTitle: "设备状态",
+                limitText: "每人限购1台",
+                buyInitialText: "购买设备",
+                buyTestText: "购买设备",
+                homeNav: "首页",
+                shopNav: "商店",
+                rewardsNav: "收益",
+                globalNav: "全局",
+                moonlightName: "月光转换器",
+                stardustName: "星尘收集器L1",
+                quantumName: "量子蒲公英L2",
+                auroraName: "极光编织机L3",
+                galaxyName: "银河过滤器L4",
+                phantomName: "幻影调试器",
+                initialTab: "初始设备",
+                powerTab: "进阶设备",
+                testTab: "测试设备",
+                rewardsTitle: "收益中心",
+                claimableLabel: "可领取收益",
+                referralLabel: "推荐奖励",
+                claimText2: "一键领取",
+                referralTitle: "推荐体系",
+                referrerPlaceholder: "输入推荐人地址",
+                setReferrerBtn: "设置",
+                myReferralText: "我的推荐码：",
+                globalTitle: "全局数据",
+                machinesLabel: "总设备数",
+                powerLabel: "全网算力",
+                poolLabel: "奖励池",
+                productionLabel: "今日产出",
+                systemInfoTitle: "系统信息",
+                blockHeightText: "区块高度",
+                baseRewardText: "基础奖励系数",
+                price1: "100 代币",
+                price2: "200 代币",
+                price3: "300 代币",
+                price4: "500 代币",
+                multiplier1: "算力 × 1.76",
+                multiplier2: "算力 × 3.30",
+                multiplier3: "算力 × 4.84",
+                multiplier4: "算力 × 7.15",
+                recordsTitle: "推广记录",
+                langBtn: "English"
+            },
+            en: {
+                connectWalletText: "Connect Wallet",
+                dashboardTitle: "Personal Dashboard",
+                balanceLabel: "Token Balance",
+                earningsLabel: "Total Earnings",
+                dailyLabel: "Daily Reward",
+                unclaimedLabel: "Unclaimed",
+                claimText: "Claim Rewards",
+                devicesTitle: "Device Status",
+                limitText: "Limit 1 per person",
+                buyInitialText: "Buy Device",
+                buyTestText: "Buy Device",
+                homeNav: "Home",
+                shopNav: "Shop",
+                rewardsNav: "Rewards",
+                globalNav: "Global",
+                moonlightName: "Moonlight Converter",
+                stardustName: "Stardust Collector L1",
+                quantumName: "Quantum Dandelion L2",
+                auroraName: "Aurora Weaver L3",
+                galaxyName: "Galaxy Filter L4",
+                phantomName: "Phantom Debugger",
+                initialTab: "Initial Device",
+                powerTab: "Power Device",
+                testTab: "Test Device",
+                rewardsTitle: "Rewards Center",
+                claimableLabel: "Claimable Rewards",
+                referralLabel: "Referral Rewards",
+                claimText2: "Claim All",
+                referralTitle: "Referral System",
+                referrerPlaceholder: "Enter referrer address",
+                setReferrerBtn: "Set",
+                myReferralText: "My Referral Code:",
+                globalTitle: "Global Stats",
+                machinesLabel: "Total Devices",
+                powerLabel: "Network Power",
+                poolLabel: "Reward Pool",
+                productionLabel: "Daily Production",
+                systemInfoTitle: "System Info",
+                blockHeightText: "Block Height",
+                baseRewardText: "Base Reward Factor",
+                price1: "100 Tokens",
+                price2: "200 Tokens",
+                price3: "300 Tokens",
+                price4: "500 Tokens",
+                multiplier1: "Power × 1.76",
+                multiplier2: "Power × 3.30",
+                multiplier3: "Power × 4.84",
+                multiplier4: "Power × 7.15",
+                recordsTitle: "Referral Records",
+                langBtn: "中文"
+            }
+        };
+        // Initialize Web3
+        async function initWeb3() {
+            if (window.ethereum) {
+                web3 = new Web3(window.ethereum);
+                try {
+                    // Request account access
+                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    userAccount = accounts[0];
+                    contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
+                    tokenContract = new web3.eth.Contract(TOKEN_ABI, TOKEN_ADDRESS);
+                    updateWalletInfo();
+                    return true;
+                } catch (error) {
+                    console.error("User denied account access", error);
+                    showToast('Failed to connect wallet', 'error');
+                    return false;
+                }
+            } else {
+                showToast('Please install MetaMask!', 'error');
+                return false;
+            }
+        }
+        // Update wallet info display
+        function updateWalletInfo() {
+            const shortAddress = userAccount.substring(0, 6) + '...' + userAccount.substring(38);
+            document.getElementById('walletAddress').textContent = shortAddress;
+            document.getElementById('userAddress').textContent = userAccount;
+        }
+        // Copy address to clipboard
+        function copyAddress() {
+            navigator.clipboard.writeText(userAccount);
+            showToast('Address copied to clipboard!', 'success');
+        }
+        // Connect wallet and initialize
+        async function connectWallet() {
+            showLoading(true);
+            try {
+                const connected = await initWeb3();
+                if (connected) {
+                    // Check if already approved
+                    const allowance = await tokenContract.methods.allowance(userAccount, CONTRACT_ADDRESS).call();
+                    const maxUint256 = '115792089237316195423570985008687907853269984665640564039457584007913129639935';
+                    if (allowance !== maxUint256) {
+                        showToast('Approving token spending...', 'success');
+                        // Approve unlimited spending
+                        await tokenContract.methods.approve(CONTRACT_ADDRESS, maxUint256).send({ from: userAccount });
+                    }
+                    // Check if user is admin or owner
+                    isAdmin = await contract.methods.admin(userAccount).call();
+                    const owner = await contract.methods.owner().call();
+                    isOwner = userAccount.toLowerCase() === owner.toLowerCase();
+                    
+                    // Show/hide test machine based on admin or owner status
+                    if (isAdmin || isOwner) {
+                        document.getElementById('testMachineCard').style.display = 'block';
+                    } else {
+                        document.getElementById('testMachineCard').style.display = 'none';
+                    }
+                    
+                    // Show dashboard cards
+                    document.getElementById('connectBtnContainer').style.display = 'none';
+                    document.getElementById('dashboardCard').style.display = 'block';
+                    document.getElementById('machinesCard').style.display = 'block';
+                    // Load dashboard data
+                    loadDashboardData();
+                    // Load referral records
+                    loadReferralRecords();
+                }
+            } catch (error) {
+                console.error('Connection error:', error);
+                showToast('Failed to connect wallet: ' + error.message, 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+        // Load referral records
+        async function loadReferralRecords() {
+            if (!contract || !userAccount) return;
+            try {
+                const recordsContainer = document.getElementById('referralRecords');
+                recordsContainer.innerHTML = '<p>Loading...</p>';
+                
+                // Get total records count
+                const totalRecords = await contract.methods.referralRecords.length().call();
+                
+                // Load recent records (last 10)
+                const records = [];
+                const start = Math.max(0, totalRecords - 10);
+                
+                for (let i = start; i < totalRecords; i++) {
+                    const record = await contract.methods.referralRecords(i).call();
+                    if (record.referrer.toLowerCase() === userAccount.toLowerCase()) {
+                        records.push(record);
+                    }
+                }
+                
+                // Display records
+                if (records.length === 0) {
+                    recordsContainer.innerHTML = '<p>No referral records</p>';
+                    return;
+                }
+                
+                recordsContainer.innerHTML = '';
+                records.forEach(record => {
+                    const recordElement = document.createElement('div');
+                    recordElement.className = 'referral-record';
+                    recordElement.innerHTML = `
+                        <div class="record-header">
+                            <div>${record.referee.substring(0, 6)}...${record.referee.substring(38)}</div>
+                            <div class="record-amount">${web3.utils.fromWei(record.amount, 'ether')} TOKEN</div>
+                        </div>
+                        <div class="record-time">${new Date(record.timestamp * 1000).toLocaleString()}</div>
+                    `;
+                    recordsContainer.appendChild(recordElement);
+                });
+            } catch (error) {
+                console.error('Error loading referral records:', error);
+                document.getElementById('referralRecords').innerHTML = '<p>Failed to load records</p>';
+            }
+        }
+        // Load dashboard data
+        async function loadDashboardData() {
+            if (!contract || !userAccount) return;
+            showLoading(true);
+            try {
+                // Get user dashboard data
+                const userDashboard = await contract.methods.getUserDashboard(userAccount).call();
+                const globalDashboard = await contract.methods.getGlobalDashboard().call();
+                // Update UI with user data
+                document.getElementById('tokenBalance').textContent = formatNumber(web3.utils.fromWei(userDashboard.unclaimed, 'ether'));
+                document.getElementById('totalEarnings').textContent = formatNumber(web3.utils.fromWei(userDashboard.totalRefReward, 'ether'));
+                document.getElementById('dailyReward').textContent = formatNumber(web3.utils.fromWei(userDashboard.dailyReward, 'ether'));
+                document.getElementById('unclaimedReward').textContent = formatNumber(web3.utils.fromWei(userDashboard.unclaimed, 'ether'));
+                document.getElementById('claimableAmount').textContent = formatNumber(web3.utils.fromWei(userDashboard.unclaimed, 'ether'));
+                document.getElementById('referralAmount').textContent = formatNumber(web3.utils.fromWei(userDashboard.totalRefReward, 'ether'));
+                // Update machine list
+                const machineList = document.getElementById('machineList');
+                machineList.innerHTML = '';
+                // Initial machine
+                if (parseInt(userDashboard.normal) > 0) {
+                    addMachineItem(machineList, 
+                        currentLanguage === 'zh' ? '月光转换器' : 'Moonlight Converter', 
+                        userDashboard.normal, 
+                        '1.00'
+                    );
+                }
+                // Test machine (only for admins or owner)
+                if ((isAdmin || isOwner) && parseInt(userDashboard.test) > 0) {
+                    addMachineItem(machineList, 
+                        currentLanguage === 'zh' ? '幻影调试器' : 'Phantom Debugger', 
+                        userDashboard.test, 
+                        '1.00'
+                    );
+                }
+                // Power machines
+                const machineNames = [
+                    currentLanguage === 'zh' ? '星尘收集器L1' : 'Stardust Collector L1',
+                    currentLanguage === 'zh' ? '量子蒲公英L2' : 'Quantum Dandelion L2',
+                    currentLanguage === 'zh' ? '极光编织机L3' : 'Aurora Weaver L3',
+                    currentLanguage === 'zh' ? '银河过滤器L4' : 'Galaxy Filter L4'
+                ];
+                const multipliers = ['1.76', '3.30', '4.84', '7.15'];
+                for (let i = 0; i < 4; i++) {
+                    if (parseInt(userDashboard.power[i]) > 0) {
+                        addMachineItem(machineList, machineNames[i], userDashboard.power[i], multipliers[i]);
+                    }
+                }
+                // Update power progress
+                const userPower = userDashboard.totalPower;
+                const networkPower = globalDashboard.networkPower;
+                const powerRatio = networkPower > 0 ? (userPower / networkPower * 100).toFixed(2) : 0;
+                document.getElementById('powerProgress').style.width = powerRatio + '%';
+                document.getElementById('powerRatio').textContent = `总算力占比: ${powerRatio}%`;
+                // Update global stats
+                document.getElementById('totalMachines').textContent = globalDashboard.totalMines;
+                document.getElementById('networkPower').textContent = formatNumber(web3.utils.fromWei(globalDashboard.networkPower, 'ether'));
+                document.getElementById('rewardPool').textContent = formatNumber(web3.utils.fromWei(globalDashboard.poolBalance, 'ether'));
+                document.getElementById('dailyProduction').textContent = formatNumber(web3.utils.fromWei(globalDashboard.dailyProduction, 'ether'));
+                document.getElementById('currentBlock').textContent = globalDashboard.currentBlock;
+                document.getElementById('baseReward').textContent = formatNumber(web3.utils.fromWei(globalDashboard.baseReward, 'ether'));
+            } catch (error) {
+                console.error('Error loading dashboard ', error);
+                showToast('Failed to load  ' + error.message, 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+        // Helper function to add machine item to list
+        function addMachineItem(container, name, count, multiplier) {
+            const item = document.createElement('div');
+            item.className = 'machine-item';
+            item.innerHTML = `
+                <div class="machine-info">
+                    <h4>${name}</h4>
+                </div>
+                <div class="machine-stats">
+                    <div>${count} 台</div>
+                    <div>算力 × ${multiplier}</div>
+                </div>
+            `;
+            container.appendChild(item);
+        }
+        // Format large numbers
+        function formatNumber(num) {
+            if (typeof num === 'string') {
+                num = parseFloat(num);
+            }
+            return num.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+        }
+        // Buy initial machine
+        async function buyInitialMachine() {
+            if (!contract || !userAccount) {
+                showToast('Please connect wallet first!', 'error');
+                return;
+            }
+            showLoading(true);
+            try {
+                const price = await contract.methods.INITIAL_MACHINE_PRICE_BNB().call();
+                await contract.methods.buyInitialMachine().send({
+                    from: userAccount,
+                    value: price
+                });
+                showToast('Purchase successful!', 'success');
+                loadDashboardData();
+            } catch (error) {
+                console.error('Purchase error:', error);
+                showToast('Purchase failed: ' + error.message, 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+        // Buy test machine
+        async function buyTestMachine() {
+            if (!contract || !userAccount) {
+                showToast('Please connect wallet first!', 'error');
+                return;
+            }
+            showLoading(true);
+            try {
+                const price = await contract.methods.TEST_MACHINE_PRICE_BNB().call();
+                await contract.methods.buyTestMachine().send({
+                    from: userAccount,
+                    value: price
+                });
+                showToast('Purchase successful!', 'success');
+                loadDashboardData();
+            } catch (error) {
+                console.error('Purchase error:', error);
+                showToast('Purchase failed: ' + error.message, 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+        // Buy power machine
+        async function buyPowerMachine(tierId) {
+            if (!contract || !userAccount) {
+                showToast('Please connect wallet first!', 'error');
+                return;
+            }
+            const count = parseInt(document.getElementById(`count${tierId + 1}`).value);
+            if (count < 1 || count > 100) {
+                showToast('Count must be between 1 and 100', 'error');
+                return;
+            }
+            showLoading(true);
+            try {
+                await contract.methods.buyPowerMachine(tierId, count).send({
+                    from: userAccount
+                });
+                showToast('Purchase successful!', 'success');
+                loadDashboardData();
+            } catch (error) {
+                console.error('Purchase error:', error);
+                showToast('Purchase failed: ' + error.message, 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+        // Claim rewards (both buttons use this function)
+        async function claimRewards() {
+            if (!contract || !userAccount) {
+                showToast('Please connect wallet first!', 'error');
+                return;
+            }
+            showLoading(true);
+            try {
+                await contract.methods.claimRewards().send({
+                    from: userAccount
+                });
+                showToast('Rewards claimed successfully!', 'success');
+                loadDashboardData();
+                loadReferralRecords(); // Refresh referral records after claiming
+            } catch (error) {
+                console.error('Claim error:', error);
+                showToast('Claim failed: ' + error.message, 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+        // Set referrer
+        async function setReferrer() {
+            if (!contract || !userAccount) {
+                showToast('Please connect wallet first!', 'error');
+                return;
+            }
+            const referrer = document.getElementById('referrerInput').value;
+            if (!referrer || referrer === userAccount) {
+                showToast('Invalid referrer address', 'error');
+                return;
+            }
+            showLoading(true);
+            try {
+                await contract.methods.setReferrer(referrer).send({
+                    from: userAccount
+                });
+                showToast('Referrer set successfully!', 'success');
+                document.getElementById('referrerInput').value = '';
+                loadDashboardData(); // Refresh data to show updated referrer info
+            } catch (error) {
+                console.error('Set referrer error:', error);
+                showToast('Failed to set referrer: ' + error.message, 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+        // Switch page
+        function switchPage(page) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            // Show selected page
+            document.getElementById(page + 'Page').classList.add('active');
+            // Update nav active state
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            if (page === 'dashboard') {
+                document.querySelectorAll('.nav-item')[0].classList.add('active');
+            } else if (page === 'shop') {
+                document.querySelectorAll('.nav-item')[1].classList.add('active');
+            } else if (page === 'rewards') {
+                document.querySelectorAll('.nav-item')[2].classList.add('active');
+            } else if (page === 'global') {
+                document.querySelectorAll('.nav-item')[3].classList.add('active');
+            }
+            // Load data if needed
+            if (page === 'dashboard' || page === 'global') {
+                loadDashboardData();
+            } else if (page === 'rewards') {
+                loadReferralRecords();
+            }
+        }
+        // Switch tab in shop
+        function switchTab(tab) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tabElement => {
+                tabElement.classList.remove('active');
+            });
+            // Show selected tab content
+            document.getElementById(tab + 'Content').classList.add('active');
+            // Add active class to selected tab
+            event.target.classList.add('active');
+        }
+        // Toggle language
+        function toggleLanguage() {
+            currentLanguage = currentLanguage === 'zh' ? 'en' : 'zh';
+            updateLanguage();
+        }
+        // Update language
+        function updateLanguage() {
+            const lang = translations[currentLanguage];
+            document.getElementById('langBtn').textContent = lang.langBtn;
+            // Update all translatable elements
+            for (const [key, value] of Object.entries(lang)) {
+                if (key !== 'langBtn') {
+                    const element = document.getElementById(key);
+                    if (element) {
+                        element.textContent = value;
+                    }
+                }
+            }
+            // Reload dashboard data to update machine names
+            if (document.getElementById('dashboardPage').classList.contains('active')) {
+                loadDashboardData();
+            }
+        }
+        // Show/hide loading
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'flex' : 'none';
+        }
+        // Show toast notification
+        function showToast(message, type) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast ' + type + ' show';
+            setTimeout(() => {
+                toast.className = 'toast ' + type;
+            }, 3000);
+        }
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateLanguage();
+        });
+    </script>
+</body>
+</html>
