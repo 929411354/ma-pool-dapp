@@ -141,6 +141,9 @@
             cursor: pointer;
             font-size: 14px;
             backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
         .lang-toggle:hover {
             background: rgba(255, 255, 255, 0.2);
@@ -359,13 +362,16 @@
             padding: 5px 15px;
             border-radius: 20px;
             transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
         }
         .nav-item.active {
             background: var(--primary-gradient);
         }
         .nav-item i {
             font-size: 20px;
-            margin-bottom: 5px;
         }
         .nav-item span {
             font-size: 12px;
@@ -482,7 +488,10 @@
     <!-- Wallet Info and Language Toggle Container -->
     <div class="wallet-info-container">
         <div class="wallet-info" id="walletAddress" onclick="copyAddress()"></div>
-        <button class="lang-toggle" onclick="toggleLanguage()" id="langBtn">中文</button>
+        <button class="lang-toggle" onclick="toggleLanguage()" id="langBtn">
+            <i class="fas fa-globe"></i>
+            <span id="langText">中文</span>
+        </button>
     </div>
     <!-- Dashboard Page (Main Page) -->
     <div class="page active" id="dashboardPage">
@@ -856,7 +865,11 @@
                 multiplier2: "算力 × 3.30",
                 multiplier3: "算力 × 4.84",
                 multiplier4: "算力 × 7.15",
-                recordsTitle: "推广记录"
+                recordsTitle: "推广记录",
+                langText: "中文",
+                unitMachine: "台",
+                powerMultiplier: "算力 ×",
+                powerRatioText: "总算力占比:"
             },
             en: {
                 connectWalletText: "Connect Wallet",
@@ -907,7 +920,11 @@
                 multiplier2: "Power × 3.30",
                 multiplier3: "Power × 4.84",
                 multiplier4: "Power × 7.15",
-                recordsTitle: "Referral Records"
+                recordsTitle: "Referral Records",
+                langText: "English",
+                unitMachine: "units",
+                powerMultiplier: "Power ×",
+                powerRatioText: "Power Ratio:"
             }
         };
         // Initialize Web3
@@ -961,10 +978,8 @@
                     isAdmin = await contract.methods.admin(userAccount).call();
                     const owner = await contract.methods.owner().call();
                     isOwner = userAccount.toLowerCase() === owner.toLowerCase();
-                    
                     // Show/hide test machine based on admin or owner status
                     updateTestDeviceVisibility();
-                    
                     // Show dashboard cards
                     document.getElementById('connectBtnContainer').style.display = 'none';
                     document.getElementById('dashboardCard').style.display = 'block';
@@ -986,7 +1001,6 @@
             const testMachineBtn = document.getElementById('testMachineBtn');
             const noPermissionMessage = document.getElementById('noPermissionMessage');
             const testTab = document.getElementById('testTab');
-            
             if (isAdmin || isOwner) {
                 testMachineBtn.style.display = 'block';
                 noPermissionMessage.style.display = 'none';
@@ -1003,28 +1017,24 @@
             try {
                 const recordsContainer = document.getElementById('referralRecords');
                 recordsContainer.innerHTML = '<p>Loading...</p>';
-                
                 // Get total records count
                 const totalRecords = await contract.methods.referralRecords.length().call();
-                
                 // Load recent records (last 10)
                 const records = [];
                 const start = Math.max(0, totalRecords - 10);
-                
                 for (let i = start; i < totalRecords; i++) {
                     const record = await contract.methods.referralRecords(i).call();
                     if (record.referrer.toLowerCase() === userAccount.toLowerCase()) {
                         records.push(record);
                     }
                 }
-                
                 // Display records
                 if (records.length === 0) {
                     recordsContainer.innerHTML = '<p>No referral records</p>';
                     return;
                 }
-                
                 recordsContainer.innerHTML = '';
+                const lang = translations[currentLanguage];
                 records.forEach(record => {
                     const recordElement = document.createElement('div');
                     recordElement.className = 'referral-record';
@@ -1060,6 +1070,7 @@
                 // Update machine list
                 const machineList = document.getElementById('machineList');
                 machineList.innerHTML = '';
+                const lang = translations[currentLanguage];
                 // Initial machine
                 if (parseInt(userDashboard.normal) > 0) {
                     addMachineItem(machineList, 
@@ -1094,7 +1105,7 @@
                 const networkPower = globalDashboard.networkPower;
                 const powerRatio = networkPower > 0 ? (userPower / networkPower * 100).toFixed(2) : 0;
                 document.getElementById('powerProgress').style.width = powerRatio + '%';
-                document.getElementById('powerRatio').textContent = `总算力占比: ${powerRatio}%`;
+                document.getElementById('powerRatio').textContent = `${lang.powerRatioText} ${powerRatio}%`;
                 // Update global stats
                 document.getElementById('totalMachines').textContent = globalDashboard.totalMines;
                 document.getElementById('networkPower').textContent = formatNumber(web3.utils.fromWei(globalDashboard.networkPower, 'ether'));
@@ -1113,13 +1124,14 @@
         function addMachineItem(container, name, count, multiplier) {
             const item = document.createElement('div');
             item.className = 'machine-item';
+            const lang = translations[currentLanguage];
             item.innerHTML = `
                 <div class="machine-info">
                     <h4>${name}</h4>
                 </div>
                 <div class="machine-stats">
-                    <div>${count} 台</div>
-                    <div>算力 × ${multiplier}</div>
+                    <div>${count} ${lang.unitMachine}</div>
+                    <div>${lang.powerMultiplier} ${multiplier}</div>
                 </div>
             `;
             container.appendChild(item);
@@ -1290,7 +1302,6 @@
             document.getElementById(tab + 'Content').classList.add('active');
             // Add active class to selected tab
             event.target.classList.add('active');
-            
             // When switching to the test tab, update visibility again
             if (tab === 'test') {
                 updateTestDeviceVisibility();
@@ -1304,17 +1315,17 @@
         // Update language
         function updateLanguage() {
             const lang = translations[currentLanguage];
-            document.getElementById('langBtn').textContent = lang.langBtn;
+            document.getElementById('langText').textContent = lang.langText;
             // Update all translatable elements
             for (const [key, value] of Object.entries(lang)) {
-                if (key !== 'langBtn') {
+                if (key !== 'langText') {
                     const element = document.getElementById(key);
                     if (element) {
                         element.textContent = value;
                     }
                 }
             }
-            // Reload dashboard data to update machine names
+            // Reload dashboard data to update machine names and texts
             if (document.getElementById('dashboardPage').classList.contains('active')) {
                 loadDashboardData();
             }
