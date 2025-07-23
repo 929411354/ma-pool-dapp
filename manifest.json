@@ -1,0 +1,37 @@
+{
+  "name": "Star Mining DApp",
+  "short_name": "StarMining",
+  "description": "A decentralized mining game on BNB Chain with NFT rewards and referral system.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#1a1a2e",
+  "background_color": "#1a1a2e",
+  "icons": [
+    {
+      "src": "https://ipfs.io/ipfs/bafkreibmp7wkdtmgp2oifju4yalhonkg22suitclwlh32c7vsoddwnimsq",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "https://ipfs.io/ipfs/bafkreig7hnnubmb3u7wnffajdpuyrlrvocprdhsnyrqu4s2ccj2rku5uli",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "https://ipfs.io/ipfs/bafkreiasqnev67xkmoey4tu7icncxjrajxp7vqtyjmrxocvu76ltykmw5e",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://ipfs.io/ipfs/bafkreiakzlfdgzvsrbzmeto4zksnisofuzhfisu6vksppk2mayfkgoewba",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["finance", "games"],
+  "lang": "zh-CN",
+  "scope": "/"
+}
