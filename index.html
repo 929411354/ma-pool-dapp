@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Star Mining DApp</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23000'/><circle cx='25' cy='25' r='5' fill='%23FFD700'/><circle cx='75' cy='25' r='5' fill='%23FFD700'/><circle cx='25' cy='75' r='5' fill='%23FFD700'/><circle cx='75' cy='75' r='5' fill='%23FFD700'/><circle cx='50' cy='50' r='5' fill='%23FFD700'/><circle cx='50' cy='50' r='15' fill='%23FFD700'/><circle cx='50' cy='50' r='10' fill='%23FFFFFF'/><circle cx='50' cy='50' r='5' fill='%23FFD700'/><path d='M10,40 Q20,20 30,40 T90,40' stroke='%2387CEEB' stroke-width='2' fill='none'/><path d='M10,60 Q20,80 30,60 T90,60' stroke='%2387CEEB' stroke-width='2' fill='none'/><path d='M85,10 L90,20 A10,10 0 0,1 95,10 H85 Z' fill='%238B4513'/><path d='M85,10 L90,20 A10,10 0 0,1 95,10' stroke='%23FFFFFF' stroke-width='2'/><circle cx='50' cy='50' r='18' fill='rgba(255,215,0,0.3)'/></svg>" type="image/svg+xml">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%231a1a2e'/><circle cx='50' cy='40' r='12' fill='%23ffd700'/><path d='M40,60 Q50,80 60,60' stroke='%234ecdc4' stroke-width='3' fill='none'/><circle cx='30' cy='30' r='3' fill='%23ffffff'/><circle cx='70' cy='30' r='3' fill='%23ffffff'/><circle cx='30' cy='70' r='3' fill='%23ffffff'/><circle cx='70' cy='70' r='3' fill='%23ffffff'/></svg>" type="image/svg+xml">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/web3@1.7.0/dist/web3.min.js"></script>
     <style>
@@ -99,18 +99,9 @@
             animation: pulse 2s infinite;
         }
         @keyframes pulse {
-            0% {
-                transform: scale(0.8);
-                opacity: 0.7;
-            }
-            50% {
-                transform: scale(1.2);
-                opacity: 0.3;
-            }
-            100% {
-                transform: scale(0.8);
-                opacity: 0.7;
-            }
+            0% { transform: scale(0.8); opacity: 0.7; }
+            50% { transform: scale(1.2); opacity: 0.3; }
+            100% { transform: scale(0.8); opacity: 0.7; }
         }
         .logo-text {
             font-size: 24px;
@@ -475,6 +466,10 @@
                 grid-template-columns: 1fr;
             }
         }
+        /* 测试设备按钮默认隐藏 */
+        #testMachineBtn {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -570,7 +565,8 @@
             <div class="tabs">
                 <div class="tab active" onclick="switchTab('initial')" id="initialTab">初始设备</div>
                 <div class="tab" onclick="switchTab('power')" id="powerTab">进阶设备</div>
-                <div class="tab" onclick="switchTab('test')" id="testTab">测试设备</div>
+                <!-- 测试设备标签页 -->
+                <div class="tab" onclick="switchTab('test')" id="testTab" style="display: none;">测试设备</div>
             </div>
             <!-- Initial Machine -->
             <div class="tab-content active" id="initialContent">
@@ -640,16 +636,22 @@
             </div>
             <!-- Test Machine -->
             <div class="tab-content" id="testContent">
-                <div class="card machine-card" id="testMachineCard" style="display: none;">
+                <div class="card machine-card">
                     <div class="machine-icon">
                         <i class="fas fa-ghost"></i>
                     </div>
                     <h3 id="phantomName">幻影调试器</h3>
                     <div class="machine-price">0.0001 BNB</div>
-                    <button class="btn btn-primary btn-full" onclick="buyTestMachine()" id="buyTestBtn">
+                    <!-- 测试设备按钮 -->
+                    <button class="btn btn-primary btn-full" id="testMachineBtn" onclick="buyTestMachine()">
                         <i class="fas fa-shopping-cart"></i>
                         <span id="buyTestText">购买设备</span>
                     </button>
+                    <!-- 无权限提示 -->
+                    <div id="noPermissionMessage" style="display: none; text-align: center; margin-top: 15px;">
+                        <p>您没有权限购买测试设备。</p>
+                        <p>此功能仅对管理员或合约所有者开放。</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -854,8 +856,7 @@
                 multiplier2: "算力 × 3.30",
                 multiplier3: "算力 × 4.84",
                 multiplier4: "算力 × 7.15",
-                recordsTitle: "推广记录",
-                langBtn: "English"
+                recordsTitle: "推广记录"
             },
             en: {
                 connectWalletText: "Connect Wallet",
@@ -906,8 +907,7 @@
                 multiplier2: "Power × 3.30",
                 multiplier3: "Power × 4.84",
                 multiplier4: "Power × 7.15",
-                recordsTitle: "Referral Records",
-                langBtn: "中文"
+                recordsTitle: "Referral Records"
             }
         };
         // Initialize Web3
@@ -963,11 +963,7 @@
                     isOwner = userAccount.toLowerCase() === owner.toLowerCase();
                     
                     // Show/hide test machine based on admin or owner status
-                    if (isAdmin || isOwner) {
-                        document.getElementById('testMachineCard').style.display = 'block';
-                    } else {
-                        document.getElementById('testMachineCard').style.display = 'none';
-                    }
+                    updateTestDeviceVisibility();
                     
                     // Show dashboard cards
                     document.getElementById('connectBtnContainer').style.display = 'none';
@@ -983,6 +979,22 @@
                 showToast('Failed to connect wallet: ' + error.message, 'error');
             } finally {
                 showLoading(false);
+            }
+        }
+        // Update test device visibility
+        function updateTestDeviceVisibility() {
+            const testMachineBtn = document.getElementById('testMachineBtn');
+            const noPermissionMessage = document.getElementById('noPermissionMessage');
+            const testTab = document.getElementById('testTab');
+            
+            if (isAdmin || isOwner) {
+                testMachineBtn.style.display = 'block';
+                noPermissionMessage.style.display = 'none';
+                testTab.style.display = 'block'; // 显示测试设备标签页
+            } else {
+                testMachineBtn.style.display = 'none';
+                noPermissionMessage.style.display = 'block';
+                testTab.style.display = 'none'; // 隐藏测试设备标签页
             }
         }
         // Load referral records
@@ -1147,6 +1159,7 @@
                 showToast('Please connect wallet first!', 'error');
                 return;
             }
+            // Check permissions again for security
             if (!(isAdmin || isOwner)) {
                 showToast('Only admin or owner can buy test machine!', 'error');
                 return;
@@ -1277,6 +1290,11 @@
             document.getElementById(tab + 'Content').classList.add('active');
             // Add active class to selected tab
             event.target.classList.add('active');
+            
+            // When switching to the test tab, update visibility again
+            if (tab === 'test') {
+                updateTestDeviceVisibility();
+            }
         }
         // Toggle language
         function toggleLanguage() {
