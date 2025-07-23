@@ -313,7 +313,7 @@
             display: flex;
             justify-content: space-around;
             padding: 15px 0;
-            border-top: 1px solid rgba(255, 255, 256, 0.1);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         body.light-mode .bottom-nav {
@@ -461,6 +461,12 @@
             opacity: 0.7;
         }
 
+        /* Connect Button */
+        .connect-btn-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+
         /* Responsive */
         @media (max-width: 428px) {
             .container {
@@ -495,8 +501,16 @@
                 <div class="wallet-info" id="walletAddress" onclick="copyAddress()"></div>
             </div>
 
+            <!-- Connect Wallet Button (if not connected) -->
+            <div class="connect-btn-container" id="connectBtnContainer">
+                <button class="btn btn-primary btn-full" onclick="connectWallet()" id="connectWalletBtn">
+                    <i class="fas fa-wallet"></i>
+                    <span id="connectWalletText">连接钱包</span>
+                </button>
+            </div>
+
             <!-- User Stats -->
-            <div class="card">
+            <div class="card" id="dashboardCard" style="display: none;">
                 <div class="card-title">
                     <i class="fas fa-chart-line"></i>
                     <span id="dashboardTitle">个人仪表盘</span>
@@ -526,7 +540,7 @@
             </div>
 
             <!-- Machines -->
-            <div class="card">
+            <div class="card" id="machinesCard" style="display: none;">
                 <div class="card-title">
                     <i class="fas fa-microchip"></i>
                     <span id="devicesTitle">设备状态</span>
@@ -856,6 +870,7 @@
         // Language dictionaries
         const translations = {
             zh: {
+                connectWalletText: "连接钱包",
                 dashboardTitle: "个人仪表盘",
                 balanceLabel: "代币余额",
                 earningsLabel: "累计收益",
@@ -907,6 +922,7 @@
                 recordsTitle: "推广记录"
             },
             en: {
+                connectWalletText: "Connect Wallet",
                 dashboardTitle: "Personal Dashboard",
                 balanceLabel: "Token Balance",
                 earningsLabel: "Total Earnings",
@@ -999,7 +1015,7 @@
         }
 
         // Connect wallet and initialize
-        async function connectWalletAndInit() {
+        async function connectWallet() {
             showLoading(true);
             try {
                 const connected = await initWeb3();
@@ -1019,6 +1035,11 @@
                     
                     // Show/hide test machine based on admin status
                     document.getElementById('testMachineCard').style.display = isAdmin ? 'block' : 'none';
+                    
+                    // Show dashboard cards
+                    document.getElementById('connectBtnContainer').style.display = 'none';
+                    document.getElementById('dashboardCard').style.display = 'block';
+                    document.getElementById('machinesCard').style.display = 'block';
                     
                     // Load dashboard data
                     loadDashboardData();
@@ -1270,7 +1291,7 @@
             }
         }
 
-        // Claim rewards
+        // Claim rewards (both buttons use this function)
         async function claimRewards() {
             if (!contract || !userAccount) {
                 showToast('Please connect wallet first!', 'error');
@@ -1411,7 +1432,6 @@
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             updateLanguage();
-            connectWalletAndInit();
         });
     </script>
 </body>
