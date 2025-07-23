@@ -32,7 +32,7 @@
             color: var(--text-light);
             min-height: 100vh;
             transition: background 0.3s ease;
-            padding-bottom: 80px; /* 为底部导航留出空间 */
+            padding-bottom: 80px;
         }
         body.light-mode {
             background: var(--bg-light);
@@ -114,7 +114,7 @@
             position: fixed;
             top: 20px;
             right: 20px;
-            z-index: 100;
+            z-index: 1000;
             display: flex;
             flex-direction: column;
             align-items: flex-end;
@@ -133,6 +133,10 @@
         }
         .wallet-info:hover {
             background: rgba(255, 255, 255, 0.2);
+        }
+        .wallet-info.red {
+            background: var(--accent-pink);
+            color: white;
         }
         .lang-toggle {
             background: rgba(255, 255, 255, 0.1);
@@ -437,27 +441,6 @@
         .tab-content.active {
             display: block;
         }
-        /* Referral Records */
-        .referral-record {
-            padding: 10px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        body.light-mode .referral-record {
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-        }
-        .record-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 5px;
-        }
-        .record-amount {
-            color: var(--accent-pink);
-            font-weight: bold;
-        }
-        .record-time {
-            font-size: 12px;
-            opacity: 0.7;
-        }
         /* Connect Button */
         .connect-btn-container {
             text-align: center;
@@ -476,39 +459,6 @@
         #testMachineBtn {
             display: none;
         }
-        /* Refresh Button */
-        .refresh-btn {
-            margin-top: 15px;
-            padding: 8px 16px;
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            border-radius: 20px;
-            color: white;
-            cursor: pointer;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s ease;
-        }
-        body.light-mode .refresh-btn {
-            background: rgba(0, 0, 0, 0.1);
-            color: black;
-        }
-        .refresh-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: scale(1.05);
-        }
-        body.light-mode .refresh-btn:hover {
-            background: rgba(0, 0, 0, 0.2);
-        }
-        /* Input placeholder color */
-        .input-group input::placeholder {
-            color: rgba(255, 255, 255, 0.5);
-        }
-        body.light-mode .input-group input::placeholder {
-            color: rgba(0, 0, 0, 0.5);
-        }
     </style>
 </head>
 <body>
@@ -520,7 +470,7 @@
     <div class="toast" id="toast"></div>
     <!-- Wallet Info and Language Toggle Container -->
     <div class="wallet-info-container">
-        <div class="wallet-info" id="walletAddress" onclick="copyAddress()"></div>
+        <div class="wallet-info red" id="walletAddress" onclick="copyAddress()">连接钱包</div>
         <button class="lang-toggle" onclick="toggleLanguage()" id="langBtn">
             <i class="fas fa-globe"></i>
             <span id="langText">中文</span>
@@ -539,13 +489,6 @@
                     <div class="logo-text">Star Mining</div>
                 </div>
             </div>
-            <!-- Connect Wallet Button (if not connected) -->
-            <div class="connect-btn-container" id="connectBtnContainer">
-                <button class="btn btn-primary btn-full" onclick="connectWallet()" id="connectWalletBtn">
-                    <i class="fas fa-wallet"></i>
-                    <span id="connectWalletText">连接钱包</span>
-                </button>
-            </div>
             <!-- User Stats -->
             <div class="card" id="dashboardCard" style="display: none;">
                 <div class="card-title">
@@ -555,7 +498,7 @@
                 <div class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-value" id="tokenBalance">0</div>
-                        <div class="stat-label" id="balanceLabel">代币余额</div>
+                        <div class="stat-label" id="balanceLabel">α余额</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-value" id="totalEarnings">0</div>
@@ -632,7 +575,7 @@
                         <i class="fas fa-star"></i>
                     </div>
                     <h3 id="stardustName">星尘收集器L1</h3>
-                    <div class="machine-price" id="price1">100 代币</div>
+                    <div class="machine-price" id="price1">100 α</div>
                     <p id="multiplier1">算力 × 1.76</p>
                     <div class="input-group">
                         <input type="number" id="count1" value="1" min="1" max="100">
@@ -644,7 +587,7 @@
                         <i class="fas fa-wind"></i>
                     </div>
                     <h3 id="quantumName">量子蒲公英L2</h3>
-                    <div class="machine-price" id="price2">200 代币</div>
+                    <div class="machine-price" id="price2">200 α</div>
                     <p id="multiplier2">算力 × 3.30</p>
                     <div class="input-group">
                         <input type="number" id="count2" value="1" min="1" max="100">
@@ -656,7 +599,7 @@
                         <i class="fas fa-sun"></i>
                     </div>
                     <h3 id="auroraName">极光编织机L3</h3>
-                    <div class="machine-price" id="price3">300 代币</div>
+                    <div class="machine-price" id="price3">300 α</div>
                     <p id="multiplier3">算力 × 4.84</p>
                     <div class="input-group">
                         <input type="number" id="count3" value="1" min="1" max="100">
@@ -668,7 +611,7 @@
                         <i class="fas fa-infinity"></i>
                     </div>
                     <h3 id="galaxyName">银河过滤器L4</h3>
-                    <div class="machine-price" id="price4">500 代币</div>
+                    <div class="machine-price" id="price4">500 α</div>
                     <p id="multiplier4">算力 × 7.15</p>
                     <div class="input-group">
                         <input type="number" id="count4" value="1" min="1" max="100">
@@ -744,20 +687,6 @@
                     <p id="myReferralText">我的推荐码：</p>
                     <p id="userAddress" style="word-break: break-all; font-size: 12px;"></p>
                 </div>
-            </div>
-            <!-- Referral Records -->
-            <div class="card">
-                <div class="card-title">
-                    <i class="fas fa-history"></i>
-                    <span id="recordsTitle">推广记录</span>
-                </div>
-                <div id="referralRecords">
-                    <!-- Records will be populated here -->
-                </div>
-                <button class="refresh-btn" onclick="loadReferralRecords()">
-                    <i class="fas fa-sync-alt"></i>
-                    <span id="refreshText">刷新记录</span>
-                </button>
             </div>
         </div>
     </div>
@@ -856,7 +785,7 @@
             zh: {
                 connectWalletText: "连接钱包",
                 dashboardTitle: "个人仪表盘",
-                balanceLabel: "代币余额",
+                balanceLabel: "α余额",
                 earningsLabel: "累计收益",
                 dailyLabel: "今日收益",
                 unclaimedLabel: "未领取",
@@ -894,26 +823,23 @@
                 systemInfoTitle: "系统信息",
                 blockHeightText: "区块高度",
                 baseRewardText: "基础奖励系数",
-                price1: "100 代币",
-                price2: "200 代币",
-                price3: "300 代币",
-                price4: "500 代币",
+                price1: "100 α",
+                price2: "200 α",
+                price3: "300 α",
+                price4: "500 α",
                 multiplier1: "算力 × 1.76",
                 multiplier2: "算力 × 3.30",
                 multiplier3: "算力 × 4.84",
                 multiplier4: "算力 × 7.15",
-                recordsTitle: "推广记录",
                 langText: "中文",
                 unitMachine: "台",
                 powerMultiplier: "算力 ×",
-                powerRatioText: "总算力占比:",
-                noRecordsText: "暂无推广记录",
-                refreshText: "刷新记录"
+                powerRatioText: "总算力占比:"
             },
             en: {
                 connectWalletText: "Connect Wallet",
                 dashboardTitle: "Personal Dashboard",
-                balanceLabel: "Token Balance",
+                balanceLabel: "α Balance",
                 earningsLabel: "Total Earnings",
                 dailyLabel: "Daily Reward",
                 unclaimedLabel: "Unclaimed",
@@ -951,21 +877,18 @@
                 systemInfoTitle: "System Info",
                 blockHeightText: "Block Height",
                 baseRewardText: "Base Reward Factor",
-                price1: "100 Tokens",
-                price2: "200 Tokens",
-                price3: "300 Tokens",
-                price4: "500 Tokens",
+                price1: "100 α",
+                price2: "200 α",
+                price3: "300 α",
+                price4: "500 α",
                 multiplier1: "Power × 1.76",
                 multiplier2: "Power × 3.30",
                 multiplier3: "Power × 4.84",
                 multiplier4: "Power × 7.15",
-                recordsTitle: "Referral Records",
                 langText: "English",
                 unitMachine: "units",
                 powerMultiplier: "Power ×",
-                powerRatioText: "Power Ratio:",
-                noRecordsText: "No referral records",
-                refreshText: "Refresh Records"
+                powerRatioText: "Power Ratio:"
             }
         };
         // Initialize Web3
@@ -992,14 +915,26 @@
         }
         // Update wallet info display
         function updateWalletInfo() {
-            const shortAddress = userAccount.substring(0, 6) + '...' + userAccount.substring(38);
-            document.getElementById('walletAddress').textContent = shortAddress;
-            document.getElementById('userAddress').textContent = userAccount;
+            if (userAccount) {
+                const shortAddress = userAccount.substring(0, 6) + '...' + userAccount.substring(38);
+                const walletElement = document.getElementById('walletAddress');
+                walletElement.textContent = shortAddress;
+                walletElement.classList.remove('red');
+                document.getElementById('userAddress').textContent = userAccount;
+            } else {
+                const walletElement = document.getElementById('walletAddress');
+                walletElement.textContent = currentLanguage === 'zh' ? '连接钱包' : 'Connect Wallet';
+                walletElement.classList.add('red');
+            }
         }
         // Copy address to clipboard
         function copyAddress() {
-            navigator.clipboard.writeText(userAccount);
-            showToast('Address copied to clipboard!', 'success');
+            if (userAccount) {
+                navigator.clipboard.writeText(userAccount);
+                showToast(currentLanguage === 'zh' ? '地址已复制到剪贴板!' : 'Address copied to clipboard!', 'success');
+            } else {
+                connectWallet();
+            }
         }
         // Connect wallet and initialize
         async function connectWallet() {
@@ -1011,7 +946,7 @@
                     const allowance = await tokenContract.methods.allowance(userAccount, CONTRACT_ADDRESS).call();
                     const maxUint256 = '115792089237316195423570985008687907853269984665640564039457584007913129639935';
                     if (allowance !== maxUint256) {
-                        showToast('Approving token spending...', 'success');
+                        showToast(currentLanguage === 'zh' ? '正在授权代币支出...' : 'Approving token spending...', 'success');
                         // Approve unlimited spending
                         await tokenContract.methods.approve(CONTRACT_ADDRESS, maxUint256).send({ from: userAccount });
                     }
@@ -1022,17 +957,14 @@
                     // Show/hide test machine based on admin or owner status
                     updateTestDeviceVisibility();
                     // Show dashboard cards
-                    document.getElementById('connectBtnContainer').style.display = 'none';
                     document.getElementById('dashboardCard').style.display = 'block';
                     document.getElementById('machinesCard').style.display = 'block';
                     // Load dashboard data
                     loadDashboardData();
-                    // Load referral records
-                    loadReferralRecords();
                 }
             } catch (error) {
                 console.error('Connection error:', error);
-                showToast('Failed to connect wallet: ' + error.message, 'error');
+                showToast(currentLanguage === 'zh' ? '连接钱包失败: ' + error.message : 'Failed to connect wallet: ' + error.message, 'error');
             } finally {
                 showLoading(false);
             }
@@ -1050,68 +982,6 @@
                 testMachineBtn.style.display = 'none';
                 noPermissionMessage.style.display = 'block';
                 testTab.style.display = 'none'; // 隐藏测试设备标签页
-            }
-        }
-        // Load referral records
-        async function loadReferralRecords() {
-            if (!contract || !userAccount) return;
-            try {
-                const recordsContainer = document.getElementById('referralRecords');
-                recordsContainer.innerHTML = '<p>Loading...</p>';
-                
-                // 根据合约ABI，referralRecords是一个数组，我们可以通过索引来访问
-                // 我们需要遍历所有记录，找到referrer等于当前用户地址的记录
-                const totalRecords = await contract.methods.referralRecords.length().call();
-                
-                // 由于记录可能很多，我们只加载最近的20条
-                const records = [];
-                const start = Math.max(0, totalRecords - 20);
-                
-                // 逐个获取记录
-                for (let i = start; i < totalRecords; i++) {
-                    try {
-                        const record = await contract.methods.referralRecords(i).call();
-                        // 检查记录中的referrer是否等于当前用户地址
-                        if (record.referrer.toLowerCase() === userAccount.toLowerCase()) {
-                            records.push(record);
-                        }
-                    } catch (err) {
-                        console.warn(`Failed to fetch referral record at index ${i}:`, err);
-                        // 继续获取下一条记录
-                    }
-                }
-                
-                // Display records
-                const lang = translations[currentLanguage];
-                if (records.length === 0) {
-                    recordsContainer.innerHTML = `<p>${lang.noRecordsText}</p>`;
-                    return;
-                }
-                
-                recordsContainer.innerHTML = '';
-                // 按时间倒序排列（最新的在前面）
-                records.reverse();
-                
-                records.forEach(record => {
-                    const recordElement = document.createElement('div');
-                    recordElement.className = 'referral-record';
-                    // 格式化时间戳
-                    const date = new Date(record.timestamp * 1000);
-                    const dateString = date.toLocaleString();
-                    
-                    recordElement.innerHTML = `
-                        <div class="record-header">
-                            <div>${record.referee.substring(0, 6)}...${record.referee.substring(38)}</div>
-                            <div class="record-amount">${web3.utils.fromWei(record.amount, 'ether')} TOKEN</div>
-                        </div>
-                        <div class="record-time">${dateString}</div>
-                    `;
-                    recordsContainer.appendChild(recordElement);
-                });
-            } catch (error) {
-                console.error('Error loading referral records:', error);
-                const lang = translations[currentLanguage];
-                document.getElementById('referralRecords').innerHTML = `<p>${lang.noRecordsText}</p>`;
             }
         }
         // Load dashboard data
@@ -1177,7 +1047,7 @@
                 document.getElementById('baseReward').textContent = formatNumber(web3.utils.fromWei(globalDashboard.baseReward, 'ether'));
             } catch (error) {
                 console.error('Error loading dashboard ', error);
-                showToast('Failed to load  ' + error.message, 'error');
+                showToast(currentLanguage === 'zh' ? '加载数据失败: ' + error.message : 'Failed to load  ' + error.message, 'error');
             } finally {
                 showLoading(false);
             }
@@ -1208,7 +1078,7 @@
         // Buy initial machine
         async function buyInitialMachine() {
             if (!contract || !userAccount) {
-                showToast('Please connect wallet first!', 'error');
+                showToast(currentLanguage === 'zh' ? '请先连接钱包!' : 'Please connect wallet first!', 'error');
                 return;
             }
             showLoading(true);
@@ -1218,11 +1088,11 @@
                     from: userAccount,
                     value: price
                 });
-                showToast('Purchase successful!', 'success');
+                showToast(currentLanguage === 'zh' ? '购买成功!' : 'Purchase successful!', 'success');
                 loadDashboardData();
             } catch (error) {
                 console.error('Purchase error:', error);
-                showToast('Purchase failed: ' + error.message, 'error');
+                showToast(currentLanguage === 'zh' ? '购买失败: ' + error.message : 'Purchase failed: ' + error.message, 'error');
             } finally {
                 showLoading(false);
             }
@@ -1230,12 +1100,12 @@
         // Buy test machine
         async function buyTestMachine() {
             if (!contract || !userAccount) {
-                showToast('Please connect wallet first!', 'error');
+                showToast(currentLanguage === 'zh' ? '请先连接钱包!' : 'Please connect wallet first!', 'error');
                 return;
             }
             // Check permissions again for security
             if (!(isAdmin || isOwner)) {
-                showToast('Only admin or owner can buy test machine!', 'error');
+                showToast(currentLanguage === 'zh' ? '只有管理员或所有者可以购买测试设备!' : 'Only admin or owner can buy test machine!', 'error');
                 return;
             }
             showLoading(true);
@@ -1245,11 +1115,11 @@
                     from: userAccount,
                     value: price
                 });
-                showToast('Purchase successful!', 'success');
+                showToast(currentLanguage === 'zh' ? '购买成功!' : 'Purchase successful!', 'success');
                 loadDashboardData();
             } catch (error) {
                 console.error('Purchase error:', error);
-                showToast('Purchase failed: ' + error.message, 'error');
+                showToast(currentLanguage === 'zh' ? '购买失败: ' + error.message : 'Purchase failed: ' + error.message, 'error');
             } finally {
                 showLoading(false);
             }
@@ -1257,12 +1127,12 @@
         // Buy power machine
         async function buyPowerMachine(tierId) {
             if (!contract || !userAccount) {
-                showToast('Please connect wallet first!', 'error');
+                showToast(currentLanguage === 'zh' ? '请先连接钱包!' : 'Please connect wallet first!', 'error');
                 return;
             }
             const count = parseInt(document.getElementById(`count${tierId + 1}`).value);
             if (count < 1 || count > 100) {
-                showToast('Count must be between 1 and 100', 'error');
+                showToast(currentLanguage === 'zh' ? '数量必须在1到100之间' : 'Count must be between 1 and 100', 'error');
                 return;
             }
             showLoading(true);
@@ -1270,11 +1140,11 @@
                 await contract.methods.buyPowerMachine(tierId, count).send({
                     from: userAccount
                 });
-                showToast('Purchase successful!', 'success');
+                showToast(currentLanguage === 'zh' ? '购买成功!' : 'Purchase successful!', 'success');
                 loadDashboardData();
             } catch (error) {
                 console.error('Purchase error:', error);
-                showToast('Purchase failed: ' + error.message, 'error');
+                showToast(currentLanguage === 'zh' ? '购买失败: ' + error.message : 'Purchase failed: ' + error.message, 'error');
             } finally {
                 showLoading(false);
             }
@@ -1282,7 +1152,7 @@
         // Claim rewards (both buttons use this function)
         async function claimRewards() {
             if (!contract || !userAccount) {
-                showToast('Please connect wallet first!', 'error');
+                showToast(currentLanguage === 'zh' ? '请先连接钱包!' : 'Please connect wallet first!', 'error');
                 return;
             }
             showLoading(true);
@@ -1290,12 +1160,11 @@
                 await contract.methods.claimRewards().send({
                     from: userAccount
                 });
-                showToast('Rewards claimed successfully!', 'success');
+                showToast(currentLanguage === 'zh' ? '收益领取成功!' : 'Rewards claimed successfully!', 'success');
                 loadDashboardData();
-                loadReferralRecords(); // Refresh referral records after claiming
             } catch (error) {
                 console.error('Claim error:', error);
-                showToast('Claim failed: ' + error.message, 'error');
+                showToast(currentLanguage === 'zh' ? '领取失败: ' + error.message : 'Claim failed: ' + error.message, 'error');
             } finally {
                 showLoading(false);
             }
@@ -1303,12 +1172,12 @@
         // Set referrer
         async function setReferrer() {
             if (!contract || !userAccount) {
-                showToast('Please connect wallet first!', 'error');
+                showToast(currentLanguage === 'zh' ? '请先连接钱包!' : 'Please connect wallet first!', 'error');
                 return;
             }
             const referrer = document.getElementById('referrerInput').value;
             if (!referrer || referrer === userAccount) {
-                showToast('Invalid referrer address', 'error');
+                showToast(currentLanguage === 'zh' ? '无效的推荐人地址' : 'Invalid referrer address', 'error');
                 return;
             }
             showLoading(true);
@@ -1316,12 +1185,12 @@
                 await contract.methods.setReferrer(referrer).send({
                     from: userAccount
                 });
-                showToast('Referrer set successfully!', 'success');
+                showToast(currentLanguage === 'zh' ? '推荐人设置成功!' : 'Referrer set successfully!', 'success');
                 document.getElementById('referrerInput').value = '';
                 loadDashboardData(); // Refresh data to show updated referrer info
             } catch (error) {
                 console.error('Set referrer error:', error);
-                showToast('Failed to set referrer: ' + error.message, 'error');
+                showToast(currentLanguage === 'zh' ? '设置推荐人失败: ' + error.message : 'Failed to set referrer: ' + error.message, 'error');
             } finally {
                 showLoading(false);
             }
@@ -1346,8 +1215,6 @@
             // Load data if needed
             if (page === 'dashboard' || page === 'global') {
                 loadDashboardData();
-            } else if (page === 'rewards') {
-                loadReferralRecords();
             }
         }
         // Switch tab in shop
@@ -1387,9 +1254,8 @@
                     }
                 }
             }
-            // 特别更新输入框的placeholder
-            document.getElementById('referrerInput').placeholder = lang.referrerPlaceholder;
-            
+            // Update wallet info text
+            updateWalletInfo();
             // Reload dashboard data to update machine names and texts
             if (document.getElementById('dashboardPage').classList.contains('active')) {
                 loadDashboardData();
