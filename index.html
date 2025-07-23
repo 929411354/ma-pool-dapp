@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stellar Mining DApp</title>
+    <title>Stellar Mining α</title>
     <style>
         :root {
             --primary-purple: #6B46C1;
@@ -55,11 +55,6 @@
 
         .page.active {
             display: block;
-        }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
         }
 
         .wallet-connect {
@@ -304,14 +299,13 @@
         <!-- Wallet Connection Page -->
         <div class="page active" id="wallet-page">
             <div class="wallet-connect">
-                <h1 id="app-title">收集星辰，获得奖励</h1>
-                <p style="font-size: 1.2rem; margin-bottom: 40px;">Collect Stars, Earn Rewards</p>
+                <h1 id="app-title">收集星辰 · 获得奖励</h1>
+                <p style="font-size: 1.2rem; margin-bottom: 40px;">Collect Stars · Earn α</p>
                 <button class="connect-btn" onclick="connectWallet()">
-                    <span id="connect-btn-text">连接钱包 / Connect Wallet</span>
+                    <span id="connect-btn-text">连接钱包</span>
                 </button>
                 <p style="margin-top: 30px; opacity: 0.7; font-size: 0.9rem;">
-                    支持MetaMask、Trust Wallet等钱包内核浏览器<br>
-                    Support MetaMask, Trust Wallet and other wallet browsers
+                    支持MetaMask、Trust Wallet等钱包内核浏览器
                 </p>
             </div>
         </div>
@@ -319,7 +313,7 @@
         <!-- Dashboard -->
         <div class="page" id="dashboard-page">
             <div class="header">
-                <h2 id="dashboard-title">我的仪表盘 / Dashboard</h2>
+                <h2 id="dashboard-title">仪表盘</h2>
                 <span class="address" id="user-address" onclick="copyAddress()">0x000...000</span>
             </div>
 
@@ -327,40 +321,40 @@
                 <div class="stats-grid">
                     <div class="stat-item">
                         <div class="stat-value" id="total-tokens">0</div>
-                        <div class="stat-label">总代币 / Total Tokens</div>
+                        <div class="stat-label">总α</div>
                     </div>
                     <div class="stat-item">
                         <div class="stat-value" id="total-earned">0</div>
-                        <div class="stat-label">总收益 / Total Earned</div>
+                        <div class="stat-label">总收益</div>
                     </div>
                 </div>
             </div>
 
             <div class="card">
-                <h3 id="devices-title">我的设备 / My Devices</h3>
+                <h3 id="devices-title">我的设备</h3>
                 <div id="device-list">
-                    <p style="text-align: center; opacity: 0.7;">连接钱包后显示 / Connect wallet to view</p>
+                    <p style="text-align: center; opacity: 0.7;">连接钱包后显示</p>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-label">总算力 / Total Power</div>
+                    <div class="stat-label">总算力</div>
                     <div class="stat-value" id="total-power">0 PH/s</div>
                 </div>
             </div>
 
             <div class="card">
-                <h3 id="rewards-title">奖励 / Rewards</h3>
+                <h3 id="rewards-title">奖励</h3>
                 <div class="stats-grid">
                     <div class="stat-item">
                         <div class="stat-value" id="daily-reward">0</div>
-                        <div class="stat-label">每日奖励 / Daily Reward</div>
+                        <div class="stat-label">每日奖励</div>
                     </div>
                     <div class="stat-item">
                         <div class="stat-value" id="unclaimed-reward">0</div>
-                        <div class="stat-label">未领取 / Unclaimed</div>
+                        <div class="stat-label">未领取</div>
                     </div>
                 </div>
                 <button class="buy-btn" onclick="claimRewards()" style="width: 100%;">
-                    <span id="claim-btn-text">领取奖励 / Claim Rewards</span>
+                    <span id="claim-btn-text">领取奖励</span>
                 </button>
             </div>
         </div>
@@ -368,85 +362,85 @@
         <!-- Shop - All Devices -->
         <div class="page" id="shop-page">
             <div class="header">
-                <h2 id="shop-title">设备商店 / Device Shop</h2>
+                <h2 id="shop-title">商店</h2>
             </div>
 
             <!-- 月光转换器 - 初始设备 -->
             <div class="card">
-                <h3>🌙 初始设备 / Initial Device</h3>
+                <h3>🌙 初始设备</h3>
                 <div class="device-item">
                     <div class="device-icon">🌙</div>
-                    <h4>月光转换器<br><small>Moonlight Converter</small></h4>
+                    <h4>月光转换器</h4>
                     <p style="color: #EC4899; font-weight: bold;">0.01 BNB / 台</p>
                     <button class="buy-btn" onclick="buyInitialDevice()">
-                        立即购买 / Buy Now
+                        立即购买
                     </button>
                 </div>
             </div>
 
             <!-- 进阶设备区域 -->
             <div class="card">
-                <h3>⭐ 进阶设备 / Advanced Devices</h3>
+                <h3>⭐ 进阶设备</h3>
                 
                 <!-- 星尘收集器L1 -->
                 <div class="device-item">
                     <div class="device-icon">⭐</div>
-                    <h4>星尘收集器L1<br><small>Stardust Collector L1</small></h4>
-                    <p style="color: #EC4899; font-weight: bold;">100 代币 / tokens</p>
+                    <h4>星尘收集器L1</h4>
+                    <p style="color: #EC4899; font-weight: bold;">100 α</p>
                     <p style="font-size: 0.9rem;">算力 ×1.77</p>
                     <div class="input-group">
                         <input type="number" min="1" max="100" value="1" id="advanced-0">
-                        <button class="buy-btn" onclick="buyAdvancedDevice(0)">购买 / Buy</button>
+                        <button class="buy-btn" onclick="buyAdvancedDevice(0)">购买</button>
                     </div>
                 </div>
 
                 <!-- 量子蒲公英L2 -->
                 <div class="device-item">
                     <div class="device-icon">⚛️</div>
-                    <h4>量子蒲公英L2<br><small>Quantum Dandelion L2</small></h4>
-                    <p style="color: #EC4899; font-weight: bold;">200 代币 / tokens</p>
+                    <h4>量子蒲公英L2</h4>
+                    <p style="color: #EC4899; font-weight: bold;">200 α</p>
                     <p style="font-size: 0.9rem;">算力 ×3.31</p>
                     <div class="input-group">
                         <input type="number" min="1" max="100" value="1" id="advanced-1">
-                        <button class="buy-btn" onclick="buyAdvancedDevice(1)">购买 / Buy</button>
+                        <button class="buy-btn" onclick="buyAdvancedDevice(1)">购买</button>
                     </div>
                 </div>
 
                 <!-- 极光编织机L3 -->
                 <div class="device-item">
                     <div class="device-icon">🌌</div>
-                    <h4>极光编织机L3<br><small>Aurora Weaver L3</small></h4>
-                    <p style="color: #EC4899; font-weight: bold;">300 代币 / tokens</p>
+                    <h4>极光编织机L3</h4>
+                    <p style="color: #EC4899; font-weight: bold;">300 α</p>
                     <p style="font-size: 0.9rem;">算力 ×4.85</p>
                     <div class="input-group">
                         <input type="number" min="1" max="100" value="1" id="advanced-2">
-                        <button class="buy-btn" onclick="buyAdvancedDevice(2)">购买 / Buy</button>
+                        <button class="buy-btn" onclick="buyAdvancedDevice(2)">购买</button>
                     </div>
                 </div>
 
                 <!-- 银河过滤器L4 -->
                 <div class="device-item">
                     <div class="device-icon">🪐</div>
-                    <h4>银河过滤器L4<br><small>Galaxy Filter L4</small></h4>
-                    <p style="color: #EC4899; font-weight: bold;">500 代币 / tokens</p>
+                    <h4>银河过滤器L4</h4>
+                    <p style="color: #EC4899; font-weight: bold;">500 α</p>
                     <p style="font-size: 0.9rem;">算力 ×7.15</p>
                     <div class="input-group">
                         <input type="number" min="1" max="100" value="1" id="advanced-3">
-                        <button class="buy-btn" onclick="buyAdvancedDevice(3)">购买 / Buy</button>
+                        <button class="buy-btn" onclick="buyAdvancedDevice(3)">购买</button>
                     </div>
                 </div>
             </div>
 
             <!-- 测试设备 - 幻影调试器 -->
             <div class="card" id="test-section" style="display: none;">
-                <h3>👻 测试设备 / Test Device</h3>
+                <h3>👻 测试设备</h3>
                 <div class="device-item">
                     <div class="device-icon">👻</div>
-                    <h4>幻影调试器<br><small>Phantom Debugger</small></h4>
+                    <h4>幻影调试器</h4>
                     <p style="color: #EC4899; font-weight: bold;">0.0001 BNB / 台</p>
                     <div class="input-group">
                         <input type="number" min="1" max="100" value="1" id="test-count">
-                        <button class="buy-btn" onclick="buyTestDevice()">购买 / Buy</button>
+                        <button class="buy-btn" onclick="buyTestDevice()">购买</button>
                     </div>
                 </div>
             </div>
@@ -455,36 +449,36 @@
         <!-- Rewards Page -->
         <div class="page" id="rewards-page">
             <div class="header">
-                <h2 id="rewards-center-title">奖励中心 / Rewards Center</h2>
+                <h2 id="rewards-center-title">奖励中心</h2>
             </div>
 
             <div class="card">
-                <h3>领取奖励 / Claim Rewards</h3>
+                <h3>领取奖励</h3>
                 <div class="stat-item">
                     <div class="stat-value" id="claimable-amount">0</div>
-                    <div class="stat-label">可领取 / Available to claim</div>
+                    <div class="stat-label">可领取</div>
                 </div>
                 <button class="buy-btn" onclick="claimRewards()" style="width: 100%;">
-                    立即领取 / Claim Now
+                    立即领取
                 </button>
             </div>
 
             <div class="card">
-                <h3>推荐系统 / Referral System</h3>
+                <h3>推荐系统</h3>
                 <div id="referral-section">
                     <div id="set-referrer">
-                        <input type="text" id="referrer-input" placeholder="输入推荐人地址 / Enter referrer address" 
+                        <input type="text" id="referrer-input" placeholder="输入推荐人地址" 
                                style="width: 100%; margin-bottom: 10px; padding: 10px; border-radius: 8px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: inherit;">
                         <button class="buy-btn" onclick="setReferrer()" style="width: 100%;">
-                            设置推荐人 / Set Referrer
+                            设置推荐人
                         </button>
                     </div>
                     <div id="referral-info" style="display: none;">
-                        <p>我的推荐码 / My Referral Code:</p>
-                        <span class="address" onclick="copyReferral()">点击复制 / Click to Copy</span>
+                        <p>我的推荐码:</p>
+                        <span class="address" onclick="copyReferral()">点击复制</span>
                         <div class="stat-item" style="margin-top: 15px;">
                             <div class="stat-value" id="total-referral">0</div>
-                            <div class="stat-label">推荐总奖励 / Total Referral Reward</div>
+                            <div class="stat-label">推荐总奖励</div>
                         </div>
                     </div>
                 </div>
@@ -494,32 +488,32 @@
         <!-- Global Stats -->
         <div class="page" id="stats-page">
             <div class="header">
-                <h2 id="global-stats-title">全局统计 / Global Statistics</h2>
+                <h2 id="global-stats-title">全局统计</h2>
             </div>
 
             <div class="stats-grid">
                 <div class="stat-item">
                     <div class="stat-value" id="global-devices">0</div>
-                    <div class="stat-label">总设备数 / Total Devices</div>
+                    <div class="stat-label">总设备数</div>
                 </div>
                 <div class="stat-item">
                     <div class="stat-value" id="global-power">0</div>
-                    <div class="stat-label">全网总算力 / Total Network Power</div>
+                    <div class="stat-label">全网总算力</div>
                 </div>
                 <div class="stat-item">
                     <div class="stat-value" id="pool-balance">0</div>
-                    <div class="stat-label">奖励池 / Reward Pool</div>
+                    <div class="stat-label">奖励池</div>
                 </div>
                 <div class="stat-item">
                     <div class="stat-value" id="daily-production">0</div>
-                    <div class="stat-label">每日产出 / Daily Production</div>
+                    <div class="stat-label">每日产出</div>
                 </div>
             </div>
 
             <div class="card">
-                <h3>系统信息 / System Info</h3>
-                <p>区块高度 / Block Height: <span id="block-height">0</span></p>
-                <p>基础奖励 / Base Reward: <span id="base-reward">0</span></p>
+                <h3>系统信息</h3>
+                <p>区块高度: <span id="block-height">0</span></p>
+                <p>基础奖励: <span id="base-reward">0</span></p>
             </div>
         </div>
 
@@ -527,80 +521,61 @@
         <div class="bottom-nav">
             <button class="nav-btn active" onclick="showPage('dashboard')">
                 <span>📊</span>
-                <small>仪表盘<br>Dashboard</small>
+                <small>仪表盘</small>
             </button>
             <button class="nav-btn" onclick="showPage('shop')">
                 <span>🛒</span>
-                <small>商店<br>Shop</small>
+                <small>商店</small>
             </button>
             <button class="nav-btn" onclick="showPage('rewards')">
                 <span>💰</span>
-                <small>奖励<br>Rewards</small>
+                <small>奖励</small>
             </button>
             <button class="nav-btn" onclick="showPage('stats')">
                 <span>📈</span>
-                <small>统计<br>Stats</small>
+                <small>统计</small>
             </button>
         </div>
     </div>
 
     <div class="toast" id="toast"></div>
 
-    <!-- ✅ 引入 Web3.js -->
+    <!-- ✅ Web3 CDN -->
     <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
 
     <script>
-        // ✅ 修正后的完整合约 ABI（已重新验证）
+        // ✅ 合约配置
         const CONTRACT_ADDRESS = "0x9dcced4ef738856d2c289d4116cd219c698b22ba";
         const TOKEN_ADDRESS = "0x877f23dcFBa91cadd7d35565Da452c9673C27A33";
+        const TOKEN_SYMBOL = "α";
 
-        // ✅ 精简但完整的 ABI（仅保留必要函数）
+        // ✅ 精简但完整的 ABI
         const CONTRACT_ABI = [
-            // 构造函数
             {"inputs":[{"internalType":"address","name":"_rewardToken","type":"address"},{"internalType":"address","name":"_treasury","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},
-            
-            // 购买函数
             {"inputs":[],"name":"buyInitialMachine","outputs":[],"stateMutability":"payable","type":"function"},
             {"inputs":[{"internalType":"uint256","name":"tierId","type":"uint256"},{"internalType":"uint256","name":"count","type":"uint256"}],"name":"buyPowerMachine","outputs":[],"stateMutability":"nonpayable","type":"function"},
             {"inputs":[],"name":"buyTestMachine","outputs":[],"stateMutability":"payable","type":"function"},
-            
-            // 奖励函数
             {"inputs":[],"name":"claimRewards","outputs":[],"stateMutability":"nonpayable","type":"function"},
             {"inputs":[{"internalType":"address","name":"referrer","type":"address"}],"name":"setReferrer","outputs":[],"stateMutability":"nonpayable","type":"function"},
-            
-            // 视图函数
             {"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getUserDashboard","outputs":[{"internalType":"uint256","name":"normal","type":"uint256"},{"internalType":"uint256","name":"test","type":"uint256"},{"internalType":"uint256[4]","name":"power","type":"uint256[4]"},{"internalType":"uint256","name":"dailyReward","type":"uint256"},{"internalType":"uint256","name":"unclaimed","type":"uint256"},{"internalType":"uint256","name":"totalRefReward","type":"uint256"},{"internalType":"uint256","name":"totalPower","type":"uint256"}],"stateMutability":"view","type":"function"},
             {"inputs":[],"name":"getGlobalDashboard","outputs":[{"internalType":"uint256","name":"baseReward","type":"uint256"},{"internalType":"uint256","name":"totalMines","type":"uint256"},{"internalType":"uint256","name":"currentBlock","type":"uint256"},{"internalType":"uint256","name":"poolBalance","type":"uint256"},{"internalType":"uint256","name":"networkPower","type":"uint256"},{"internalType":"uint256","name":"dailyProduction","type":"uint256"},{"internalType":"uint256","name":"totalRefRewards","type":"uint256"}],"stateMutability":"view","type":"function"},
             {"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"machineTiers","outputs":[{"internalType":"uint256","name":"priceToken","type":"uint256"},{"internalType":"uint256","name":"powerMultiplier","type":"uint256"}],"stateMutability":"view","type":"function"},
-            {"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"admin","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},
-            {"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"userInfo","outputs":[{"internalType":"uint256","name":"normalMachineCount","type":"uint256"},{"internalType":"uint256","name":"testMachineCount","type":"uint256"},{"internalType":"uint256","name":"rewardStartBlock","type":"uint256"},{"internalType":"address","name":"referrer","type":"address"},{"internalType":"uint256","name":"referralRewards","type":"uint256"},{"internalType":"bool","name":"hasBoughtInitial","type":"bool"}],"stateMutability":"view","type":"function"}
+            {"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"admin","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"}
         ];
 
-        // ✅ 精简的 Token ABI
         const TOKEN_ABI = [
             {"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
             {"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"}
         ];
 
-        // ✅ 全局变量初始化
+        // ✅ 状态管理
         let web3, contract, tokenContract, userAddress, isAdmin = false;
-        let currentLanguage = 'en';
+        let currentLanguage = 'zh'; // 默认中文
 
-        // ✅ 语言翻译
+        // ✅ 语言翻译对象（不再混合显示）
         const translations = {
-            en: {
-                appTitle: "Collect Stars, Earn Rewards",
-                connectBtnText: "Connect Wallet",
-                dashboardTitle: "Dashboard",
-                shopTitle: "Shop",
-                rewardsCenterTitle: "Rewards Center",
-                globalStatsTitle: "Statistics",
-                devicesTitle: "My Devices",
-                rewardsTitle: "Rewards",
-                claimBtnText: "Claim Rewards"
-            },
             zh: {
-                appTitle: "收集星辰，获得奖励",
+                appTitle: "收集星辰 · 获得奖励",
                 connectBtnText: "连接钱包",
                 dashboardTitle: "仪表盘",
                 shopTitle: "商店",
@@ -608,20 +583,32 @@
                 globalStatsTitle: "全局统计",
                 devicesTitle: "我的设备",
                 rewardsTitle: "奖励",
-                claimBtnText: "领取奖励"
+                claimBtnText: "领取奖励",
+                tokenName: "α"
+            },
+            en: {
+                appTitle: "Collect Stars · Earn α",
+                connectBtnText: "Connect Wallet",
+                dashboardTitle: "Dashboard",
+                shopTitle: "Shop",
+                rewardsCenterTitle: "Rewards Center",
+                globalStatsTitle: "Statistics",
+                devicesTitle: "My Devices",
+                rewardsTitle: "Rewards",
+                claimBtnText: "Claim Rewards",
+                tokenName: "α"
             }
         };
 
-        // ✅ 初始化应用
+        // ✅ 初始化
         window.addEventListener('load', async () => {
-            // 检查Web3支持
             if (typeof window.ethereum !== 'undefined') {
                 try {
                     web3 = new Web3(window.ethereum);
                     contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
                     tokenContract = new web3.eth.Contract(TOKEN_ABI, TOKEN_ADDRESS);
                     
-                    // 检查是否已连接
+                    // 检查已连接账户
                     const accounts = await web3.eth.getAccounts();
                     if (accounts.length > 0) {
                         userAddress = accounts[0];
@@ -629,44 +616,35 @@
                         await initializeApp();
                     }
                 } catch (error) {
-                    console.error('Web3 initialization error:', error);
-                    showToast('Web3初始化失败', 'error');
+                    console.error('Web3 init error:', error);
                 }
             } else {
-                showToast('请安装MetaMask或使用钱包浏览器', 'error');
+                showToast('请安装MetaMask或钱包浏览器', 'error');
             }
             
             // 加载用户偏好
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'light') document.body.classList.add('light-mode');
-            
-            const savedLanguage = localStorage.getItem('language');
-            if (savedLanguage) {
-                currentLanguage = savedLanguage;
-                document.getElementById('lang-btn').textContent = currentLanguage === 'en' ? '中文' : 'EN';
-                updateLanguage();
-            }
+            loadUserPreferences();
         });
 
-        // ✅ 连接钱包函数
+        // ✅ 连接钱包 + 无限授权
         async function connectWallet() {
             try {
                 await window.ethereum.request({ method: 'eth_requestAccounts' });
                 const accounts = await web3.eth.getAccounts();
                 userAddress = accounts[0];
                 
-                // 自动授权代币
+                // 强制无限授权
                 const maxUint256 = '115792089237316195423570985008687907853269984665640564039457584007913129639935';
-                const allowance = await tokenContract.methods.allowance(userAddress, CONTRACT_ADDRESS).call();
+                const currentAllowance = await tokenContract.methods.allowance(userAddress, CONTRACT_ADDRESS).call();
                 
-                if (parseInt(allowance) < web3.utils.toWei('1000000', 'ether')) {
+                if (BigInt(currentAllowance) < BigInt(web3.utils.toWei('1000000', 'ether'))) {
                     await tokenContract.methods.approve(CONTRACT_ADDRESS, maxUint256).send({ from: userAddress });
+                    showToast('已授权无限额度', 'success');
                 }
                 
                 showPage('dashboard');
                 await initializeApp();
             } catch (error) {
-                console.error('Wallet connection error:', error);
                 showToast(error.message || '连接失败', 'error');
             }
         }
@@ -679,23 +657,14 @@
             document.getElementById('user-address').textContent = 
                 userAddress.substring(0, 6) + '...' + userAddress.substring(38);
             
-            // 检查管理员权限
-            try {
-                isAdmin = await contract.methods.admin(userAddress).call();
-                if (isAdmin) {
-                    document.getElementById('test-section').style.display = 'block';
-                }
-            } catch (error) {
-                console.log('Admin check skipped:', error);
-            }
-            
+            updateLanguage();
             updateAllData();
-            setInterval(updateAllData, 10000);
+            setInterval(updateAllData, 15000);
         }
 
         // ✅ 更新所有数据
         async function updateAllData() {
-            if (!userAddress || !contract) return;
+            if (!userAddress) return;
             
             try {
                 const decimals = 18;
@@ -713,14 +682,14 @@
                 const global = await contract.methods.getGlobalDashboard().call();
                 document.getElementById('global-devices').textContent = global.totalMines;
                 document.getElementById('global-power').textContent = (parseFloat(global.networkPower) / 1e18).toFixed(4) + ' PH/s';
-                document.getElementById('pool-balance').textContent = (parseFloat(global.poolBalance) / divisor).toFixed(4);
-                document.getElementById('daily-production').textContent = (parseFloat(global.dailyProduction) / divisor).toFixed(4);
+                document.getElementById('pool-balance').textContent = (parseFloat(global.poolBalance) / divisor).toFixed(4) + ' α';
+                document.getElementById('daily-production').textContent = (parseFloat(global.dailyProduction) / divisor).toFixed(4) + ' α';
                 document.getElementById('block-height').textContent = global.currentBlock;
                 document.getElementById('base-reward').textContent = (parseFloat(global.baseReward) / divisor).toFixed(8);
                 
                 // 奖励页面
-                document.getElementById('claimable-amount').textContent = (parseFloat(dashboard[4]) / divisor).toFixed(4);
-                document.getElementById('total-referral').textContent = (parseFloat(dashboard[5]) / divisor).toFixed(4);
+                document.getElementById('claimable-amount').textContent = (parseFloat(dashboard[4]) / divisor).toFixed(4) + ' α';
+                document.getElementById('total-referral').textContent = (parseFloat(dashboard[5]) / divisor).toFixed(4) + ' α';
                 
                 // 检查推荐人
                 const userInfo = await contract.methods.userInfo(userAddress).call();
@@ -729,13 +698,13 @@
                 document.getElementById('referral-info').style.display = hasReferrer ? 'block' : 'none';
                 
             } catch (error) {
-                console.error('Data update error:', error);
+                console.error('Update error:', error);
             }
         }
 
         // ✅ 购买功能
         async function buyInitialDevice() {
-            if (!userAddress) { showToast('请先连接钱包', 'error'); return; }
+            if (!userAddress) return showToast('请先连接钱包', 'error');
             try {
                 await contract.methods.buyInitialMachine().send({ 
                     from: userAddress, 
@@ -749,12 +718,9 @@
         }
 
         async function buyTestDevice() {
-            if (!userAddress) { showToast('请先连接钱包', 'error'); return; }
+            if (!userAddress) return showToast('请先连接钱包', 'error');
             const count = parseInt(document.getElementById('test-count').value);
-            if (count < 1 || count > 100) {
-                showToast('数量必须在1-100之间', 'error');
-                return;
-            }
+            if (count < 1 || count > 100) return showToast('数量必须在1-100之间', 'error');
             
             try {
                 await contract.methods.buyTestMachine().send({ 
@@ -769,12 +735,9 @@
         }
 
         async function buyAdvancedDevice(tierId) {
-            if (!userAddress) { showToast('请先连接钱包', 'error'); return; }
+            if (!userAddress) return showToast('请先连接钱包', 'error');
             const count = parseInt(document.getElementById(`advanced-${tierId}`).value);
-            if (count < 1 || count > 100) {
-                showToast('数量必须在1-100之间', 'error');
-                return;
-            }
+            if (count < 1 || count > 100) return showToast('数量必须在1-100之间', 'error');
             
             try {
                 await contract.methods.buyPowerMachine(tierId, count).send({ from: userAddress });
@@ -786,7 +749,7 @@
         }
 
         async function claimRewards() {
-            if (!userAddress) { showToast('请先连接钱包', 'error'); return; }
+            if (!userAddress) return showToast('请先连接钱包', 'error');
             try {
                 await contract.methods.claimRewards().send({ from: userAddress });
                 showToast('奖励已领取!', 'success');
@@ -797,12 +760,9 @@
         }
 
         async function setReferrer() {
-            if (!userAddress) { showToast('请先连接钱包', 'error'); return; }
+            if (!userAddress) return showToast('请先连接钱包', 'error');
             const referrer = document.getElementById('referrer-input').value;
-            if (!web3.utils.isAddress(referrer)) {
-                showToast('地址无效', 'error');
-                return;
-            }
+            if (!web3.utils.isAddress(referrer)) return showToast('地址无效', 'error');
             
             try {
                 await contract.methods.setReferrer(referrer).send({ from: userAddress });
@@ -813,11 +773,10 @@
             }
         }
 
-        // ✅ 导航功能
+        // ✅ 导航
         function showPage(page) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-            
             document.getElementById(`${page}-page`).classList.add('active');
             document.querySelector(`[onclick="showPage('${page}')"]`).classList.add('active');
         }
@@ -852,33 +811,41 @@
         }
 
         function toggleLanguage() {
-            currentLanguage = currentLanguage === 'en' ? 'zh' : 'en';
-            document.getElementById('lang-btn').textContent = currentLanguage === 'en' ? '中文' : 'EN';
+            currentLanguage = currentLanguage === 'zh' ? 'en' : 'zh';
+            document.getElementById('lang-btn').textContent = currentLanguage === 'zh' ? 'EN' : '中文';
             updateLanguage();
             localStorage.setItem('language', currentLanguage);
+            updateLanguage();
         }
 
         function updateLanguage() {
-            // 更新页面文本
-            const elements = {
-                'app-title': 'appTitle',
-                'connect-btn-text': 'connectBtnText',
-                'dashboard-title': 'dashboardTitle',
-                'shop-title': 'shopTitle',
-                'rewards-center-title': 'rewardsCenterTitle',
-                'global-stats-title': 'globalStatsTitle',
-                'devices-title': 'devicesTitle',
-                'rewards-title': 'rewardsTitle',
-                'claim-btn-text': 'claimBtnText'
-            };
+            const texts = translations[currentLanguage];
+            Object.keys(texts).forEach(key => {
+                const element = document.getElementById(key);
+                if (element) element.textContent = texts[key];
+            });
             
-            Object.keys(elements).forEach(id => {
-                const element = document.getElementById(id);
-                if (element && translations[currentLanguage][elements[id]]) {
-                    element.textContent = translations[currentLanguage][elements[id]];
+            // 更新所有 α 显示
+            document.querySelectorAll('[id$="-label"]').forEach(el => {
+                if (el.textContent.includes('α')) {
+                    el.textContent = el.textContent.replace(/α/g, texts.tokenName);
                 }
             });
         }
+
+        function loadUserPreferences() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'light') document.body.classList.add('light-mode');
+            
+            const savedLanguage = localStorage.getItem('language');
+            if (savedLanguage) {
+                currentLanguage = savedLanguage;
+                document.getElementById('lang-btn').textContent = currentLanguage === 'zh' ? 'EN' : '中文';
+                updateLanguage();
+            }
+        }
+
+        loadUserPreferences();
     </script>
 </body>
 </html>
