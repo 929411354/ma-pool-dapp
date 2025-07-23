@@ -869,7 +869,8 @@
                 langText: "中文",
                 unitMachine: "台",
                 powerMultiplier: "算力 ×",
-                powerRatioText: "总算力占比:"
+                powerRatioText: "总算力占比:",
+                noRecordsText: "暂无推广记录"
             },
             en: {
                 connectWalletText: "Connect Wallet",
@@ -924,7 +925,8 @@
                 langText: "English",
                 unitMachine: "units",
                 powerMultiplier: "Power ×",
-                powerRatioText: "Power Ratio:"
+                powerRatioText: "Power Ratio:",
+                noRecordsText: "No referral records"
             }
         };
         // Initialize Web3
@@ -1030,7 +1032,8 @@
                 }
                 // Display records
                 if (records.length === 0) {
-                    recordsContainer.innerHTML = '<p>No referral records</p>';
+                    const lang = translations[currentLanguage];
+                    recordsContainer.innerHTML = `<p>${lang.noRecordsText}</p>`;
                     return;
                 }
                 recordsContainer.innerHTML = '';
@@ -1049,7 +1052,8 @@
                 });
             } catch (error) {
                 console.error('Error loading referral records:', error);
-                document.getElementById('referralRecords').innerHTML = '<p>Failed to load records</p>';
+                const lang = translations[currentLanguage];
+                document.getElementById('referralRecords').innerHTML = `<p>${lang.noRecordsText}</p>`;
             }
         }
         // Load dashboard data
