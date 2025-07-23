@@ -302,31 +302,6 @@
             border: 1px solid rgba(0, 0, 0, 0.2);
         }
 
-        /* Connection Page */
-        .connection-page {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            text-align: center;
-            padding: 20px;
-        }
-
-        .connection-page h1 {
-            font-size: 32px;
-            margin-bottom: 20px;
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .connection-page p {
-            font-size: 18px;
-            margin-bottom: 30px;
-            opacity: 0.8;
-        }
-
         /* Bottom Navigation */
         .bottom-nav {
             position: fixed;
@@ -338,7 +313,7 @@
             display: flex;
             justify-content: space-around;
             padding: 15px 0;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: 1px solid rgba(255, 255, 256, 0.1);
         }
 
         body.light-mode .bottom-nav {
@@ -447,6 +422,45 @@
             display: block;
         }
 
+        /* QR Code */
+        .qr-code {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .qr-code img {
+            width: 200px;
+            height: 200px;
+            border: 10px solid white;
+            border-radius: 10px;
+        }
+
+        /* Referral Records */
+        .referral-record {
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        body.light-mode .referral-record {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .record-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .record-amount {
+            color: var(--accent-pink);
+            font-weight: bold;
+        }
+
+        .record-time {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
         /* Responsive */
         @media (max-width: 428px) {
             .container {
@@ -473,20 +487,8 @@
         <button class="btn" onclick="toggleLanguage()" id="langBtn">中文</button>
     </div>
 
-    <!-- Connection Page -->
-    <div class="page active" id="connectionPage">
-        <div class="connection-page">
-            <h1 id="slogan">Collect Stars, Earn Rewards</h1>
-            <p id="walletSupport">支持MetaMask、Trust Wallet等钱包内核浏览器</p>
-            <button class="btn btn-primary btn-full" onclick="connectWallet()" id="connectBtn">
-                <i class="fas fa-wallet"></i>
-                <span id="connectText">连接钱包</span>
-            </button>
-        </div>
-    </div>
-
-    <!-- Dashboard Page -->
-    <div class="page" id="dashboardPage">
+    <!-- Dashboard Page (Main Page) -->
+    <div class="page active" id="dashboardPage">
         <div class="container">
             <div class="header">
                 <div class="logo">Star Mining</div>
@@ -723,6 +725,23 @@
                     <p id="myReferralText">我的推荐码：</p>
                     <p id="userAddress" style="word-break: break-all; font-size: 12px;"></p>
                 </div>
+                
+                <!-- QR Code -->
+                <div class="qr-code" id="qrCodeContainer">
+                    <img id="qrCode" src="" alt="推广二维码">
+                    <p id="scanText">扫描二维码推广</p>
+                </div>
+            </div>
+
+            <!-- Referral Records -->
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-history"></i>
+                    <span id="recordsTitle">推广记录</span>
+                </div>
+                <div id="referralRecords">
+                    <!-- Records will be populated here -->
+                </div>
             </div>
 
             <div class="bottom-nav">
@@ -837,9 +856,6 @@
         // Language dictionaries
         const translations = {
             zh: {
-                slogan: "Collect Stars, Earn Rewards",
-                walletSupport: "支持MetaMask、Trust Wallet等钱包内核浏览器",
-                connectText: "连接钱包",
                 dashboardTitle: "个人仪表盘",
                 balanceLabel: "代币余额",
                 earningsLabel: "累计收益",
@@ -886,12 +902,11 @@
                 multiplier1: "算力 × 1.76",
                 multiplier2: "算力 × 3.30",
                 multiplier3: "算力 × 4.84",
-                multiplier4: "算力 × 7.15"
+                multiplier4: "算力 × 7.15",
+                scanText: "扫描二维码推广",
+                recordsTitle: "推广记录"
             },
             en: {
-                slogan: "Collect Stars, Earn Rewards",
-                walletSupport: "Supports MetaMask, Trust Wallet and other wallet kernel browsers",
-                connectText: "Connect Wallet",
                 dashboardTitle: "Personal Dashboard",
                 balanceLabel: "Token Balance",
                 earningsLabel: "Total Earnings",
@@ -938,7 +953,9 @@
                 multiplier1: "Power × 1.76",
                 multiplier2: "Power × 3.30",
                 multiplier3: "Power × 4.84",
-                multiplier4: "Power × 7.15"
+                multiplier4: "Power × 7.15",
+                scanText: "Scan QR Code to Promote",
+                recordsTitle: "Referral Records"
             }
         };
 
@@ -981,8 +998,8 @@
             showToast('Address copied to clipboard!', 'success');
         }
 
-        // Connect wallet
-        async function connectWallet() {
+        // Connect wallet and initialize
+        async function connectWalletAndInit() {
             showLoading(true);
             try {
                 const connected = await initWeb3();
@@ -1003,15 +1020,74 @@
                     // Show/hide test machine based on admin status
                     document.getElementById('testMachineCard').style.display = isAdmin ? 'block' : 'none';
                     
-                    // Switch to dashboard
-                    switchPage('dashboard');
+                    // Load dashboard data
                     loadDashboardData();
+                    
+                    // Generate QR code
+                    generateQRCode();
+                    
+                    // Load referral records
+                    loadReferralRecords();
                 }
             } catch (error) {
                 console.error('Connection error:', error);
                 showToast('Failed to connect wallet: ' + error.message, 'error');
             } finally {
                 showLoading(false);
+            }
+        }
+
+        // Generate QR code
+        function generateQRCode() {
+            const qrCodeUrl = `https://uid606.top?utm_source=tokenpocket/${userAccount}`;
+            const qrCodeImg = document.getElementById('qrCode');
+            qrCodeImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(qrCodeUrl)}`;
+        }
+
+        // Load referral records
+        async function loadReferralRecords() {
+            if (!contract || !userAccount) return;
+            
+            try {
+                const recordsContainer = document.getElementById('referralRecords');
+                recordsContainer.innerHTML = '<p>Loading...</p>';
+                
+                // Get total records count
+                const totalRecords = await contract.methods.referralRecords.length().call();
+                
+                // Load recent records (last 10)
+                const records = [];
+                const start = Math.max(0, totalRecords - 10);
+                
+                for (let i = start; i < totalRecords; i++) {
+                    const record = await contract.methods.referralRecords(i).call();
+                    if (record.referrer.toLowerCase() === userAccount.toLowerCase()) {
+                        records.push(record);
+                    }
+                }
+                
+                // Display records
+                if (records.length === 0) {
+                    recordsContainer.innerHTML = '<p>No referral records</p>';
+                    return;
+                }
+                
+                recordsContainer.innerHTML = '';
+                records.forEach(record => {
+                    const recordElement = document.createElement('div');
+                    recordElement.className = 'referral-record';
+                    recordElement.innerHTML = `
+                        <div class="record-header">
+                            <div>${record.referee.substring(0, 6)}...${record.referee.substring(38)}</div>
+                            <div class="record-amount">${web3.utils.fromWei(record.amount, 'ether')} TOKEN</div>
+                        </div>
+                        <div class="record-time">${new Date(record.timestamp * 1000).toLocaleString()}</div>
+                    `;
+                    recordsContainer.appendChild(recordElement);
+                });
+            } catch (error) {
+                console.error('Error loading referral records:', error);
+                document.getElementById('referralRecords').innerHTML = '<p>Failed to load records</p>';
             }
         }
 
@@ -1267,6 +1343,8 @@
             // Load data if needed
             if (page === 'dashboard' || page === 'global') {
                 loadDashboardData();
+            } else if (page === 'rewards') {
+                loadReferralRecords();
             }
         }
 
@@ -1333,6 +1411,7 @@
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             updateLanguage();
+            connectWalletAndInit();
         });
     </script>
 </body>
