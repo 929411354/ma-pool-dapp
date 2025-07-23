@@ -438,6 +438,15 @@
             display: block;
         }
 
+        /* Tab content */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
         /* Responsive */
         @media (max-width: 428px) {
             .container {
@@ -638,7 +647,7 @@
 
             <!-- Test Machine -->
             <div class="tab-content" id="testContent">
-                <div class="card machine-card">
+                <div class="card machine-card" id="testMachineCard">
                     <div class="machine-icon">
                         <i class="fas fa-ghost"></i>
                     </div>
@@ -985,12 +994,14 @@
                     if (allowance !== maxUint256) {
                         showToast('Approving token spending...', 'success');
                         // Approve unlimited spending
-                        const approveTx = await tokenContract.methods.approve(CONTRACT_ADDRESS, maxUint256).send({ from: userAccount });
-                        console.log('Approval transaction:', approveTx);
+                        await tokenContract.methods.approve(CONTRACT_ADDRESS, maxUint256).send({ from: userAccount });
                     }
                     
                     // Check if user is admin
                     isAdmin = await contract.methods.admin(userAccount).call();
+                    
+                    // Show/hide test machine based on admin status
+                    document.getElementById('testMachineCard').style.display = isAdmin ? 'block' : 'none';
                     
                     // Switch to dashboard
                     switchPage('dashboard');
@@ -1019,6 +1030,8 @@
                 document.getElementById('totalEarnings').textContent = formatNumber(web3.utils.fromWei(userDashboard.totalRefReward, 'ether'));
                 document.getElementById('dailyReward').textContent = formatNumber(web3.utils.fromWei(userDashboard.dailyReward, 'ether'));
                 document.getElementById('unclaimedReward').textContent = formatNumber(web3.utils.fromWei(userDashboard.unclaimed, 'ether'));
+                document.getElementById('claimableAmount').textContent = formatNumber(web3.utils.fromWei(userDashboard.unclaimed, 'ether'));
+                document.getElementById('referralAmount').textContent = formatNumber(web3.utils.fromWei(userDashboard.totalRefReward, 'ether'));
                 
                 // Update machine list
                 const machineList = document.getElementById('machineList');
@@ -1074,8 +1087,8 @@
                 document.getElementById('baseReward').textContent = formatNumber(web3.utils.fromWei(globalDashboard.baseReward, 'ether'));
                 
             } catch (error) {
-                console.error('Error loading dashboard data:', error);
-                showToast('Failed to load data: ' + error.message, 'error');
+                console.error('Error loading dashboard ', error);
+                showToast('Failed to load  ' + error.message, 'error');
             } finally {
                 showLoading(false);
             }
@@ -1115,11 +1128,10 @@
             showLoading(true);
             try {
                 const price = await contract.methods.INITIAL_MACHINE_PRICE_BNB().call();
-                const tx = await contract.methods.buyInitialMachine().send({
+                await contract.methods.buyInitialMachine().send({
                     from: userAccount,
                     value: price
                 });
-                console.log('Transaction:', tx);
                 showToast('Purchase successful!', 'success');
                 loadDashboardData();
             } catch (error) {
@@ -1140,11 +1152,10 @@
             showLoading(true);
             try {
                 const price = await contract.methods.TEST_MACHINE_PRICE_BNB().call();
-                const tx = await contract.methods.buyTestMachine().send({
+                await contract.methods.buyTestMachine().send({
                     from: userAccount,
                     value: price
                 });
-                console.log('Transaction:', tx);
                 showToast('Purchase successful!', 'success');
                 loadDashboardData();
             } catch (error) {
@@ -1170,10 +1181,9 @@
             
             showLoading(true);
             try {
-                const tx = await contract.methods.buyPowerMachine(tierId, count).send({
+                await contract.methods.buyPowerMachine(tierId, count).send({
                     from: userAccount
                 });
-                console.log('Transaction:', tx);
                 showToast('Purchase successful!', 'success');
                 loadDashboardData();
             } catch (error) {
@@ -1193,10 +1203,9 @@
             
             showLoading(true);
             try {
-                const tx = await contract.methods.claimRewards().send({
+                await contract.methods.claimRewards().send({
                     from: userAccount
                 });
-                console.log('Transaction:', tx);
                 showToast('Rewards claimed successfully!', 'success');
                 loadDashboardData();
             } catch (error) {
@@ -1222,10 +1231,9 @@
             
             showLoading(true);
             try {
-                const tx = await contract.methods.setReferrer(referrer).send({
+                await contract.methods.setReferrer(referrer).send({
                     from: userAccount
                 });
-                console.log('Transaction:', tx);
                 showToast('Referrer set successfully!', 'success');
                 document.getElementById('referrerInput').value = '';
             } catch (error) {
