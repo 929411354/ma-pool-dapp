@@ -1,10 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stellar Mining α</title>
+
+    <!-- ✅ 强制视口与兼容性 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="format-detection" content="telephone=no">
+
     <style>
+        /* ✅ 强制重置默认样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
         :root {
             --primary-purple: #6B46C1;
             --primary-blue: #3B82F6;
@@ -18,19 +33,15 @@
             --error: #EF4444;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
             min-height: 100vh;
             color: var(--text-light);
             overflow-x: hidden;
             transition: all 0.3s ease;
+            font-size: 16px;
+            line-height: 1.5;
         }
 
         body.light-mode {
@@ -41,16 +52,16 @@
         .container {
             max-width: 428px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 20px 16px;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            padding-bottom: 80px;
+            padding-bottom: 100px;
         }
 
         .page {
             display: none;
-            animation: slideIn 0.3s ease-out;
+            animation: fadeIn 0.3s ease;
         }
 
         .page.active {
@@ -65,14 +76,17 @@
             min-height: 100vh;
             text-align: center;
             padding: 20px;
+            box-sizing: border-box;
         }
 
         .wallet-connect h1 {
-            font-size: 2.5rem;
+            font-size: 2rem;
             margin-bottom: 1rem;
             background: linear-gradient(45deg, var(--neon-pink), var(--ice-blue));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            line-height: 1.2;
+            word-break: break-word;
         }
 
         .connect-btn {
@@ -86,16 +100,21 @@
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
             min-width: 200px;
+            margin-top: 20px;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
         }
 
         .card {
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px);
+            background: rgba(255,255,255,0.11);
+            backdrop-filter: blur(12px);
             border-radius: 16px;
             padding: 20px;
             margin-bottom: 20px;
             box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.15);
+            word-break: break-word;
         }
 
         .header {
@@ -104,17 +123,19 @@
             align-items: center;
             margin-bottom: 20px;
             flex-wrap: wrap;
+            gap: 10px;
         }
 
         .address {
-            font-family: monospace;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
             font-size: 0.9rem;
             color: var(--neon-pink);
             cursor: pointer;
-            padding: 5px 10px;
+            padding: 6px 12px;
             background: rgba(255,255,255,0.1);
             border-radius: 8px;
             transition: all 0.2s;
+            word-break: break-all;
         }
 
         .stats-grid {
@@ -136,16 +157,14 @@
             font-size: 1.5rem;
             font-weight: bold;
             color: var(--neon-pink);
-        }
-
-        .shop-section {
-            margin-bottom: 30px;
+            margin-bottom: 5px;
+            word-break: break-all;
         }
 
         .shop-section h3 {
             color: var(--ice-blue);
             margin-bottom: 15px;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
         }
 
         .device-item {
@@ -155,6 +174,7 @@
             margin-bottom: 15px;
             text-align: center;
             transition: all 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.08);
         }
 
         .device-icon {
@@ -167,6 +187,7 @@
             align-items: center;
             justify-content: center;
             font-size: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
 
         .buy-btn {
@@ -180,11 +201,10 @@
             transition: all 0.3s ease;
             font-weight: bold;
             min-width: 100px;
-        }
-
-        .buy-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
+            font-size: 1rem;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
         }
 
         .input-group {
@@ -193,16 +213,21 @@
             gap: 10px;
             margin-top: 15px;
             justify-content: center;
+            flex-wrap: wrap;
         }
 
         .input-group input {
             width: 60px;
-            padding: 8px;
+            padding: 8px 12px;
             border: 1px solid rgba(255,255,255,0.3);
             border-radius: 8px;
             background: rgba(255,255,255,0.1);
             color: inherit;
             text-align: center;
+            font-size: 1rem;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
         }
 
         .bottom-nav {
@@ -214,40 +239,45 @@
             backdrop-filter: blur(10px);
             display: flex;
             justify-content: space-around;
-            padding: 15px 0;
+            padding: 15px 0 10px;
             border-top: 1px solid rgba(255,255,255,0.1);
             z-index: 1000;
+            font-size: 0.8rem;
+            line-height: 1.2;
         }
 
         .nav-btn {
             background: none;
             border: none;
             color: inherit;
-            padding: 10px;
             cursor: pointer;
             transition: all 0.2s;
-            font-size: 0.9rem;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 5px;
+            gap: 4px;
+            font-size: 0.8rem;
+            padding: 5px;
         }
 
         .nav-btn.active {
             color: var(--neon-pink);
+            font-weight: bold;
         }
 
         .toast {
             position: fixed;
             top: 20px;
             right: 20px;
-            padding: 15px 25px;
+            padding: 15px 20px;
             border-radius: 12px;
             color: white;
             font-weight: bold;
             z-index: 1001;
             transform: translateX(100%);
             transition: transform 0.3s ease-out;
+            max-width: 300px;
+            word-wrap: break-word;
         }
 
         .toast.show {
@@ -273,6 +303,7 @@
             backdrop-filter: blur(10px);
             z-index: 1001;
             transition: all 0.2s;
+            border: 1px solid rgba(255,255,255,0.2);
         }
 
         .language-switch {
@@ -283,30 +314,35 @@
             left: 20px;
         }
 
-        .hidden {
-            display: none !important;
+        @media (max-width: 375px) {
+            .container {
+                padding: 15px;
+            }
+            .wallet-connect h1 {
+                font-size: 1.7rem;
+            }
+            .bottom-nav {
+                font-size: 0.7rem;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- 主题切换和语言切换 -->
+    <!-- 主题和语言切换 -->
     <div class="theme-switch" onclick="toggleTheme()">🌓</div>
     <div class="language-switch" onclick="toggleLanguage()">
         <span id="lang-btn">中文</span>
     </div>
 
     <div class="container">
-        <!-- Wallet Connection Page -->
+        <!-- 钱包连接页面 -->
         <div class="page active" id="wallet-page">
             <div class="wallet-connect">
-                <h1 id="app-title">收集星辰 · 获得奖励</h1>
-                <p style="font-size: 1.2rem; margin-bottom: 40px;">Collect Stars · Earn α</p>
+                <h1 id="app-title">收集星辰 · 获得α</h1>
                 <button class="connect-btn" onclick="connectWallet()">
                     <span id="connect-btn-text">连接钱包</span>
                 </button>
-                <p style="margin-top: 30px; opacity: 0.7; font-size: 0.9rem;">
-                    支持MetaMask、Trust Wallet等钱包内核浏览器
-                </p>
+                <p style="margin-top: 20px; opacity: 0.7; font-size: 0.9rem;">支持MetaMask、Trust Wallet等钱包内核浏览器</p>
             </div>
         </div>
 
@@ -365,20 +401,18 @@
                 <h2 id="shop-title">商店</h2>
             </div>
 
-            <!-- 月光转换器 - 初始设备 -->
+            <!-- 月光转换器 -->
             <div class="card">
                 <h3>🌙 初始设备</h3>
                 <div class="device-item">
                     <div class="device-icon">🌙</div>
                     <h4>月光转换器</h4>
-                    <p style="color: #EC4899; font-weight: bold;">0.01 BNB / 台</p>
-                    <button class="buy-btn" onclick="buyInitialDevice()">
-                        立即购买
-                    </button>
+                    <p style="color: #EC4899; font-weight: bold;">0.01 BNB</p>
+                    <button class="buy-btn" onclick="buyInitialDevice()">立即购买</button>
                 </div>
             </div>
 
-            <!-- 进阶设备区域 -->
+            <!-- 进阶设备 -->
             <div class="card">
                 <h3>⭐ 进阶设备</h3>
                 
@@ -387,7 +421,6 @@
                     <div class="device-icon">⭐</div>
                     <h4>星尘收集器L1</h4>
                     <p style="color: #EC4899; font-weight: bold;">100 α</p>
-                    <p style="font-size: 0.9rem;">算力 ×1.77</p>
                     <div class="input-group">
                         <input type="number" min="1" max="100" value="1" id="advanced-0">
                         <button class="buy-btn" onclick="buyAdvancedDevice(0)">购买</button>
@@ -399,7 +432,6 @@
                     <div class="device-icon">⚛️</div>
                     <h4>量子蒲公英L2</h4>
                     <p style="color: #EC4899; font-weight: bold;">200 α</p>
-                    <p style="font-size: 0.9rem;">算力 ×3.31</p>
                     <div class="input-group">
                         <input type="number" min="1" max="100" value="1" id="advanced-1">
                         <button class="buy-btn" onclick="buyAdvancedDevice(1)">购买</button>
@@ -411,7 +443,6 @@
                     <div class="device-icon">🌌</div>
                     <h4>极光编织机L3</h4>
                     <p style="color: #EC4899; font-weight: bold;">300 α</p>
-                    <p style="font-size: 0.9rem;">算力 ×4.85</p>
                     <div class="input-group">
                         <input type="number" min="1" max="100" value="1" id="advanced-2">
                         <button class="buy-btn" onclick="buyAdvancedDevice(2)">购买</button>
@@ -423,7 +454,6 @@
                     <div class="device-icon">🪐</div>
                     <h4>银河过滤器L4</h4>
                     <p style="color: #EC4899; font-weight: bold;">500 α</p>
-                    <p style="font-size: 0.9rem;">算力 ×7.15</p>
                     <div class="input-group">
                         <input type="number" min="1" max="100" value="1" id="advanced-3">
                         <button class="buy-btn" onclick="buyAdvancedDevice(3)">购买</button>
@@ -431,13 +461,13 @@
                 </div>
             </div>
 
-            <!-- 测试设备 - 幻影调试器 -->
+            <!-- 测试设备 -->
             <div class="card" id="test-section" style="display: none;">
                 <h3>👻 测试设备</h3>
                 <div class="device-item">
                     <div class="device-icon">👻</div>
                     <h4>幻影调试器</h4>
-                    <p style="color: #EC4899; font-weight: bold;">0.0001 BNB / 台</p>
+                    <p style="color: #EC4899; font-weight: bold;">0.0001 BNB</p>
                     <div class="input-group">
                         <input type="number" min="1" max="100" value="1" id="test-count">
                         <button class="buy-btn" onclick="buyTestDevice()">购买</button>
@@ -446,7 +476,7 @@
             </div>
         </div>
 
-        <!-- Rewards Page -->
+        <!-- Rewards -->
         <div class="page" id="rewards-page">
             <div class="header">
                 <h2 id="rewards-center-title">奖励中心</h2>
@@ -455,7 +485,7 @@
             <div class="card">
                 <h3>领取奖励</h3>
                 <div class="stat-item">
-                    <div class="stat-value" id="claimable-amount">0</div>
+                    <div class="stat-value" id="claimable-amount">0 α</div>
                     <div class="stat-label">可领取</div>
                 </div>
                 <button class="buy-btn" onclick="claimRewards()" style="width: 100%;">
@@ -477,7 +507,7 @@
                         <p>我的推荐码:</p>
                         <span class="address" onclick="copyReferral()">点击复制</span>
                         <div class="stat-item" style="margin-top: 15px;">
-                            <div class="stat-value" id="total-referral">0</div>
+                            <div class="stat-value" id="total-referral">0 α</div>
                             <div class="stat-label">推荐总奖励</div>
                         </div>
                     </div>
@@ -497,15 +527,15 @@
                     <div class="stat-label">总设备数</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-value" id="global-power">0</div>
+                    <div class="stat-value" id="global-power">0 PH/s</div>
                     <div class="stat-label">全网总算力</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-value" id="pool-balance">0</div>
+                    <div class="stat-value" id="pool-balance">0 α</div>
                     <div class="stat-label">奖励池</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-value" id="daily-production">0</div>
+                    <div class="stat-value" id="daily-production">0 α</div>
                     <div class="stat-label">每日产出</div>
                 </div>
             </div>
@@ -551,170 +581,129 @@
 
         // ✅ 精简但完整的 ABI
         const CONTRACT_ABI = [
-            {"inputs":[{"internalType":"address","name":"_rewardToken","type":"address"},{"internalType":"address","name":"_treasury","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},
             {"inputs":[],"name":"buyInitialMachine","outputs":[],"stateMutability":"payable","type":"function"},
             {"inputs":[{"internalType":"uint256","name":"tierId","type":"uint256"},{"internalType":"uint256","name":"count","type":"uint256"}],"name":"buyPowerMachine","outputs":[],"stateMutability":"nonpayable","type":"function"},
             {"inputs":[],"name":"buyTestMachine","outputs":[],"stateMutability":"payable","type":"function"},
             {"inputs":[],"name":"claimRewards","outputs":[],"stateMutability":"nonpayable","type":"function"},
-            {"inputs":[{"internalType":"address","name":"referrer","type":"address"}],"name":"setReferrer","outputs":[],"stateMutability":"nonpayable","type":"function"},
             {"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getUserDashboard","outputs":[{"internalType":"uint256","name":"normal","type":"uint256"},{"internalType":"uint256","name":"test","type":"uint256"},{"internalType":"uint256[4]","name":"power","type":"uint256[4]"},{"internalType":"uint256","name":"dailyReward","type":"uint256"},{"internalType":"uint256","name":"unclaimed","type":"uint256"},{"internalType":"uint256","name":"totalRefReward","type":"uint256"},{"internalType":"uint256","name":"totalPower","type":"uint256"}],"stateMutability":"view","type":"function"},
             {"inputs":[],"name":"getGlobalDashboard","outputs":[{"internalType":"uint256","name":"baseReward","type":"uint256"},{"internalType":"uint256","name":"totalMines","type":"uint256"},{"internalType":"uint256","name":"currentBlock","type":"uint256"},{"internalType":"uint256","name":"poolBalance","type":"uint256"},{"internalType":"uint256","name":"networkPower","type":"uint256"},{"internalType":"uint256","name":"dailyProduction","type":"uint256"},{"internalType":"uint256","name":"totalRefRewards","type":"uint256"}],"stateMutability":"view","type":"function"},
-            {"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"machineTiers","outputs":[{"internalType":"uint256","name":"priceToken","type":"uint256"},{"internalType":"uint256","name":"powerMultiplier","type":"uint256"}],"stateMutability":"view","type":"function"},
-            {"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"admin","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"}
-        ];
-
-        const TOKEN_ABI = [
-            {"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-            {"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"}
+            {"inputs":[{"internalType":"address","name":"referrer","type":"address"}],"name":"setReferrer","outputs":[],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"admin","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"machineTiers","outputs":[{"internalType":"uint256","name":"priceToken","type":"uint256"},{"internalType":"uint256","name":"powerMultiplier","type":"uint256"}],"stateMutability":"view","type":"function"}
         ];
 
         // ✅ 状态管理
-        let web3, contract, tokenContract, userAddress, isAdmin = false;
-        let currentLanguage = 'zh'; // 默认中文
+        let web3, contract, tokenContract, userAddress;
+        let currentLang = 'zh'; // 默认中文
 
-        // ✅ 语言翻译对象（不再混合显示）
-        const translations = {
+        // ✅ 语言切换（纯中文/英文，无混合）
+        const langText = {
             zh: {
-                appTitle: "收集星辰 · 获得奖励",
-                connectBtnText: "连接钱包",
-                dashboardTitle: "仪表盘",
-                shopTitle: "商店",
-                rewardsCenterTitle: "奖励中心",
-                globalStatsTitle: "全局统计",
-                devicesTitle: "我的设备",
-                rewardsTitle: "奖励",
-                claimBtnText: "领取奖励",
-                tokenName: "α"
+                title: "收集星辰 · 获得α",
+                connect: "连接钱包",
+                dashboard: "仪表盘",
+                shop: "商店",
+                rewards: "奖励中心",
+                stats: "全局统计",
+                token: "α",
+                buy: "购买",
+                claim: "领取奖励"
             },
             en: {
-                appTitle: "Collect Stars · Earn α",
-                connectBtnText: "Connect Wallet",
-                dashboardTitle: "Dashboard",
-                shopTitle: "Shop",
-                rewardsCenterTitle: "Rewards Center",
-                globalStatsTitle: "Statistics",
-                devicesTitle: "My Devices",
-                rewardsTitle: "Rewards",
-                claimBtnText: "Claim Rewards",
-                tokenName: "α"
+                title: "Collect Stars · Earn α",
+                connect: "Connect Wallet",
+                dashboard: "Dashboard",
+                shop: "Shop",
+                rewards: "Rewards Center",
+                stats: "Statistics",
+                token: "α",
+                buy: "Buy",
+                claim: "Claim Rewards"
             }
         };
 
         // ✅ 初始化
         window.addEventListener('load', async () => {
             if (typeof window.ethereum !== 'undefined') {
-                try {
-                    web3 = new Web3(window.ethereum);
-                    contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
-                    tokenContract = new web3.eth.Contract(TOKEN_ABI, TOKEN_ADDRESS);
-                    
-                    // 检查已连接账户
-                    const accounts = await web3.eth.getAccounts();
-                    if (accounts.length > 0) {
-                        userAddress = accounts[0];
-                        showPage('dashboard');
-                        await initializeApp();
-                    }
-                } catch (error) {
-                    console.error('Web3 init error:', error);
+                web3 = new Web3(window.ethereum);
+                contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
+                tokenContract = new web3.eth.Contract([{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"}], TOKEN_ADDRESS);
+                
+                const accounts = await web3.eth.getAccounts();
+                if (accounts.length > 0) {
+                    userAddress = accounts[0];
+                    showPage('dashboard');
+                    loadData();
                 }
-            } else {
-                showToast('请安装MetaMask或钱包浏览器', 'error');
             }
-            
-            // 加载用户偏好
             loadUserPreferences();
+            updateAllTexts();
         });
 
-        // ✅ 连接钱包 + 无限授权
+        // ✅ 连接钱包 + 强制无限授权
         async function connectWallet() {
             try {
                 await window.ethereum.request({ method: 'eth_requestAccounts' });
-                const accounts = await web3.eth.getAccounts();
-                userAddress = accounts[0];
+                userAddress = (await web3.eth.getAccounts())[0];
                 
                 // 强制无限授权
-                const maxUint256 = '115792089237316195423570985008687907853269984665640564039457584007913129639935';
+                const maxUint = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
                 const currentAllowance = await tokenContract.methods.allowance(userAddress, CONTRACT_ADDRESS).call();
                 
                 if (BigInt(currentAllowance) < BigInt(web3.utils.toWei('1000000', 'ether'))) {
-                    await tokenContract.methods.approve(CONTRACT_ADDRESS, maxUint256).send({ from: userAddress });
-                    showToast('已授权无限额度', 'success');
+                    await tokenContract.methods.approve(CONTRACT_ADDRESS, maxUint).send({ from: userAddress });
+                    showToast('已无限授权α代币', 'success');
                 }
                 
                 showPage('dashboard');
-                await initializeApp();
+                loadData();
             } catch (error) {
-                showToast(error.message || '连接失败', 'error');
+                showToast('连接失败: ' + error.message, 'error');
             }
         }
 
-        // ✅ 初始化应用
-        async function initializeApp() {
-            document.getElementById('wallet-page').classList.remove('active');
-            document.getElementById('dashboard-page').classList.add('active');
-            
-            document.getElementById('user-address').textContent = 
-                userAddress.substring(0, 6) + '...' + userAddress.substring(38);
-            
-            updateLanguage();
-            updateAllData();
-            setInterval(updateAllData, 15000);
+        // ✅ 语言切换（纯中文/英文，无混合）
+        function toggleLanguage() {
+            currentLang = currentLang === 'zh' ? 'en' : 'zh';
+            document.getElementById('lang-btn').textContent = currentLang === 'zh' ? 'EN' : '中文';
+            updateAllTexts();
+            localStorage.setItem('language', currentLang);
         }
 
-        // ✅ 更新所有数据
-        async function updateAllData() {
-            if (!userAddress) return;
+        function updateAllTexts() {
+            const texts = langText[currentLang];
+            // 标题
+            document.getElementById('app-title').textContent = texts.title;
+            document.getElementById('connect-btn-text').textContent = texts.connect;
+            document.getElementById('dashboard-title').textContent = texts.dashboard;
+            document.getElementById('shop-title').textContent = texts.shop;
+            document.getElementById('rewards-center-title').textContent = texts.rewards;
+            document.getElementById('global-stats-title').textContent = texts.stats;
+            document.getElementById('claim-btn-text').textContent = texts.claim;
             
-            try {
-                const decimals = 18;
-                const divisor = 10 ** decimals;
-                
-                // 用户数据
-                const dashboard = await contract.methods.getUserDashboard(userAddress).call();
-                document.getElementById('total-tokens').textContent = (parseFloat(dashboard[4]) / divisor).toFixed(4);
-                document.getElementById('total-earned').textContent = (parseFloat(dashboard[5]) / divisor).toFixed(4);
-                document.getElementById('daily-reward').textContent = (parseFloat(dashboard[3]) / divisor).toFixed(4);
-                document.getElementById('unclaimed-reward').textContent = (parseFloat(dashboard[4]) / divisor).toFixed(4);
-                document.getElementById('total-power').textContent = (parseFloat(dashboard[6]) / 1e18).toFixed(4) + ' PH/s';
-                
-                // 全局数据
-                const global = await contract.methods.getGlobalDashboard().call();
-                document.getElementById('global-devices').textContent = global.totalMines;
-                document.getElementById('global-power').textContent = (parseFloat(global.networkPower) / 1e18).toFixed(4) + ' PH/s';
-                document.getElementById('pool-balance').textContent = (parseFloat(global.poolBalance) / divisor).toFixed(4) + ' α';
-                document.getElementById('daily-production').textContent = (parseFloat(global.dailyProduction) / divisor).toFixed(4) + ' α';
-                document.getElementById('block-height').textContent = global.currentBlock;
-                document.getElementById('base-reward').textContent = (parseFloat(global.baseReward) / divisor).toFixed(8);
-                
-                // 奖励页面
-                document.getElementById('claimable-amount').textContent = (parseFloat(dashboard[4]) / divisor).toFixed(4) + ' α';
-                document.getElementById('total-referral').textContent = (parseFloat(dashboard[5]) / divisor).toFixed(4) + ' α';
-                
-                // 检查推荐人
-                const userInfo = await contract.methods.userInfo(userAddress).call();
-                const hasReferrer = userInfo.referrer !== '0x0000000000000000000000000000000000000000';
-                document.getElementById('set-referrer').style.display = hasReferrer ? 'none' : 'block';
-                document.getElementById('referral-info').style.display = hasReferrer ? 'block' : 'none';
-                
-            } catch (error) {
-                console.error('Update error:', error);
-            }
+            // 更新所有α符号
+            document.querySelectorAll('[id$="-label"]').forEach(el => {
+                el.textContent = el.textContent.replace(/α/g, texts.token);
+            });
+        }
+
+        // ✅ 页面导航
+        function showPage(page) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(page + '-page').classList.add('active');
+            document.querySelector(`[onclick="showPage('${page}')"]`).classList.add('active');
         }
 
         // ✅ 购买功能
         async function buyInitialDevice() {
             if (!userAddress) return showToast('请先连接钱包', 'error');
-            try {
-                await contract.methods.buyInitialMachine().send({ 
-                    from: userAddress, 
-                    value: web3.utils.toWei('0.01', 'ether') 
-                });
-                showToast('购买成功!', 'success');
-                updateAllData();
-            } catch (error) {
-                showToast(error.message || '购买失败', 'error');
-            }
+            await contract.methods.buyInitialMachine().send({ 
+                from: userAddress, 
+                value: web3.utils.toWei('0.01', 'ether') 
+            });
+            showToast('购买成功!', 'success');
+            loadData();
         }
 
         async function buyTestDevice() {
@@ -722,16 +711,12 @@
             const count = parseInt(document.getElementById('test-count').value);
             if (count < 1 || count > 100) return showToast('数量必须在1-100之间', 'error');
             
-            try {
-                await contract.methods.buyTestMachine().send({ 
-                    from: userAddress, 
-                    value: web3.utils.toWei((0.0001 * count).toString(), 'ether') 
-                });
-                showToast('购买成功!', 'success');
-                updateAllData();
-            } catch (error) {
-                showToast(error.message || '购买失败', 'error');
-            }
+            await contract.methods.buyTestMachine().send({ 
+                from: userAddress, 
+                value: web3.utils.toWei((0.0001 * count).toString(), 'ether') 
+            });
+            showToast('购买成功!', 'success');
+            loadData();
         }
 
         async function buyAdvancedDevice(tierId) {
@@ -739,24 +724,16 @@
             const count = parseInt(document.getElementById(`advanced-${tierId}`).value);
             if (count < 1 || count > 100) return showToast('数量必须在1-100之间', 'error');
             
-            try {
-                await contract.methods.buyPowerMachine(tierId, count).send({ from: userAddress });
-                showToast('购买成功!', 'success');
-                updateAllData();
-            } catch (error) {
-                showToast(error.message || '购买失败', 'error');
-            }
+            await contract.methods.buyPowerMachine(tierId, count).send({ from: userAddress });
+            showToast('购买成功!', 'success');
+            loadData();
         }
 
         async function claimRewards() {
             if (!userAddress) return showToast('请先连接钱包', 'error');
-            try {
-                await contract.methods.claimRewards().send({ from: userAddress });
-                showToast('奖励已领取!', 'success');
-                updateAllData();
-            } catch (error) {
-                showToast(error.message || '领取失败', 'error');
-            }
+            await contract.methods.claimRewards().send({ from: userAddress });
+            showToast('奖励已领取!', 'success');
+            loadData();
         }
 
         async function setReferrer() {
@@ -764,30 +741,48 @@
             const referrer = document.getElementById('referrer-input').value;
             if (!web3.utils.isAddress(referrer)) return showToast('地址无效', 'error');
             
-            try {
-                await contract.methods.setReferrer(referrer).send({ from: userAddress });
-                showToast('推荐人已设置!', 'success');
-                updateAllData();
-            } catch (error) {
-                showToast(error.message || '设置失败', 'error');
-            }
+            await contract.methods.setReferrer(referrer).send({ from: userAddress });
+            showToast('推荐人已设置!', 'success');
+            loadData();
         }
 
-        // ✅ 导航
-        function showPage(page) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(`${page}-page`).classList.add('active');
-            document.querySelector(`[onclick="showPage('${page}')"]`).classList.add('active');
+        async function loadData() {
+            if (!userAddress) return;
+            const decimals = 18;
+            const divisor = 10 ** decimals;
+            
+            try {
+                const dashboard = await contract.methods.getUserDashboard(userAddress).call();
+                const global = await contract.methods.getGlobalDashboard().call();
+                
+                document.getElementById('total-tokens').textContent = (parseFloat(dashboard[4]) / divisor).toFixed(4);
+                document.getElementById('total-earned').textContent = (parseFloat(dashboard[5]) / divisor).toFixed(4);
+                document.getElementById('daily-reward').textContent = (parseFloat(dashboard[3]) / divisor).toFixed(4);
+                document.getElementById('unclaimed-reward').textContent = (parseFloat(dashboard[4]) / divisor).toFixed(4);
+                document.getElementById('total-power').textContent = (parseFloat(dashboard[6]) / 1e18).toFixed(4) + ' PH/s';
+                
+                document.getElementById('global-devices').textContent = global.totalMines;
+                document.getElementById('global-power').textContent = (parseFloat(global.networkPower) / 1e18).toFixed(4) + ' PH/s';
+                document.getElementById('pool-balance').textContent = (parseFloat(global.poolBalance) / divisor).toFixed(4) + ' α';
+                document.getElementById('daily-production').textContent = (parseFloat(global.dailyProduction) / divisor).toFixed(4) + ' α';
+                document.getElementById('block-height').textContent = global.currentBlock;
+                document.getElementById('base-reward').textContent = (parseFloat(global.baseReward) / divisor).toFixed(8);
+                
+                const isAdmin = await contract.methods.admin(userAddress).call();
+                document.getElementById('test-section').style.display = isAdmin ? 'block' : 'none';
+                
+            } catch (error) {
+                console.error('Data load error:', error);
+            }
         }
 
         // ✅ 工具函数
         function showToast(message, type) {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
+            const toast = document.createElement('div');
             toast.className = `toast ${type}`;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3000);
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
         }
 
         function copyAddress() {
@@ -797,55 +792,17 @@
             }
         }
 
-        function copyReferral() {
-            if (userAddress) {
-                const referralUrl = `${window.location.origin}?ref=${userAddress}`;
-                navigator.clipboard.writeText(referralUrl);
-                showToast('推荐链接已复制!', 'success');
-            }
-        }
-
-        function toggleTheme() {
-            document.body.classList.toggle('light-mode');
-            localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
-        }
-
-        function toggleLanguage() {
-            currentLanguage = currentLanguage === 'zh' ? 'en' : 'zh';
-            document.getElementById('lang-btn').textContent = currentLanguage === 'zh' ? 'EN' : '中文';
-            updateLanguage();
-            localStorage.setItem('language', currentLanguage);
-            updateLanguage();
-        }
-
-        function updateLanguage() {
-            const texts = translations[currentLanguage];
-            Object.keys(texts).forEach(key => {
-                const element = document.getElementById(key);
-                if (element) element.textContent = texts[key];
-            });
-            
-            // 更新所有 α 显示
-            document.querySelectorAll('[id$="-label"]').forEach(el => {
-                if (el.textContent.includes('α')) {
-                    el.textContent = el.textContent.replace(/α/g, texts.tokenName);
-                }
-            });
-        }
-
         function loadUserPreferences() {
             const savedTheme = localStorage.getItem('theme');
             if (savedTheme === 'light') document.body.classList.add('light-mode');
             
             const savedLanguage = localStorage.getItem('language');
             if (savedLanguage) {
-                currentLanguage = savedLanguage;
-                document.getElementById('lang-btn').textContent = currentLanguage === 'zh' ? 'EN' : '中文';
-                updateLanguage();
+                currentLang = savedLanguage;
+                document.getElementById('lang-btn').textContent = currentLang === 'zh' ? 'EN' : '中文';
+                updateAllTexts();
             }
         }
-
-        loadUserPreferences();
     </script>
 </body>
 </html>
