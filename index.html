@@ -148,9 +148,6 @@
         .lang-toggle:hover {
             background: rgba(255, 255, 255, 0.2);
         }
-        .lang-toggle i {
-            font-size: 12px;
-        }
         /* Card Styles */
         .card {
             background: rgba(255, 255, 255, 0.05);
@@ -740,7 +737,7 @@
                     <span id="referralTitle">推荐体系</span>
                 </div>
                 <div class="input-group">
-                    <input type="text" id="referrerInput" placeholder="输入推荐人地址" id="referrerPlaceholder">
+                    <input type="text" id="referrerInput" placeholder="输入推荐人地址">
                     <button class="btn btn-secondary" onclick="setReferrer()" id="setReferrerBtn">设置</button>
                 </div>
                 <div style="margin-top: 15px;">
@@ -1061,33 +1058,53 @@
             try {
                 const recordsContainer = document.getElementById('referralRecords');
                 recordsContainer.innerHTML = '<p>Loading...</p>';
-                // Get total records count
+                
+                // 根据合约ABI，referralRecords是一个数组，我们可以通过索引来访问
+                // 我们需要遍历所有记录，找到referrer等于当前用户地址的记录
                 const totalRecords = await contract.methods.referralRecords.length().call();
-                // Load recent records (last 10)
+                
+                // 由于记录可能很多，我们只加载最近的20条
                 const records = [];
-                const start = Math.max(0, totalRecords - 10);
+                const start = Math.max(0, totalRecords - 20);
+                
+                // 逐个获取记录
                 for (let i = start; i < totalRecords; i++) {
-                    const record = await contract.methods.referralRecords(i).call();
-                    if (record.referrer.toLowerCase() === userAccount.toLowerCase()) {
-                        records.push(record);
+                    try {
+                        const record = await contract.methods.referralRecords(i).call();
+                        // 检查记录中的referrer是否等于当前用户地址
+                        if (record.referrer.toLowerCase() === userAccount.toLowerCase()) {
+                            records.push(record);
+                        }
+                    } catch (err) {
+                        console.warn(`Failed to fetch referral record at index ${i}:`, err);
+                        // 继续获取下一条记录
                     }
                 }
+                
                 // Display records
                 const lang = translations[currentLanguage];
                 if (records.length === 0) {
                     recordsContainer.innerHTML = `<p>${lang.noRecordsText}</p>`;
                     return;
                 }
+                
                 recordsContainer.innerHTML = '';
+                // 按时间倒序排列（最新的在前面）
+                records.reverse();
+                
                 records.forEach(record => {
                     const recordElement = document.createElement('div');
                     recordElement.className = 'referral-record';
+                    // 格式化时间戳
+                    const date = new Date(record.timestamp * 1000);
+                    const dateString = date.toLocaleString();
+                    
                     recordElement.innerHTML = `
                         <div class="record-header">
                             <div>${record.referee.substring(0, 6)}...${record.referee.substring(38)}</div>
                             <div class="record-amount">${web3.utils.fromWei(record.amount, 'ether')} TOKEN</div>
                         </div>
-                        <div class="record-time">${new Date(record.timestamp * 1000).toLocaleString()}</div>
+                        <div class="record-time">${dateString}</div>
                     `;
                     recordsContainer.appendChild(recordElement);
                 });
@@ -1370,6 +1387,9 @@
                     }
                 }
             }
+            // 特别更新输入框的placeholder
+            document.getElementById('referrerInput').placeholder = lang.referrerPlaceholder;
+            
             // Reload dashboard data to update machine names and texts
             if (document.getElementById('dashboardPage').classList.contains('active')) {
                 loadDashboardData();
