@@ -1,7 +1,7 @@
 {
-  "name": "Star Mining DApp",
-  "short_name": "StarMining",
-  "description": "A decentralized mining game on BNB Chain with NFT rewards and referral system.",
+  "name": "MA Pool DApp",
+  "short_name": "MA Pool",
+  "description": "Decentralized mining aggregator on BNB Chain",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",
@@ -9,29 +9,28 @@
   "background_color": "#1a1a2e",
   "icons": [
     {
-      "src": "https://ipfs.io/ipfs/bafkreibmp7wkdtmgp2oifju4yalhonkg22suitclwlh32c7vsoddwnimsq",
+      "src": "icons/favicon-32x32.png",
       "sizes": "32x32",
       "type": "image/png"
     },
     {
-      "src": "https://ipfs.io/ipfs/bafkreig7hnnubmb3u7wnffajdpuyrlrvocprdhsnyrqu4s2ccj2rku5uli",
+      "src": "icons/apple-touch-icon.png",
       "sizes": "180x180",
       "type": "image/png"
     },
     {
-      "src": "https://ipfs.io/ipfs/bafkreiasqnev67xkmoey4tu7icncxjrajxp7vqtyjmrxocvu76ltykmw5e",
+      "src": "icons/android-chrome-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "https://ipfs.io/ipfs/bafkreiakzlfdgzvsrbzmeto4zksnisofuzhfisu6vksppk2mayfkgoewba",
+      "src": "icons/android-chrome-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
     }
   ],
   "categories": ["finance", "games"],
-  "lang": "zh-CN",
-  "scope": "/"
+  "lang": "en"
 }
