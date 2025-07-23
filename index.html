@@ -148,6 +148,9 @@
         .lang-toggle:hover {
             background: rgba(255, 255, 255, 0.2);
         }
+        .lang-toggle i {
+            font-size: 12px;
+        }
         /* Card Styles */
         .card {
             background: rgba(255, 255, 255, 0.05);
@@ -476,6 +479,39 @@
         #testMachineBtn {
             display: none;
         }
+        /* Refresh Button */
+        .refresh-btn {
+            margin-top: 15px;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 20px;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+        body.light-mode .refresh-btn {
+            background: rgba(0, 0, 0, 0.1);
+            color: black;
+        }
+        .refresh-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+        body.light-mode .refresh-btn:hover {
+            background: rgba(0, 0, 0, 0.2);
+        }
+        /* Input placeholder color */
+        .input-group input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+        body.light-mode .input-group input::placeholder {
+            color: rgba(0, 0, 0, 0.5);
+        }
     </style>
 </head>
 <body>
@@ -721,6 +757,10 @@
                 <div id="referralRecords">
                     <!-- Records will be populated here -->
                 </div>
+                <button class="refresh-btn" onclick="loadReferralRecords()">
+                    <i class="fas fa-sync-alt"></i>
+                    <span id="refreshText">刷新记录</span>
+                </button>
             </div>
         </div>
     </div>
@@ -870,7 +910,8 @@
                 unitMachine: "台",
                 powerMultiplier: "算力 ×",
                 powerRatioText: "总算力占比:",
-                noRecordsText: "暂无推广记录"
+                noRecordsText: "暂无推广记录",
+                refreshText: "刷新记录"
             },
             en: {
                 connectWalletText: "Connect Wallet",
@@ -926,7 +967,8 @@
                 unitMachine: "units",
                 powerMultiplier: "Power ×",
                 powerRatioText: "Power Ratio:",
-                noRecordsText: "No referral records"
+                noRecordsText: "No referral records",
+                refreshText: "Refresh Records"
             }
         };
         // Initialize Web3
@@ -1031,13 +1073,12 @@
                     }
                 }
                 // Display records
+                const lang = translations[currentLanguage];
                 if (records.length === 0) {
-                    const lang = translations[currentLanguage];
                     recordsContainer.innerHTML = `<p>${lang.noRecordsText}</p>`;
                     return;
                 }
                 recordsContainer.innerHTML = '';
-                const lang = translations[currentLanguage];
                 records.forEach(record => {
                     const recordElement = document.createElement('div');
                     recordElement.className = 'referral-record';
