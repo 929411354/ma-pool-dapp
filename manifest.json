@@ -1,14 +1,36 @@
 {
   "name": "MA Pool DApp",
   "short_name": "MA Pool",
+  "description": "Decentralized mining aggregator on BNB Chain",
   "start_url": "/",
   "display": "standalone",
+  "orientation": "portrait",
   "theme_color": "#1a1a2e",
   "background_color": "#1a1a2e",
   "icons": [
-    { "src": "https://uid606.top/icons/favicon-32x32.png", "sizes": "32x32", "type": "image/png" },
-    { "src": "https://uid606.top/icons/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" },
-    { "src": "https://uid606.top/icons/android-chrome-192x192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "https://uid606.top/icons/android-chrome-512x512.png", "sizes": "512x512", "type": "image/png" }
-  ]
+    {
+      "src": "https://ipfs.io/ipfs/bafkreibohuj6yb6hji4q7rwt6kd5iu6swgx4h2lz4ehib4uemgvbggkxsq",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "https://ipfs.io/ipfs/bafkreiat5nq6axw2yv6n3ull25zdzxjyj7qt5nh6bseafeq3w775p2nsmm",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "https://ipfs.io/ipfs/bafkreieklrnbbuqzhgbcuzyjimjuq5dsgp4pmye5azao43jfuuy7tnpugm",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://ipfs.io/ipfs/bafybeihmehnlog7ucjda5tzggmbbrlzylkl5p3l44jo7aobcr2kmfrplku",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["finance", "games"],
+  "lang": "en"
 }
