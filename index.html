@@ -527,30 +527,6 @@
             color: black;
             border: 1px solid rgba(0, 0, 0, 0.2);
         }
-        .record-item {
-            padding: 15px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        body.light-mode .record-item {
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-        }
-        .record-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-        }
-        .record-address {
-            font-size: 14px;
-            opacity: 0.8;
-        }
-        .record-amount {
-            font-weight: bold;
-            color: var(--accent-blue);
-        }
-        .record-date {
-            font-size: 12px;
-            opacity: 0.6;
-        }
         .whitepaper-btn {
             margin-top: 15px;
         }
@@ -954,15 +930,6 @@
                     <span id="whitepaperText">查看白皮书</span>
                 </button>
             </div>
-            <div class="card">
-                <div class="card-title">
-                    <i class="fas fa-list"></i>
-                    <span id="recordsTitle">邀请记录</span>
-                </div>
-                <div id="recordsList">
-                    <!-- Records will be populated here -->
-                </div>
-            </div>
         </div>
     </div>
     <!-- Global Stats Page -->
@@ -1059,7 +1026,6 @@
         let isAdmin = false;
         let isOwner = false;
         let currentLanguage = 'zh'; // 'zh' or 'en'
-        let referralRecords = [];
         // Language dictionaries
         const translations = {
             zh: {
@@ -1124,7 +1090,6 @@
                 scanText: "扫描二维码分享",
                 copyLinkBtn: "复制链接",
                 whitepaperText: "查看白皮书",
-                recordsTitle: "邀请记录",
                 noRecordsText: "暂无邀请记录",
                 totalReferrals: "总邀请",
                 totalRewards: "总奖励",
@@ -1192,7 +1157,6 @@
                 scanText: "Scan QR code to share",
                 copyLinkBtn: "Copy Link",
                 whitepaperText: "View Whitepaper",
-                recordsTitle: "Invite Records",
                 noRecordsText: "No invite records yet",
                 totalReferrals: "Total Invites",
                 totalRewards: "Total Rewards",
@@ -1427,55 +1391,18 @@
                 document.getElementById('totalReferrals').textContent = '0'; // This would need to be fetched from contract
                 document.getElementById('totalRewards').textContent = formatNumber(web3.utils.fromWei(userDashboard.totalRefReward, 'ether'));
                 document.getElementById('todayRewards').textContent = '0'; // This would need to be calculated
-                
                 // Generate invite link and QR code
-                const inviteLink = `https://uid606.top/${userAccount}`;
+                const inviteLink = `${window.location.origin}${window.location.pathname}?ref=${userAccount}`;
                 document.getElementById('inviteLink').value = inviteLink;
-                
                 // Generate QR code
                 const qrCodeElement = document.getElementById('qrcode');
                 qrCodeElement.innerHTML = '';
                 QRCode.toCanvas(qrCodeElement, inviteLink, { width: 200 }, function (error) {
                     if (error) console.error(error);
                 });
-                
-                // Load referral records (mock data for now)
-                loadReferralRecords();
             } catch (error) {
                 console.error('Error loading invite ', error);
             }
-        }
-        // Load referral records (mock implementation)
-        function loadReferralRecords() {
-            const recordsList = document.getElementById('recordsList');
-            recordsList.innerHTML = '';
-            
-            // Mock data - in a real implementation, this would come from the contract
-            const mockRecords = [
-                { address: '0x1234...5678', amount: '10.50', date: '2023-05-15' },
-                { address: '0xabcd...ef01', amount: '5.25', date: '2023-05-14' },
-                { address: '0x9876...5432', amount: '15.75', date: '2023-05-13' }
-            ];
-            
-            const lang = translations[currentLanguage];
-            
-            if (mockRecords.length === 0) {
-                recordsList.innerHTML = `<p style="text-align: center; opacity: 0.7;">${lang.noRecordsText}</p>`;
-                return;
-            }
-            
-            mockRecords.forEach(record => {
-                const recordElement = document.createElement('div');
-                recordElement.className = 'record-item';
-                recordElement.innerHTML = `
-                    <div class="record-header">
-                        <div class="record-address">${record.address}</div>
-                        <div class="record-amount">${record.amount} α</div>
-                    </div>
-                    <div class="record-date">${record.date}</div>
-                `;
-                recordsList.appendChild(recordElement);
-            });
         }
         // Helper function to add machine item to list
         function addMachineItem(container, name, count, multiplier) {
@@ -1723,6 +1650,9 @@
             if (window.ethereum && window.ethereum.selectedAddress) {
                 connectWallet('metamask');
             }
+            
+            // Check for referral in URL on page load
+            checkReferralInURL();
         });
     </script>
 </body>
