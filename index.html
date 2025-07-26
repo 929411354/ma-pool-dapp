@@ -655,55 +655,19 @@
             <div class="wallet-options">
                 <div class="wallet-option" onclick="connectWallet('metamask')">
                     <div class="wallet-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12 24C18.6274 24 24 18.6274 24 12C24 5.37258 18.6274 0 12 0C5.37258 0 0 5.37258 0 12C0 18.6274 5.37258 24 12 24Z" fill="#F6851B"/>
-                            <path d="M12 24C15.532 24 18.8369 22.4834 21.2132 20H2.7868C5.16314 22.4834 8.46797 24 12 24Z" fill="#FFD166"/>
-                            <path d="M17.5 15.5L16.5 17.5L12.5 15.5L8.5 17.5L7.5 15.5L12.5 8.5L17.5 15.5Z" fill="#0D0D0D"/>
-                            <path d="M12.5 8.5L16.5 17.5L12.5 15.5L8.5 17.5L12.5 8.5Z" fill="#F6F6F6"/>
-                            <path d="M12.5 8.5L8.5 17.5L12.5 15.5L16.5 17.5L12.5 8.5Z" fill="#F6F6F6"/>
-                            <path d="M12.5 12.5L14.5 15.5L12.5 14.5L10.5 15.5L12.5 12.5Z" fill="#0D0D0D"/>
+                        <svg width="24" height="24" viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg">
+                            <g fill="none" fill-rule="evenodd">
+                                <circle cx="160" cy="160" r="160" fill="#E2761B" stroke="#E2761B" stroke-width="1"/>
+                                <g fill="#FFF">
+                                    <path d="M109.61 81.655L151.72 56.6l42.11 25.055v50.11L151.72 106.71 109.61 131.765v-50.11zM166.33 164.45l47.425-25.055 39.47-25.055v50.11l-39.47 25.055-47.425 25.055V164.45z"/>
+                                    <path d="M157.125 171.735l-47.425 25.055-39.47 25.055v-50.11l39.47-25.055 47.425-25.055v50.11z"/>
+                                    <path d="M159.77 211.205l-50.07 29.455-47.425-29.455 50.07-29.455 47.425 29.455z"/>
+                                    <path d="M162.415 211.205l50.07 29.455 47.425-29.455-50.07-29.455-47.425 29.455z"/>
+                                </g>
+                            </g>
                         </svg>
                     </div>
                     <div class="wallet-name">MetaMask</div>
-                </div>
-                <div class="wallet-option" onclick="connectWallet('trustwallet')">
-                    <div class="wallet-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12 24C18.6274 24 24 18.6274 24 12C24 5.37258 18.6274 0 12 0C5.37258 0 0 5.37258 0 12C0 18.6274 5.37258 24 12 24Z" fill="#3375BB"/>
-                            <path d="M12 24C15.532 24 18.8369 22.4834 21.2132 20H2.7868C5.16314 22.4834 8.46797 24 12 24Z" fill="#FFD166"/>
-                            <path d="M17.5 15.5L16.5 17.5L12.5 15.5L8.5 17.5L7.5 15.5L12.5 8.5L17.5 15.5Z" fill="#0D0D0D"/>
-                            <path d="M12.5 8.5L16.5 17.5L12.5 15.5L8.5 17.5L12.5 8.5Z" fill="#F6F6F6"/>
-                            <path d="M12.5 8.5L8.5 17.5L12.5 15.5L16.5 17.5L12.5 8.5Z" fill="#F6F6F6"/>
-                            <path d="M12.5 12.5L14.5 15.5L12.5 14.5L10.5 15.5L12.5 12.5Z" fill="#0D0D0D"/>
-                        </svg>
-                    </div>
-                    <div class="wallet-name">Trust Wallet</div>
-                </div>
-                <div class="wallet-option" onclick="connectWallet('coinbase')">
-                    <div class="wallet-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12 24C18.6274 24 24 18.6274 24 12C24 5.37258 18.6274 0 12 0C5.37258 0 0 5.37258 0 12C0 18.6274 5.37258 24 12 24Z" fill="#0052FF"/>
-                            <path d="M12 24C15.532 24 18.8369 22.4834 21.2132 20H2.7868C5.16314 22.4834 8.46797 24 12 24Z" fill="#FFD166"/>
-                            <path d="M17.5 15.5L16.5 17.5L12.5 15.5L8.5 17.5L7.5 15.5L12.5 8.5L17.5 15.5Z" fill="#0D0D0D"/>
-                            <path d="M12.5 8.5L16.5 17.5L12.5 15.5L8.5 17.5L12.5 8.5Z" fill="#F6F6F6"/>
-                            <path d="M12.5 8.5L8.5 17.5L12.5 15.5L16.5 17.5L12.5 8.5Z" fill="#F6F6F6"/>
-                            <path d="M12.5 12.5L14.5 15.5L12.5 14.5L10.5 15.5L12.5 12.5Z" fill="#0D0D0D"/>
-                        </svg>
-                    </div>
-                    <div class="wallet-name">Coinbase Wallet</div>
-                </div>
-                <div class="wallet-option" onclick="connectWallet('binance')">
-                    <div class="wallet-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12 24C18.6274 24 24 18.6274 24 12C24 5.37258 18.6274 0 12 0C5.37258 0 0 5.37258 0 12C0 18.6274 5.37258 24 12 24Z" fill="#F0B90B"/>
-                            <path d="M12 24C15.532 24 18.8369 22.4834 21.2132 20H2.7868C5.16314 22.4834 8.46797 24 12 24Z" fill="#FFD166"/>
-                            <path d="M17.5 15.5L16.5 17.5L12.5 15.5L8.5 17.5L7.5 15.5L12.5 8.5L17.5 15.5Z" fill="#0D0D0D"/>
-                            <path d="M12.5 8.5L16.5 17.5L12.5 15.5L8.5 17.5L12.5 8.5Z" fill="#F6F6F6"/>
-                            <path d="M12.5 8.5L8.5 17.5L12.5 15.5L16.5 17.5L12.5 8.5Z" fill="#F6F6F6"/>
-                            <path d="M12.5 12.5L14.5 15.5L12.5 14.5L10.5 15.5L12.5 12.5Z" fill="#0D0D0D"/>
-                        </svg>
-                    </div>
-                    <div class="wallet-name">Binance Wallet</div>
                 </div>
                 <div class="wallet-option" onclick="connectWallet('walletconnect')">
                     <div class="wallet-icon">
@@ -1300,32 +1264,6 @@
                             ethereumProvider = window.ethereum;
                         } else {
                             showToast('Please install MetaMask!', 'error');
-                            return;
-                        }
-                        break;
-                    case 'trustwallet':
-                        if (window.ethereum && window.ethereum.isTrust) {
-                            ethereumProvider = window.ethereum;
-                        } else {
-                            showToast('Please install Trust Wallet!', 'error');
-                            return;
-                        }
-                        break;
-                    case 'coinbase':
-                        if (window.ethereum && window.ethereum.isCoinbaseWallet) {
-                            ethereumProvider = window.ethereum;
-                        } else {
-                            showToast('Please install Coinbase Wallet!', 'error');
-                            return;
-                        }
-                        break;
-                    case 'binance':
-                        if (window.BinanceChain) {
-                            ethereumProvider = window.BinanceChain;
-                        } else if (window.ethereum && window.ethereum.isBinanceChain) {
-                            ethereumProvider = window.ethereum;
-                        } else {
-                            showToast('Please install Binance Chain Wallet!', 'error');
                             return;
                         }
                         break;
