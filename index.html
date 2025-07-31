@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Star Mining DApp</title>
-    <link rel="icon" href="image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%231a1a2e'/><circle cx='50' cy='40' r='12' fill='%23ffd700'/><path d='M40,60 Q50,80 60,60' stroke='%234ecdc4' stroke-width='3' fill='none'/><circle cx='30' cy='30' r='3' fill='%23ffffff'/><circle cx='70' cy='30' r='3' fill='%23ffffff'/><circle cx='30' cy='70' r='3' fill='%23ffffff'/><circle cx='70' cy='70' r='3' fill='%23ffffff'/></svg>" type="image/svg+xml">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%231a1a2e'/><circle cx='50' cy='40' r='12' fill='%23ffd700'/><path d='M40,60 Q50,80 60,60' stroke='%234ecdc4' stroke-width='3' fill='none'/><circle cx='30' cy='30' r='3' fill='%23ffffff'/><circle cx='70' cy='30' r='3' fill='%23ffffff'/><circle cx='30' cy='70' r='3' fill='%23ffffff'/><circle cx='70' cy='70' r='3' fill='%23ffffff'/></svg>" type="image/svg+xml">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/web3@1.7.0/dist/web3.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
@@ -343,6 +343,107 @@
             color: black;
             border: 1px solid rgba(0, 0, 0, 0.2);
         }
+        /* Rewards Page New Styles */
+        .referral-section {
+            background: rgba(46, 204, 113, 0.15);
+            border: 1px solid #2ecc71;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            text-align: left;
+        }
+        .referral-section h3 {
+            color: #2ecc71;
+            margin-bottom: 10px;
+        }
+        .referral-input {
+            display: flex;
+            margin-top: 10px;
+        }
+        .referral-input input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #2ecc71;
+            border-radius: 6px 0 0 6px;
+            background: rgba(0, 0, 0, 0.2);
+            color: white;
+            font-size: 14px;
+        }
+        .referral-input button {
+            background: #2ecc71;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 0 6px 6px 0;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        .referral-input button:hover {
+            background: #27ae60;
+        }
+        .referral-success {
+            margin-top: 10px;
+            color: #2ecc71;
+            font-weight: 600;
+            display: none;
+        }
+        .referral-auto {
+            background: rgba(46, 204, 113, 0.3);
+            border: 1px solid #2ecc71;
+            padding: 8px;
+            border-radius: 6px;
+            margin-top: 10px;
+            display: none;
+        }
+        .qrcode-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 15px 0;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+        .qrcode-header {
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #8a6bff;
+        }
+        #qrcode {
+            margin: 10px auto;
+            padding: 15px;
+            background: white;
+            border-radius: 15px;
+            display: inline-block;
+            box-shadow: 0 5px 20px rgba(138, 107, 255, 0.3);
+        }
+        .share-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            width: 100%;
+        }
+        .share-btn {
+            flex: 1;
+            background: #8a6bff;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        .share-btn:hover {
+            background: #7a5bff;
+        }
+        .copy-btn {
+            background: #2ecc71;
+        }
+        .copy-btn:hover {
+            background: #27ae60;
+        }
         /* Bottom Navigation */
         .bottom-nav {
             position: fixed;
@@ -428,7 +529,7 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        /* Page */
+        /* Hidden by default */
         .page {
             display: none;
         }
@@ -459,113 +560,6 @@
         /* 测试设备按钮默认隐藏 */
         #testMachineBtn {
             display: none;
-        }
-        /* 新增邀请功能样式 */
-        .referral-section {
-            background: rgba(78, 205, 196, 0.15);
-            border: 1px solid var(--accent-blue);
-            border-radius: 10px;
-            padding: 15px;
-            margin: 15px 0;
-        }
-        .referral-section h4 {
-            color: var(--accent-blue);
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .referral-input {
-            display: flex;
-            margin-top: 10px;
-        }
-        .referral-input input {
-            flex: 1;
-            padding: 10px;
-            border: 1px solid var(--accent-blue);
-            border-radius: 6px 0 0 6px;
-            background: rgba(0, 0, 0, 0.2);
-            color: white;
-        }
-        .referral-input button {
-            background: var(--accent-blue);
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 0 6px 6px 0;
-            cursor: pointer;
-            font-weight: 600;
-        }
-        .referral-input button:hover {
-            background: #3cb9b0;
-        }
-        .referral-success {
-            margin-top: 10px;
-            color: #2ecc71;
-            font-weight: 600;
-            display: none;
-        }
-        .referral-auto {
-            background: rgba(46, 204, 113, 0.3);
-            border: 1px solid #2ecc71;
-            padding: 8px;
-            border-radius: 6px;
-            margin-top: 10px;
-            display: none;
-        }
-        .share-section {
-            margin-top: 15px;
-        }
-        .share-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        .share-btn {
-            flex: 1;
-            padding: 8px 12px;
-            font-size: 14px;
-            border-radius: 8px;
-        }
-        .share-btn i {
-            margin-right: 5px;
-        }
-        .invite-stats {
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .invite-stats .stats-grid {
-            gap: 10px;
-        }
-        .invite-stats .stat-card {
-            background: rgba(78, 205, 196, 0.2);
-        }
-        .invite-stats .stat-value {
-            background: var(--accent-blue);
-        }
-        /* 二维码样式 */
-        .qrcode-container {
-            margin-top: 15px;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            text-align: center;
-        }
-        .qrcode-title {
-            font-size: 14px;
-            margin-bottom: 10px;
-            color: var(--accent-blue);
-        }
-        #qrcode {
-            display: inline-block;
-            margin: 0 auto;
-        }
-        .qrcode-link {
-            font-size: 12px;
-            word-break: break-all;
-            margin-top: 10px;
-            color: #ccc;
         }
     </style>
 </head>
@@ -764,54 +758,32 @@
             </div>
             <div class="card">
                 <div class="card-title">
-                    <i class="fas fa-gift"></i>
-                    <span id="rewardsTitle">收益中心</span>
+                    <i class="fas fa-user-friends"></i>
+                    <span id="referralTitle">推荐体系</span>
                 </div>
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-value" id="claimableAmount">0</div>
-                        <div class="stat-label" id="claimableLabel">可领取收益</div>
+                <div class="referral-section">
+                    <h3><i class="fas fa-user-plus"></i> 邀请人地址</h3>
+                    <p>如果您是通过邀请链接加入，系统已自动填写邀请人地址</p>
+                    <div class="referral-input">
+                        <input type="text" id="referrerInput" placeholder="输入推荐人钱包地址">
+                        <button class="btn-secondary" id="setReferrerBtn" onclick="setReferrer()">设置</button>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="referralAmount">0</div>
-                        <div class="stat-label" id="referralLabel">推荐奖励</div>
+                    <div class="referral-auto" id="referralAuto">
+                        <i class="fas fa-check-circle"></i> 已自动填写邀请人地址
+                    </div>
+                    <div class="referral-success" id="referralSuccess">
+                        <i class="fas fa-check-circle"></i> 邀请人地址已保存
                     </div>
                 </div>
-                <button class="btn btn-accent btn-full" onclick="claimRewards()" id="claimBtn2">
-                    <i class="fas fa-hand-holding-usd"></i>
-                    <span id="claimText2">一键领取</span>
-                </button>
-            </div>
-            <!-- 新增邀请功能 -->
-            <div class="referral-section">
-                <h4><i class="fas fa-user-friends"></i> <span id="referralTitle">推荐体系</span></h4>
-                <div class="referral-input">
-                    <input type="text" id="referrerInput" placeholder="输入推荐人地址">
-                    <button class="btn btn-secondary" onclick="setReferrer()" id="setReferrerBtn">设置</button>
-                </div>
-                <div class="referral-auto" id="referralAuto">
-                    <i class="fas fa-check-circle"></i> <span id="autoFillText">已自动填写邀请人地址</span>
-                </div>
-                <div class="referral-success" id="referralSuccess">
-                    <i class="fas fa-check-circle"></i> <span id="successText">邀请人地址已保存</span>
-                </div>
-                <div class="share-section">
-                    <p><span id="myReferralText">我的推荐码：</span></p>
-                    <p id="userAddress" style="word-break: break-all; font-size: 12px;"></p>
-                    
-                    <!-- 二维码容器 -->
-                    <div class="qrcode-container">
-                        <div class="qrcode-title">扫描二维码分享</div>
-                        <div id="qrcode"></div>
-                        <div class="qrcode-link" id="inviteLink">https://uid606.top/?invite=钱包地址</div>
-                    </div>
-                    
-                    <div class="share-buttons">
-                        <button class="btn btn-secondary share-btn" onclick="copyInviteLink()">
-                            <i class="fas fa-copy"></i> <span id="copyLinkText">复制链接</span>
+                <div class="qrcode-container">
+                    <div class="qrcode-header">我的邀请二维码</div>
+                    <div id="qrcode"></div>
+                    <div class="share-actions">
+                        <button class="share-btn" id="shareBtn">
+                            <i class="fas fa-share-alt"></i> 分享
                         </button>
-                        <button class="btn btn-primary share-btn" onclick="shareInvite()">
-                            <i class="fas fa-share-alt"></i> <span id="shareText">分享</span>
+                        <button class="share-btn copy-btn" id="copyLinkBtn">
+                            <i class="fas fa-copy"></i> 复制
                         </button>
                     </div>
                 </div>
@@ -895,11 +867,50 @@
         </div>
     </div>
     <script>
+        // 1. 首先定义自动填写函数
+        function autoFillReferralAddress() {
+            try {
+                // 获取输入框元素
+                const referralInput = document.getElementById('referrerInput');
+                const referralAuto = document.getElementById('referralAuto');
+                // 解析URL参数
+                const url = new URL(window.location.href);
+                const params = new URLSearchParams(url.search);
+                // 检查所有可能的参数名
+                const referralAddress = 
+                    params.get('ref') || 
+                    params.get('referral') || 
+                    params.get('refAddress') || 
+                    params.get('address') || 
+                    params.get('invite') || 
+                    params.get('inviter') ||
+                    params.get('ref_id') ||
+                    params.get('referrer');
+                if (referralAddress) {
+                    referralInput.value = referralAddress;
+                    console.log('自动填写邀请地址:', referralAddress);
+                    // 显示自动填写提示
+                    referralAuto.style.display = 'block';
+                    // 添加视觉反馈
+                    referralInput.style.border = '2px solid #2ecc71';
+                    referralInput.style.backgroundColor = '#e8f5e9';
+                    setTimeout(() => {
+                        referralInput.style.border = '';
+                        referralInput.style.backgroundColor = '';
+                    }, 2000);
+                }
+            } catch (error) {
+                console.error('自动填写失败:', error);
+            }
+        }
+        // 2. 在页面加载时立即执行自动填写
+        autoFillReferralAddress();
+
         // Contract Configuration
         const CONTRACT_ADDRESS = '0x9dcced4ef738856d2c289d4116cd219c698b22ba';
         const TOKEN_ADDRESS = '0x877f23dcFBa91cadd7d35565Da452c9673C27A33';
-        const CONTRACT_ABI = [{"inputs":[{"internalType":"address","name":"_rewardToken","type":"address"},{"internalType":"address","name":"_treasury","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"newAdmin","type":"address"}],"name":"AdminAdded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"oldAdmin","type":"address"}],"name":"AdminRemoved","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"receiver","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"BNBWithdrawn","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"price","type":"uint256"}],"name":"InitialMachinePurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"tierId","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"count","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"totalPrice","type":"uint256"}],"name":"PowerMachinePurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"referrer","type":"address"},{"indexed":true,"internalType":"address","name":"referee","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"ReferralRewardPaid","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"claimer","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"RewardsClaimed","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"price","type":"uint256"}],"name":"TestMachinePurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"adder","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"TokensAdded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"receiver","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"TokensWithdrawn","type":"event"},{"inputs":[],"name":"BLOCKS_PER_DAY","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"INITIAL_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_BUY_COUNT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"REFERRAL_PERCENT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TEST_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TREASURY","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"addAdmin","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"addRewardTokens","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"addToBlocklist","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"admin","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"blocklist","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"baseRewardPerBlockPerPower","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"userInfo","outputs":[{"internalType":"uint256","name":"normalMachineCount","type":"uint256"},{"internalType":"uint256","name":"testMachineCount","type":"uint256"},{"internalType":"uint256","name":"rewardStartBlock","type":"uint256"},{"internalType":"address","name":"referrer","type":"address"},{"internalType":"uint256","name":"referralRewards","type":"uint256"},{"internalType":"bool","name":"hasBoughtInitial","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"withdrawBNB","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdrawTokens","outputs":[],"stateMutability":"nonpayable","type":"function"}];
-        const TOKEN_ABI = [{"inputs":[{"internalType":"string","name":"name_","type":"string"},{"internalType":"string","name":"symbol_","type":"string"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"spender","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"subtractedValue","type":"uint256"}],"name":"decreaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"addedValue","type":"uint256"}],"name":"increaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"}];
+        const CONTRACT_ABI = [{"inputs":[{"internalType":"address","name":"_rewardToken","type":"address"},{"internalType":"address","name":"_treasury","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"newAdmin","type":"address"}],"name":"AdminAdded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"oldAdmin","type":"address"}],"name":"AdminRemoved","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"receiver","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"BNBWithdrawn","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"price","type":"uint256"}],"name":"InitialMachinePurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"tierId","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"count","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"totalPrice","type":"uint256"}],"name":"PowerMachinePurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"referrer","type":"address"},{"indexed":true,"internalType":"address","name":"referee","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"ReferralRewardPaid","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"claimer","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"RewardsClaimed","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"price","type":"uint256"}],"name":"TestMachinePurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"adder","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"TokensAdded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"receiver","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"TokensWithdrawn","type":"event"},{"inputs":[],"name":"BLOCKS_PER_DAY","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"INITIAL_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_BUY_COUNT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"REFERRAL_PERCENT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TEST_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TREASURY","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"addAdmin","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"addRewardTokens","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"addToBlocklist","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"admin","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"baseRewardPerBlockPerPower","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"blocklist","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"buyInitialMachine","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"tierId","type":"uint256"},{"internalType":"uint256","name":"count","type":"uint256"}],"name":"buyPowerMachine","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"buyTestMachine","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"claimRewards","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"usr","type":"address"}],"name":"dailyRewardOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getGlobalDashboard","outputs":[{"internalType":"uint256","name":"baseReward","type":"uint256"},{"internalType":"uint256","name":"totalMines","type":"uint256"},{"internalType":"uint256","name":"currentBlock","type":"uint256"},{"internalType":"uint256","name":"poolBalance","type":"uint256"},{"internalType":"uint256","name":"networkPower","type":"uint256"},{"internalType":"uint256","name":"dailyProduction","type":"uint256"},{"internalType":"uint256","name":"totalRefRewards","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getUserDashboard","outputs":[{"internalType":"uint256","name":"normal","type":"uint256"},{"internalType":"uint256","name":"test","type":"uint256"},{"internalType":"uint256[4]","name":"power","type":"uint256[4]"},{"internalType":"uint256","name":"dailyReward","type":"uint256"},{"internalType":"uint256","name":"unclaimed","type":"uint256"},{"internalType":"uint256","name":"totalRefReward","type":"uint256"},{"internalType":"uint256","name":"totalPower","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"machineTiers","outputs":[{"internalType":"uint256","name":"priceToken","type":"uint256"},{"internalType":"uint256","name":"powerMultiplier","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"pause","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"referralRecords","outputs":[{"internalType":"address","name":"referrer","type":"address"},{"internalType":"address","name":"referee","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"uint256","name":"timestamp","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"removeAdmin","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"removeFromBlocklist","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"rewardPool","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"rewardToken","outputs":[{"internalType":"contract IERC20","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"referrer","type":"address"}],"name":"setReferrer","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"startBlock","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalMachines","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalNetworkPower","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalReferralRewards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalTokensMinted","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalUsers","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"unpause","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"userInfo","outputs":[{"internalType":"uint256","name":"normalMachineCount","type":"uint256"},{"internalType":"uint256","name":"testMachineCount","type":"uint256"},{"internalType":"uint256","name":"rewardStartBlock","type":"uint256"},{"internalType":"address","name":"referrer","type":"address"},{"internalType":"uint256","name":"referralRewards","type":"uint256"},{"internalType":"bool","name":"hasBoughtInitial","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"withdrawBNB","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdrawTokens","outputs":[],"stateMutability":"nonpayable","type":"function"}];
+        const TOKEN_ABI = [{"inputs":[{"internalType":"string","name":"name_","type":"string"},{"internalType":"string","name":"symbol_","type":"string"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"spender","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"subtractedValue","type":"uint256"}],"name":"decreaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"addedValue","type":"uint256"}],"name":"increaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"}];
         // Global variables
         let web3;
         let contract;
@@ -936,10 +947,6 @@
                 initialTab: "初始设备",
                 powerTab: "进阶设备",
                 testTab: "测试设备",
-                rewardsTitle: "收益中心",
-                claimableLabel: "可领取收益",
-                referralLabel: "推荐奖励",
-                claimText2: "一键领取",
                 referralTitle: "推荐体系",
                 referrerPlaceholder: "输入推荐人地址",
                 setReferrerBtn: "设置",
@@ -964,13 +971,9 @@
                 unitMachine: "台",
                 powerMultiplier: "算力 ×",
                 powerRatioText: "总算力占比:",
-                autoFillText: "已自动填写邀请人地址",
-                successText: "邀请人地址已保存",
-                copyLinkText: "复制链接",
                 shareText: "分享",
-                inviteStatsTitle: "邀请统计",
-                directLabel: "直接邀请",
-                totalLabel: "总邀请"
+                copyText: "复制",
+                qrcodeHeader: "我的邀请二维码"
             },
             en: {
                 connectWalletText: "Connect Wallet",
@@ -997,10 +1000,6 @@
                 initialTab: "Initial Device",
                 powerTab: "Power Device",
                 testTab: "Test Device",
-                rewardsTitle: "Rewards Center",
-                claimableLabel: "Claimable Rewards",
-                referralLabel: "Referral Rewards",
-                claimText2: "Claim All",
                 referralTitle: "Referral System",
                 referrerPlaceholder: "Enter referrer address",
                 setReferrerBtn: "Set",
@@ -1025,13 +1024,9 @@
                 unitMachine: "units",
                 powerMultiplier: "Power ×",
                 powerRatioText: "Power Ratio:",
-                autoFillText: "Referrer address auto-filled",
-                successText: "Referrer address saved",
-                copyLinkText: "Copy Link",
                 shareText: "Share",
-                inviteStatsTitle: "Invitation Stats",
-                directLabel: "Direct Invitations",
-                totalLabel: "Total Invitations"
+                copyText: "Copy",
+                qrcodeHeader: "My Invitation QR Code"
             }
         };
         // Initialize Web3
@@ -1064,6 +1059,10 @@
                 walletElement.textContent = shortAddress;
                 walletElement.classList.remove('red');
                 document.getElementById('userAddress').textContent = userAccount;
+                // Generate QR code if in rewards page
+                if (document.getElementById('rewardsPage').classList.contains('active')) {
+                    generateQRCode();
+                }
             } else {
                 const walletElement = document.getElementById('walletAddress');
                 walletElement.textContent = currentLanguage === 'zh' ? '连接钱包' : 'Connect Wallet';
@@ -1188,12 +1187,10 @@
                 document.getElementById('dailyProduction').textContent = formatNumber(web3.utils.fromWei(globalDashboard.dailyProduction, 'ether'));
                 document.getElementById('currentBlock').textContent = globalDashboard.currentBlock;
                 document.getElementById('baseReward').textContent = formatNumber(web3.utils.fromWei(globalDashboard.baseReward, 'ether'));
-                // Update referral stats
-                document.getElementById('directReferrals').textContent = '0'; // 假设合约中没有直接提供这些数据
-                document.getElementById('totalReferrals').textContent = '0'; // 假设合约中没有直接提供这些数据
-                
-                // Generate QR code for invite link
-                generateQRCode();
+                // Generate QR code if in rewards page
+                if (document.getElementById('rewardsPage').classList.contains('active')) {
+                    generateQRCode();
+                }
             } catch (error) {
                 console.error('Error loading dashboard ', error);
                 showToast(currentLanguage === 'zh' ? '加载数据失败: ' + error.message : 'Failed to load  ' + error.message, 'error');
@@ -1348,67 +1345,59 @@
                 showLoading(false);
             }
         }
-        // Generate QR code for invite link
+        // Generate QR Code
         function generateQRCode() {
             if (!userAccount) return;
-            
-            const inviteUrl = `https://uid606.top/?invite=${userAccount}`;
-            const qrcodeElement = document.getElementById('qrcode');
-            
-            // Clear previous QR code
-            if (qrCodeInstance) {
-                qrcodeElement.innerHTML = '';
-            }
-            
-            // Generate new QR code
-            qrCodeInstance = new QRCode(qrcodeElement, {
-                text: inviteUrl,
-                width: 200,
-                height: 200,
-                colorDark: '#667eea',
-                colorLight: '#1a1a2e',
+            const url = `https://uid606.top/?invite=${userAccount}`;
+            const qrElement = document.getElementById('qrcode');
+            qrElement.innerHTML = '';
+            qrCodeInstance = new QRCode(qrElement, {
+                text: url,
+                width: 220,
+                height: 220,
+                colorDark: '#8a6bff',
+                colorLight: '#1e1e2e',
                 correctLevel: QRCode.CorrectLevel.H
             });
-            
-            // Update link text
-            document.getElementById('inviteLink').textContent = inviteUrl;
         }
-        // Copy invite link
-        function copyInviteLink() {
-            if (!userAccount) {
-                showToast(currentLanguage === 'zh' ? '请先连接钱包!' : 'Please connect wallet first!', 'error');
-                return;
-            }
-            const inviteUrl = `https://uid606.top/?invite=${userAccount}`;
-            navigator.clipboard.writeText(inviteUrl);
-            showToast(currentLanguage === 'zh' ? '邀请链接已复制到剪贴板!' : 'Invite link copied to clipboard!', 'success');
-        }
-        // Share invite
-        function shareInvite() {
-            if (!userAccount) {
-                showToast(currentLanguage === 'zh' ? '请先连接钱包!' : 'Please connect wallet first!', 'error');
-                return;
-            }
-            const inviteUrl = `https://uid606.top/?invite=${userAccount}`;
-            const shareText = currentLanguage === 'zh' ? '加入我的邀请链接' : 'Join my invite link';
+        // Share or Copy Link
+        document.addEventListener('DOMContentLoaded', function() {
+            const shareBtn = document.getElementById('shareBtn');
+            const copyLinkBtn = document.getElementById('copyLinkBtn');
             
-            if (navigator.share) {
-                navigator.share({
-                    title: 'Star Mining DApp',
-                    text: shareText,
-                    url: inviteUrl
-                })
-                .then(() => console.log('Share successful'))
-                .catch((error) => {
-                    console.log('Share failed', error);
-                    // Fallback to copy if share fails
-                    copyInviteLink();
+            if (shareBtn) {
+                shareBtn.addEventListener('click', function() {
+                    if (!userAccount) {
+                        connectWallet();
+                        return;
+                    }
+                    const url = `https://uid606.top/?invite=${userAccount}`;
+                    if (navigator.share) {
+                        navigator.share({
+                            title: 'Join Star Mining DApp',
+                            text: 'Check out this amazing mining dapp!',
+                            url: url
+                        }).catch(error => console.log('Error sharing:', error));
+                    } else {
+                        // Fallback to copying
+                        navigator.clipboard.writeText(url);
+                        showToast(currentLanguage === 'zh' ? '链接已复制!' : 'Link copied!', 'success');
+                    }
                 });
-            } else {
-                // Fallback for browsers that don't support Web Share API
-                copyInviteLink();
             }
-        }
+            
+            if (copyLinkBtn) {
+                copyLinkBtn.addEventListener('click', function() {
+                    if (!userAccount) {
+                        connectWallet();
+                        return;
+                    }
+                    const url = `https://uid606.top/?invite=${userAccount}`;
+                    navigator.clipboard.writeText(url);
+                    showToast(currentLanguage === 'zh' ? '链接已复制!' : 'Link copied!', 'success');
+                });
+            }
+        });
         // Switch page
         function switchPage(page) {
             // Hide all pages
@@ -1423,6 +1412,10 @@
                 document.querySelectorAll('.nav-item')[1].classList.add('active');
             } else if (page === 'rewards') {
                 document.querySelectorAll('.nav-item')[2].classList.add('active');
+                // Generate QR code when switching to rewards page
+                if (userAccount) {
+                    generateQRCode();
+                }
             } else if (page === 'global') {
                 document.querySelectorAll('.nav-item')[3].classList.add('active');
             }
@@ -1488,39 +1481,10 @@
                 toast.className = 'toast ' + type;
             }, 3000);
         }
-        // Auto-fill referral address from URL parameters
-        function autoFillReferralAddress() {
-            try {
-                const url = new URL(window.location.href);
-                const params = new URLSearchParams(url.search);
-                const referralAddress = 
-                    params.get('ref') || 
-                    params.get('referral') || 
-                    params.get('refAddress') || 
-                    params.get('address') || 
-                    params.get('invite') || 
-                    params.get('inviter') ||
-                    params.get('ref_id') ||
-                    params.get('referrer');
-                
-                if (referralAddress) {
-                    const referralInput = document.getElementById('referrerInput');
-                    const referralAuto = document.getElementById('referralAuto');
-                    referralInput.value = referralAddress;
-                    referralAuto.style.display = 'block';
-                    // Highlight the input field
-                    referralInput.style.border = '2px solid #2ecc71';
-                    setTimeout(() => {
-                        referralInput.style.border = '';
-                    }, 2000);
-                }
-            } catch (error) {
-                console.error('Error auto-filling referral address:', error);
-            }
-        }
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             updateLanguage();
+            // Initialize auto-fill for referral address
             autoFillReferralAddress();
         });
     </script>
