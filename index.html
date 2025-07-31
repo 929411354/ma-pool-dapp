@@ -507,6 +507,7 @@
             background: white;
             padding: 15px;
             border-radius: 10px;
+            margin: 0 auto;
         }
         .invite-link-container {
             display: flex;
@@ -526,6 +527,30 @@
             background: white;
             color: black;
             border: 1px solid rgba(0, 0, 0, 0.2);
+        }
+        .record-item {
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        body.light-mode .record-item {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        .record-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        .record-address {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        .record-amount {
+            font-weight: bold;
+            color: var(--accent-blue);
+        }
+        .record-date {
+            font-size: 12px;
+            opacity: 0.6;
         }
         .whitepaper-btn {
             margin-top: 15px;
@@ -612,6 +637,19 @@
             font-size: 16px;
             font-weight: 500;
         }
+        /* 二维码响应式 */
+        @media (max-width: 375px) {
+            #qrcode {
+                width: 180px;
+                height: 180px;
+            }
+        }
+        @media (max-width: 320px) {
+            #qrcode {
+                width: 160px;
+                height: 160px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -635,7 +673,7 @@
                             <g fill="none" fill-rule="evenodd">
                                 <circle cx="160" cy="160" r="160" fill="#E2761B" stroke="#E2761B" stroke-width="1"/>
                                 <g fill="#FFF">
-                                    <path d="M109.61 81.655L151.72 56.6l42.11 25.055v50.11L151.72 106.71 109.61 131.765v-50.11zM166.33 164.45l-47.425-25.055-39.47-25.055v50.11l39.47 25.055 47.425 25.055V164.45z"/>
+                                    <path d="M109.61 81.655L151.72 56.6l42.11 25.055v50.11L151.72 106.71 109.61 131.765v-50.11zM166.33 164.45l47.425-25.055 39.47-25.055v50.11l-39.47 25.055-47.425 25.055V164.45z"/>
                                     <path d="M157.125 171.735l-47.425 25.055-39.47 25.055v-50.11l39.47-25.055 47.425-25.055v50.11z"/>
                                     <path d="M159.77 211.205l-50.07 29.455-47.425-29.455 50.07-29.455 47.425 29.455z"/>
                                     <path d="M162.415 211.205l50.07 29.455 47.425-29.455-50.07-29.455-47.425 29.455z"/>
@@ -929,6 +967,15 @@
                     <i class="fas fa-file-pdf"></i>
                     <span id="whitepaperText">查看白皮书</span>
                 </button>
+            </div>
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-list"></i>
+                    <span id="recordsTitle">邀请记录</span>
+                </div>
+                <div id="recordsList">
+                    <!-- Records will be populated here -->
+                </div>
             </div>
         </div>
     </div>
@@ -1395,17 +1442,53 @@
                 document.getElementById('totalRewards').textContent = formatNumber(web3.utils.fromWei(userDashboard.totalRefReward, 'ether'));
                 document.getElementById('todayRewards').textContent = '0'; // This would need to be calculated
                 // Generate invite link and QR code
-                const inviteLink = `https://uid606.top/${userAccount}`;
+                const inviteLink = `https://uid606.top/?ref=${userAccount}`;
                 document.getElementById('inviteLink').value = inviteLink;
                 // Generate QR code
                 const qrCodeElement = document.getElementById('qrcode');
-                qrCodeElement.innerHTML = '';
-                QRCode.toCanvas(qrCodeElement, inviteLink, { width: 200 }, function (error) {
+                qrCodeElement.innerHTML = ''; // 清空旧内容
+                if (!userAccount) {
+                    qrCodeElement.innerHTML = '<p style="color: #ff6b6b;">请先连接钱包</p>';
+                    return;
+                }
+                // 动态设置二维码尺寸
+                const qrSize = window.innerWidth < 320 ? 160 : (window.innerWidth < 375 ? 180 : 200);
+                QRCode.toCanvas(qrCodeElement, inviteLink, { width: qrSize, height: qrSize }, function (error) {
                     if (error) console.error(error);
                 });
+                // Load referral records (mock data for now)
+                loadReferralRecords();
             } catch (error) {
                 console.error('Error loading invite ', error);
             }
+        }
+        // Load referral records (mock implementation)
+        function loadReferralRecords() {
+            const recordsList = document.getElementById('recordsList');
+            recordsList.innerHTML = '';
+            // Mock data - in a real implementation, this would come from the contract
+            const mockRecords = [
+                { address: '0x1234...5678', amount: '10.50', date: '2023-05-15' },
+                { address: '0xabcd...ef01', amount: '5.25', date: '2023-05-14' },
+                { address: '0x9876...5432', amount: '15.75', date: '2023-05-13' }
+            ];
+            const lang = translations[currentLanguage];
+            if (mockRecords.length === 0) {
+                recordsList.innerHTML = `<p style="text-align: center; opacity: 0.7;">${lang.noRecordsText}</p>`;
+                return;
+            }
+            mockRecords.forEach(record => {
+                const recordElement = document.createElement('div');
+                recordElement.className = 'record-item';
+                recordElement.innerHTML = `
+                    <div class="record-header">
+                        <div class="record-address">${record.address}</div>
+                        <div class="record-amount">${record.amount} α</div>
+                    </div>
+                    <div class="record-date">${record.date}</div>
+                `;
+                recordsList.appendChild(recordElement);
+            });
         }
         // Helper function to add machine item to list
         function addMachineItem(container, name, count, multiplier) {
