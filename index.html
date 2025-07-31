@@ -592,7 +592,7 @@
                 </div>
             </div>
             <!-- User Stats -->
-            <div class="card" id="dashboardCard" style="display: none;">
+            <div class="card" id="dashboardCard">
                 <div class="card-title">
                     <i class="fas fa-chart-line"></i>
                     <span id="dashboardTitle">个人仪表盘</span>
@@ -621,7 +621,7 @@
                 </button>
             </div>
             <!-- Machines -->
-            <div class="card" id="machinesCard" style="display: none;">
+            <div class="card" id="machinesCard">
                 <div class="card-title">
                     <i class="fas fa-microchip"></i>
                     <span id="devicesTitle">设备状态</span>
@@ -878,11 +878,9 @@
                 // 无论是否连接，都更新语言设置
                 updateLanguage();
             });
-            
             // 初始化自动填写邀请地址功能
             autoFillReferralAddress();
         });
-
         // 1. 首先定义自动填写函数
         function autoFillReferralAddress() {
             try {
@@ -919,7 +917,6 @@
                 console.error('自动填写失败:', error);
             }
         }
-
         // Contract Configuration
         const CONTRACT_ADDRESS = '0x9dcced4ef738856d2c289d4116cd219c698b22ba';
         const TOKEN_ADDRESS = '0x877f23dcFBa91cadd7d35565Da452c9673C27A33';
@@ -934,7 +931,6 @@
         let isOwner = false;
         let currentLanguage = 'zh'; // 'zh' or 'en'
         let qrCodeInstance;
-        
         // Language dictionaries
         const translations = {
             zh: {
@@ -1044,7 +1040,6 @@
                 qrcodeHeader: "My Invitation QR Code"
             }
         };
-
         // 初始化 Web3 并连接钱包
         async function initWeb3() {
             if (window.ethereum) {
@@ -1070,7 +1065,6 @@
             }
             return false;
         }
-
         // 更新钱包信息显示
         function updateWalletInfo() {
             const walletElement = document.getElementById('walletAddress');
@@ -1079,7 +1073,6 @@
                 walletElement.textContent = shortAddress;
                 walletElement.classList.remove('red');
                 walletElement.onclick = copyAddress;
-                
                 // 如果在奖励页面，生成二维码
                 if (document.getElementById('rewardsPage').classList.contains('active')) {
                     generateQRCode();
@@ -1090,7 +1083,6 @@
                 walletElement.onclick = connectWallet;
             }
         }
-
         // 复制地址到剪贴板
         function copyAddress() {
             if (userAccount) {
@@ -1106,7 +1098,6 @@
                 connectWallet();
             }
         }
-
         // 连接钱包并初始化
         async function connectWallet() {
             showLoading(true);
@@ -1116,7 +1107,6 @@
                     // 检查代币授权
                     const allowance = await tokenContract.methods.allowance(userAccount, CONTRACT_ADDRESS).call();
                     const maxUint256 = '115792089237316195423570985008687907853269984665640564039457584007913129639935';
-                    
                     if (allowance === '0') {
                         showToast(currentLanguage === 'zh' ? '正在授权代币支出...' : 'Approving token spending...', 'success');
                         try {
@@ -1127,19 +1117,15 @@
                             showToast(currentLanguage === 'zh' ? '授权失败，但可以继续使用' : 'Approval failed, but can continue', 'error');
                         }
                     }
-                    
                     // 检查用户是否为管理员或所有者
                     isAdmin = await contract.methods.admin(userAccount).call();
                     const owner = await contract.methods.owner().call();
                     isOwner = userAccount.toLowerCase() === owner.toLowerCase();
-                    
                     // 更新测试设备可见性
                     updateTestDeviceVisibility();
-                    
                     // 显示仪表盘卡片
                     document.getElementById('dashboardCard').style.display = 'block';
                     document.getElementById('machinesCard').style.display = 'block';
-                    
                     // 加载仪表盘数据
                     await loadDashboardData();
                 }
@@ -1150,13 +1136,11 @@
                 showLoading(false);
             }
         }
-
         // 更新测试设备可见性
         function updateTestDeviceVisibility() {
             const testMachineBtn = document.getElementById('testMachineBtn');
             const noPermissionMessage = document.getElementById('noPermissionMessage');
             const testTab = document.getElementById('testTab');
-            
             if (isAdmin || isOwner) {
                 testMachineBtn.style.display = 'block';
                 noPermissionMessage.style.display = 'none';
@@ -1167,28 +1151,23 @@
                 testTab.style.display = 'none';
             }
         }
-
         // 加载仪表盘数据
         async function loadDashboardData() {
             if (!contract || !userAccount) return;
-            
             showLoading(true);
             try {
                 // 获取用户和全局仪表盘数据
                 const userDashboard = await contract.methods.getUserDashboard(userAccount).call();
                 const globalDashboard = await contract.methods.getGlobalDashboard().call();
-                
                 // 更新用户数据
                 document.getElementById('tokenBalance').textContent = formatNumber(web3.utils.fromWei(userDashboard.unclaimed, 'ether'));
                 document.getElementById('totalEarnings').textContent = formatNumber(web3.utils.fromWei(userDashboard.totalRefReward, 'ether'));
                 document.getElementById('dailyReward').textContent = formatNumber(web3.utils.fromWei(userDashboard.dailyReward, 'ether'));
                 document.getElementById('unclaimedReward').textContent = formatNumber(web3.utils.fromWei(userDashboard.unclaimed, 'ether'));
-                
                 // 更新设备列表
                 const machineList = document.getElementById('machineList');
                 machineList.innerHTML = '';
                 const lang = translations[currentLanguage];
-                
                 // 初始设备
                 if (parseInt(userDashboard.normal) > 0) {
                     addMachineItem(machineList, 
@@ -1197,7 +1176,6 @@
                         '1.00'
                     );
                 }
-                
                 // 测试设备（仅管理员或所有者）
                 if ((isAdmin || isOwner) && parseInt(userDashboard.test) > 0) {
                     addMachineItem(machineList, 
@@ -1206,7 +1184,6 @@
                         '1.00'
                     );
                 }
-                
                 // 进阶设备
                 const machineNames = [
                     currentLanguage === 'zh' ? '星尘收集器L1' : 'Stardust Collector L1',
@@ -1215,20 +1192,17 @@
                     currentLanguage === 'zh' ? '银河过滤器L4' : 'Galaxy Filter L4'
                 ];
                 const multipliers = ['1.76', '3.30', '4.84', '7.15'];
-                
                 for (let i = 0; i < 4; i++) {
                     if (parseInt(userDashboard.power[i]) > 0) {
                         addMachineItem(machineList, machineNames[i], userDashboard.power[i], multipliers[i]);
                     }
                 }
-                
                 // 更新算力进度
                 const userPower = userDashboard.totalPower;
                 const networkPower = globalDashboard.networkPower;
                 const powerRatio = networkPower > 0 ? (userPower / networkPower * 100).toFixed(2) : 0;
                 document.getElementById('powerProgress').style.width = powerRatio + '%';
                 document.getElementById('powerRatio').textContent = `${lang.powerRatioText} ${powerRatio}%`;
-                
                 // 更新全局统计数据
                 document.getElementById('totalMachines').textContent = globalDashboard.totalMines;
                 document.getElementById('networkPower').textContent = formatNumber(web3.utils.fromWei(globalDashboard.networkPower, 'ether'));
@@ -1236,12 +1210,10 @@
                 document.getElementById('dailyProduction').textContent = formatNumber(web3.utils.fromWei(globalDashboard.dailyProduction, 'ether'));
                 document.getElementById('currentBlock').textContent = globalDashboard.currentBlock;
                 document.getElementById('baseReward').textContent = formatNumber(web3.utils.fromWei(globalDashboard.baseReward, 'ether'));
-                
                 // 如果在奖励页面，生成二维码
                 if (document.getElementById('rewardsPage').classList.contains('active')) {
                     generateQRCode();
                 }
-                
             } catch (error) {
                 console.error('加载数据失败:', error);
                 showToast(currentLanguage === 'zh' ? `加载数据失败: ${error.message}` : `Failed to load data: ${error.message}`, 'error');
@@ -1249,7 +1221,6 @@
                 showLoading(false);
             }
         }
-
         // 添加设备项到列表
         function addMachineItem(container, name, count, multiplier) {
             const item = document.createElement('div');
@@ -1266,7 +1237,6 @@
             `;
             container.appendChild(item);
         }
-
         // 格式化大数字
         function formatNumber(num) {
             if (typeof num === 'string') {
@@ -1274,14 +1244,12 @@
             }
             return num.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
         }
-
         // 购买初始设备
         async function buyInitialMachine() {
             if (!contract || !userAccount) {
                 showToast(currentLanguage === 'zh' ? '请先连接钱包!' : 'Please connect wallet first!', 'error');
                 return;
             }
-            
             showLoading(true);
             try {
                 const price = await contract.methods.INITIAL_MACHINE_PRICE_BNB().call();
@@ -1298,20 +1266,17 @@
                 showLoading(false);
             }
         }
-
         // 购买测试设备
         async function buyTestMachine() {
             if (!contract || !userAccount) {
                 showToast(currentLanguage === 'zh' ? '请先连接钱包!' : 'Please connect wallet first!', 'error');
                 return;
             }
-            
             // 再次检查权限
             if (!(isAdmin || isOwner)) {
                 showToast(currentLanguage === 'zh' ? '只有管理员或所有者可以购买测试设备!' : 'Only admin or owner can buy test machine!', 'error');
                 return;
             }
-            
             showLoading(true);
             try {
                 const price = await contract.methods.TEST_MACHINE_PRICE_BNB().call();
@@ -1328,20 +1293,17 @@
                 showLoading(false);
             }
         }
-
         // 购买进阶设备
         async function buyPowerMachine(tierId) {
             if (!contract || !userAccount) {
                 showToast(currentLanguage === 'zh' ? '请先连接钱包!' : 'Please connect wallet first!', 'error');
                 return;
             }
-            
             const count = parseInt(document.getElementById(`count${tierId + 1}`).value);
             if (count < 1 || count > 100) {
                 showToast(currentLanguage === 'zh' ? '数量必须在1到100之间' : 'Count must be between 1 and 100', 'error');
                 return;
             }
-            
             showLoading(true);
             try {
                 await contract.methods.buyPowerMachine(tierId, count).send({
@@ -1356,14 +1318,12 @@
                 showLoading(false);
             }
         }
-
         // 领取收益
         async function claimRewards() {
             if (!contract || !userAccount) {
                 showToast(currentLanguage === 'zh' ? '请先连接钱包!' : 'Please connect wallet first!', 'error');
                 return;
             }
-            
             showLoading(true);
             try {
                 await contract.methods.claimRewards().send({
@@ -1378,20 +1338,17 @@
                 showLoading(false);
             }
         }
-
         // 设置推荐人
         async function setReferrer() {
             if (!contract || !userAccount) {
                 showToast(currentLanguage === 'zh' ? '请先连接钱包!' : 'Please connect wallet first!', 'error');
                 return;
             }
-            
             const referrer = document.getElementById('referrerInput').value;
             if (!referrer || referrer === userAccount) {
                 showToast(currentLanguage === 'zh' ? '无效的推荐人地址' : 'Invalid referrer address', 'error');
                 return;
             }
-            
             showLoading(true);
             try {
                 await contract.methods.setReferrer(referrer).send({
@@ -1411,15 +1368,12 @@
                 showLoading(false);
             }
         }
-
         // 生成二维码
         function generateQRCode() {
             if (!userAccount) return;
-            
             const url = `https://uid606.top/?invite=${userAccount}`;
             const qrElement = document.getElementById('qrcode');
             qrElement.innerHTML = '';
-            
             qrCodeInstance = new QRCode(qrElement, {
                 text: url,
                 width: 220,
@@ -1429,12 +1383,10 @@
                 correctLevel: QRCode.CorrectLevel.H
             });
         }
-
         // 分享或复制链接
         document.addEventListener('DOMContentLoaded', function() {
             const shareBtn = document.getElementById('shareBtn');
             const copyLinkBtn = document.getElementById('copyLinkBtn');
-            
             if (shareBtn) {
                 shareBtn.addEventListener('click', function() {
                     if (!userAccount) {
@@ -1460,7 +1412,6 @@
                     }
                 });
             }
-            
             if (copyLinkBtn) {
                 copyLinkBtn.addEventListener('click', function() {
                     if (!userAccount) {
@@ -1479,32 +1430,27 @@
                 });
             }
         });
-
         // 切换页面
         function switchPage(page) {
             // 隐藏所有页面
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             // 显示选中的页面
             document.getElementById(page + 'Page').classList.add('active');
-            
             // 更新导航激活状态
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
             const pageIndex = ['dashboard', 'shop', 'rewards', 'global'].indexOf(page);
             if (pageIndex >= 0) {
                 document.querySelectorAll('.nav-item')[pageIndex].classList.add('active');
             }
-            
             // 如果切换到奖励页面，生成二维码
             if (page === 'rewards' && userAccount) {
                 generateQRCode();
             }
-            
             // 如果切换到仪表盘或全局页面，加载数据
             if (page === 'dashboard' || page === 'global') {
                 loadDashboardData();
             }
         }
-
         // 切换商店标签页
         function switchTab(tab) {
             // 隐藏所有标签内容
@@ -1519,24 +1465,20 @@
             document.getElementById(tab + 'Content').classList.add('active');
             // 为选中的标签添加激活类
             event.target.classList.add('active');
-            
             // 当切换到测试标签时，更新可见性
             if (tab === 'test') {
                 updateTestDeviceVisibility();
             }
         }
-
         // 切换语言
         function toggleLanguage() {
             currentLanguage = currentLanguage === 'zh' ? 'en' : 'zh';
             updateLanguage();
         }
-
         // 更新语言
         function updateLanguage() {
             const lang = translations[currentLanguage];
             document.getElementById('langText').textContent = lang.langText;
-            
             // 更新所有可翻译的元素
             for (const [key, value] of Object.entries(lang)) {
                 if (key !== 'langText') {
@@ -1546,21 +1488,17 @@
                     }
                 }
             }
-            
             // 更新钱包信息文本
             updateWalletInfo();
-            
             // 如果在仪表盘页面，重新加载数据以更新机器名称和文本
             if (document.getElementById('dashboardPage').classList.contains('active')) {
                 loadDashboardData();
             }
         }
-
         // 显示/隐藏加载状态
         function showLoading(show) {
             document.getElementById('loading').style.display = show ? 'flex' : 'none';
         }
-
         // 显示 toast 通知
         function showToast(message, type) {
             const toast = document.getElementById('toast');
