@@ -1,16 +1,17 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Star Mining DApp</title>
-    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
-    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Star Mining - 超级探索版</title>
+    <meta name="description" content="星际能源站 - 宇宙能源采集之旅">
+    <meta name="keywords" content="区块链,挖矿,星际,能源,数字资产">
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.7.4/dist/web3.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode.js/lib/qrcode.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* 独立组件样式 */
-        .stellar-energy-poster-generator {
-            --primary-gradient: linear-gradient(to right, #8a6bff, #5d9bff);
+        :root {
+            --primary-gradient: linear-gradient(135deg, #8a6bff 0%, #5d9bff 100%);
             --secondary-gradient: linear-gradient(to right, #ff6b6b, #ff9b5d);
             --background-gradient: linear-gradient(135deg, #091947 0%, #0a0529 100%);
             --text-color: #fff;
@@ -18,483 +19,15 @@
             --card-bg: linear-gradient(to bottom, #2a1957, #0d0b2b);
             --border-color: rgba(103, 72, 186, 0.3);
             --shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
-            font-family: 'Arial Rounded MT Bold', 'Segoe UI', sans-serif;
-            background: var(--background-gradient);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 15px;
-            color: var(--text-color);
-            position: relative;
-            overflow: auto;
-            touch-action: manipulation;
+            --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            --neon-glow: 0 0 20px rgba(102, 126, 234, 0.5);
+            --bg-dark: #1a1a2e;
+            --bg-light: #f0f0f0;
+            --text-light: #fff;
+            --text-dark: #333;
+            --accent-blue: #5d9bff;
         }
 
-        .stellar-container {
-            width: 100%;
-            max-width: 375px;
-            margin: 0 auto;
-            transform-origin: top center;
-            transform: scale(1);
-            transition: transform 0.2s;
-            padding-bottom: 20px;
-        }
-
-        .stellar-poster-container {
-            background: var(--card-bg);
-            border-radius: 20px;
-            box-shadow: var(--shadow);
-            position: relative;
-            overflow: hidden;
-            border: 1px solid var(--border-color);
-            padding: 25px 15px;
-        }
-
-        .stellar-space-decoration {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .stellar-star {
-            position: absolute;
-            background-color: #fff;
-            border-radius: 50%;
-            animation: twinkle 3s infinite ease-in-out;
-        }
-
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 1; }
-        }
-
-        .stellar-planet {
-            position: absolute;
-            border-radius: 50%;
-            background: radial-gradient(circle at 30% 30%, #fff, #aaa);
-            transform: rotate(45deg);
-        }
-
-        .stellar-header-section {
-            text-align: center;
-            padding: 15px 0;
-            position: relative;
-            z-index: 1;
-        }
-
-        .stellar-logo-text {
-            font-size: 28px;
-            font-weight: bold;
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 5px;
-        }
-
-        .stellar-subtitle {
-            font-size: 14px;
-            opacity: 0.8;
-            letter-spacing: 1px;
-        }
-
-        .stellar-character-section {
-            display: flex;
-            justify-content: center;
-            margin: 20px 0;
-            position: relative;
-            z-index: 1;
-        }
-
-        .stellar-spaceship {
-            width: 80px;
-            height: 60px;
-            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
-            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
-            position: relative;
-            animation: float 3s ease-in-out infinite;
-        }
-
-        .stellar-spaceship::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 30px;
-            height: 30px;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-
-        .stellar-info-section {
-            text-align: center;
-            margin: 15px 0;
-            position: relative;
-            z-index: 1;
-        }
-
-        .stellar-info-title {
-            font-size: 18px;
-            margin-bottom: 10px;
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .stellar-info-desc {
-            font-size: 14px;
-            line-height: 1.5;
-            opacity: 0.9;
-        }
-
-        .stellar-qr-section {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin: 20px 0;
-            position: relative;
-            z-index: 1;
-        }
-
-        .stellar-qr-title {
-            font-size: 16px;
-            margin-bottom: 15px;
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .stellar-qr-code {
-            width: 90px;
-            height: 90px;
-            background: white;
-            padding: 5px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .stellar-qr-code canvas {
-            width: 100% !important;
-            height: 100% !important;
-        }
-
-        .stellar-qr-tip {
-            font-size: 12px;
-            margin-top: 10px;
-            opacity: 0.7;
-        }
-
-        .stellar-action-buttons {
-            display: flex;
-            gap: 15px;
-            margin-top: 20px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .stellar-action-btn {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 25px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            font-size: 14px;
-        }
-
-        .stellar-action-btn.primary {
-            background: var(--primary-gradient);
-            color: white;
-        }
-
-        .stellar-action-btn.secondary {
-            background: var(--secondary-gradient);
-            color: white;
-        }
-
-        .stellar-action-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .stellar-share-panel {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: var(--card-bg);
-            border-radius: 20px 20px 0 0;
-            padding: 20px;
-            transform: translateY(100%);
-            transition: transform 0.3s ease;
-            z-index: 1000;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.3);
-        }
-
-        .stellar-share-panel.active {
-            transform: translateY(0);
-        }
-
-        .stellar-share-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .stellar-share-title {
-            font-size: 18px;
-            font-weight: bold;
-        }
-
-        .stellar-share-close {
-            background: none;
-            border: none;
-            font-size: 24px;
-            color: var(--text-color);
-            cursor: pointer;
-        }
-
-        .stellar-share-options {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-        }
-
-        .stellar-share-option {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .stellar-share-option:hover {
-            transform: translateY(-5px);
-            background: rgba(255, 255, 255, 0.15);
-        }
-
-        .stellar-share-option i {
-            font-size: 24px;
-            margin-bottom: 8px;
-        }
-
-        .stellar-share-option span {
-            font-size: 14px;
-        }
-
-        .stellar-digital-asset-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1001;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-
-        .stellar-digital-asset-modal.active {
-            opacity: 1;
-            pointer-events: all;
-        }
-
-        .stellar-digital-asset-content {
-            background: var(--card-bg);
-            padding: 30px;
-            border-radius: 20px;
-            text-align: center;
-            border: 1px solid var(--border-color);
-            box-shadow: var(--shadow);
-            max-width: 300px;
-            width: 100%;
-        }
-
-        .stellar-digital-asset-content h3 {
-            margin-bottom: 15px;
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .stellar-digital-asset-content p {
-            margin-bottom: 20px;
-            opacity: 0.8;
-            font-size: 14px;
-        }
-
-        .stellar-digital-asset-qrcode {
-            margin: 20px 0;
-            display: inline-block;
-        }
-
-        .stellar-digital-asset-qrcode canvas {
-            width: 200px !important;
-            height: 200px !important;
-        }
-
-        .stellar-digital-asset-close {
-            background: var(--secondary-gradient);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 14px;
-            margin-top: 10px;
-        }
-
-        .stellar-ios-save-instructions {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 1001;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-            padding: 20px;
-        }
-
-        .stellar-ios-save-instructions.active {
-            opacity: 1;
-            pointer-events: all;
-        }
-
-        .stellar-ios-save-instructions h3 {
-            color: var(--accent-color);
-            margin-bottom: 15px;
-            font-size: 20px;
-        }
-
-        .stellar-ios-save-instructions p {
-            color: var(--text-color);
-            margin-bottom: 15px;
-            text-align: center;
-            font-size: 16px;
-        }
-
-        .stellar-ios-save-close {
-            background: var(--secondary-gradient);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 14px;
-            margin-top: 20px;
-        }
-
-        .stellar-loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1002;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-
-        .stellar-loading-overlay.active {
-            opacity: 1;
-            pointer-events: all;
-        }
-
-        .stellar-loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top: 5px solid var(--accent-color);
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .stellar-download-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1002;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-
-        .stellar-download-overlay.active {
-            opacity: 1;
-            pointer-events: all;
-        }
-
-        .no-animation {
-            animation: none !important;
-            transition: none !important;
-        }
-
-        .toast {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 25px;
-            z-index: 1003;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .toast.active {
-            opacity: 1;
-        }
-
-        /* 全局样式 */
         * {
             margin: 0;
             padding: 0;
@@ -503,11 +36,14 @@
         }
 
         body {
-            background: var(--bg-dark);
-            color: var(--text-light);
+            background: var(--background-gradient);
+            color: var(--text-color);
             min-height: 100vh;
             transition: background 0.3s ease;
             padding-bottom: 80px;
+            position: relative;
+            overflow: auto;
+            touch-action: manipulation;
         }
 
         body.light-mode {
@@ -598,73 +134,72 @@
 
         .wallet-info-container {
             position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: var(--bg-dark);
-            border-top: 1px solid var(--border-color);
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 100;
+            top: 15px;
+            right: 15px;
+            z-index: 1000;
         }
 
         .wallet-info {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 8px 15px;
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .wallet-info.red {
+            background: rgba(255, 0, 0, 0.1);
             color: #ff6b6b;
         }
 
-        .wallet-info.green {
-            color: #2ecc71;
+        .wallet-info:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
 
-        .nav-container {
-            display: flex;
-            justify-content: space-around;
-            margin-top: 20px;
-        }
-
-        .nav-item {
-            flex: 1;
-            text-align: center;
-            padding: 10px;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .nav-item.active {
-            background: var(--primary-gradient);
+        .lang-toggle {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: none;
             color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: background 0.3s ease;
         }
 
-        .nav-item i {
-            font-size: 18px;
-            display: block;
-            margin-bottom: 5px;
+        .lang-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
         }
 
-        .page {
-            display: none;
-        }
-
-        .page.active {
-            display: block;
-        }
-
+        /* Card Styles */
         .card {
-            background: var(--card-bg);
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
             border-radius: 15px;
             padding: 20px;
             margin-bottom: 20px;
             box-shadow: var(--card-shadow);
-            border: 1px solid var(--border-color);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        body.light-mode .card {
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
         }
 
         .card-title {
@@ -711,7 +246,168 @@
             color: white;
         }
 
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: var(--neon-glow);
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        .btn-full {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+        }
+
+        /* Dashboard Styles */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        body.light-mode .stat-card {
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            background: var(--secondary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .devices-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .device-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .device-icon {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: var(--accent-color);
+        }
+
+        .device-label {
+            font-size: 14px;
+            margin-bottom: 5px;
+            opacity: 0.9;
+        }
+
+        .device-count {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        /* Shop Styles */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        body.light-mode .tab {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .tab.active {
+            background: var(--primary-gradient);
+        }
+
+        .machine-card {
+            text-align: center;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .machine-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            color: var(--accent-color);
+        }
+
+        .machine-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .machine-desc {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        .machine-price {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .input-group input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+        }
+
+        body.light-mode .input-group input {
+            background: white;
+            color: black;
+            border: 1px solid rgba(0, 0, 0, 0.2);
+        }
+
+        /* Rewards Page New Styles */
         .referral-section {
+            background: rgba(46, 204, 113, 0.15);
+            border: 1px solid rgba(46, 204, 113, 0.3);
+            border-radius: 10px;
+            padding: 15px;
             margin-bottom: 20px;
         }
 
@@ -726,327 +422,931 @@
         .referral-input {
             display: flex;
             gap: 10px;
-            margin-bottom: 15px;
         }
 
         .referral-input input {
             flex: 1;
             padding: 10px;
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--text-light);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
         }
 
-        .referral-auto, .referral-success {
-            display: none;
-            font-size: 14px;
-            margin-bottom: 15px;
+        body.light-mode .referral-input input {
+            background: white;
+            color: black;
+            border: 1px solid rgba(0, 0, 0, 0.2);
+        }
+
+        .referral-success {
+            margin-top: 10px;
             color: #2ecc71;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            font-weight: 600;
+            display: none;
+        }
+
+        .referral-auto {
+            background: rgba(46, 204, 113, 0.3);
+            border: 1px solid #2ecc71;
+            padding: 8px;
+            border-radius: 6px;
+            margin-top: 10px;
+            display: none;
         }
 
         .qrcode-container {
-            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 15px 0;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
         }
 
         .qrcode-header {
-            font-size: 16px;
-            margin-bottom: 15px;
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #8a6bff;
+        }
+
+        #qrcode {
+            margin: 10px auto;
+            padding: 15px;
+            background: white;
+            border-radius: 15px;
+            display: inline-block;
+            box-shadow: 0 5px 20px rgba(138, 107, 255, 0.3);
         }
 
         .share-actions {
             display: flex;
             gap: 10px;
-            margin-top: 20px;
+            margin-top: 15px;
+            width: 100%;
         }
 
         .share-btn {
             flex: 1;
-            padding: 12px;
+            background: #8a6bff;
+            color: white;
             border: none;
-            border-radius: 25px;
-            font-weight: 600;
+            padding: 10px;
+            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        .share-btn:hover {
+            background: #7a5bff;
         }
 
         .copy-btn {
-            background: var(--secondary-gradient);
+            background: #2ecc71;
+        }
+
+        .copy-btn:hover {
+            background: #27ae60;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(26, 26, 46, 0.9);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 12px;
+            transition: color 0.3s ease;
+        }
+
+        .nav-item.active {
+            color: #8a6bff;
+        }
+
+        .nav-item i {
+            font-size: 20px;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
             color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            z-index: 2000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+
+        .toast.success {
+            background: rgba(46, 204, 113, 0.9);
+        }
+
+        .toast.error {
+            background: rgba(231, 76, 60, 0.9);
+        }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1500;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .loading-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-top: 5px solid #8a6bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Page Styles */
+        .page {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Poster Generator Styles */
+        .stellar-poster-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .stellar-poster-container.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .stellar-poster-wrapper {
+            position: relative;
+            width: 320px;
+            height: 568px;
+            background: url('https://placehold.co/320x568/091947/ffffff?text=Stellar+Background') no-repeat center center;
+            background-size: cover;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .stellar-space-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at center, #091947 0%, #0a0529 100%);
+            overflow: hidden;
+        }
+
+        .stellar-star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        .stellar-planet {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #ff6b6b, #ff9b5d);
+            box-shadow: 0 0 30px rgba(255, 107, 107, 0.4);
+        }
+
+        .stellar-poster-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 40px 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            z-index: 2;
+        }
+
+        .stellar-header {
+            text-align: center;
+            color: white;
+        }
+
+        .stellar-logo {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 15px;
+            position: relative;
+        }
+
+        .stellar-logo-icon {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: var(--primary-gradient);
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stellar-logo-inner {
+            width: 36px;
+            height: 36px;
+            background: white;
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .stellar-logo-inner::before {
+            content: "";
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            background: var(--accent-blue);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .stellar-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stellar-subtitle {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .stellar-character {
+            text-align: center;
+            color: white;
+        }
+
+        .stellar-character-img {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 15px;
+            border-radius: 50%;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            background: url('https://placehold.co/120x120/2a1957/ffffff?text=Avatar') no-repeat center center;
+            background-size: cover;
+        }
+
+        .stellar-text-container {
+            flex: 1;
+        }
+
+        .stellar-character-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #5d9bff;
+            margin-bottom: 5px;
+        }
+
+        .stellar-call-to-action {
+            font-size: 14px;
+            color: var(--accent-color);
+            line-height: 1.4;
+        }
+
+        .stellar-poster-qrcode {
+            width: 90px;
+            height: 90px;
+            margin: 20px auto;
+            border-radius: 15px;
+            overflow: hidden;
+            border: 2px solid white;
+            background: white;
+            padding: 5px;
+        }
+
+        .stellar-action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            z-index: 10;
+            position: relative;
+        }
+
+        .stellar-action-btn {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            min-width: 120px;
+        }
+
+        .stellar-action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(138, 107, 255, 0.4);
+        }
+
+        .stellar-action-btn i {
+            margin-right: 5px;
+        }
+
+        .stellar-poster-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 30px;
+            height: 30px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            z-index: 10;
+            font-size: 16px;
+        }
+
+        .stellar-poster-close:hover {
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        .stellar-share-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .stellar-share-modal.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .stellar-share-content {
+            background: rgba(26, 26, 46, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            width: 90%;
+            max-width: 400px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stellar-share-header {
+            text-align: center;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .stellar-share-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stellar-share-subtitle {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .stellar-share-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        body.light-mode .stellar-share-input {
+            background: white;
+            color: black;
+            border: 1px solid rgba(0, 0, 0, 0.2);
+        }
+
+        .stellar-share-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .stellar-share-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .stellar-share-option:hover {
+            transform: translateY(-3px);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .stellar-share-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .stellar-share-icon.twitter {
+            background: #1DA1F2;
+        }
+
+        .stellar-share-icon.telegram {
+            background: #0088cc;
+        }
+
+        .stellar-share-icon.reddit {
+            background: #FF4500;
+        }
+
+        .stellar-share-icon.discord {
+            background: #5865F2;
+        }
+
+        .stellar-share-icon.whatsapp {
+            background: #25D366;
+        }
+
+        .stellar-share-icon.copy {
+            background: #8a6bff;
+        }
+
+        .stellar-share-label {
+            font-size: 12px;
+            color: white;
+            font-weight: 500;
+        }
+
+        .stellar-loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2200;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .stellar-loading-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .stellar-loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 6px solid rgba(255, 255, 255, 0.3);
+            border-top: 6px solid #8a6bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .stellar-digital-asset-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2300;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .stellar-digital-asset-modal.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .stellar-digital-asset-content {
+            background: rgba(26, 26, 46, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            width: 90%;
+            max-width: 350px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .stellar-digital-asset-content h3 {
+            color: white;
+            margin-bottom: 15px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .stellar-digital-asset-content p {
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .stellar-digital-asset-qrcode {
+            margin: 0 auto 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            display: inline-block;
+        }
+
+        .stellar-digital-asset-close {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .stellar-digital-asset-close:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(138, 107, 255, 0.4);
+        }
+
+        .stellar-ios-save-instructions {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2400;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .stellar-ios-save-instructions.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .stellar-ios-instructions-content {
+            background: rgba(26, 26, 46, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            width: 90%;
+            max-width: 350px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .stellar-ios-instructions-content h3 {
+            color: white;
+            margin-bottom: 15px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .stellar-ios-instructions-content p {
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 20px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .stellar-ios-instructions-content .btn {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .stellar-ios-instructions-content .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(138, 107, 255, 0.4);
         }
     </style>
 </head>
 <body>
-    <!-- 海报生成器组件 -->
-    <div class="stellar-energy-poster-generator">
-        <div class="stellar-container" id="stellarMainContainer">
-            <div class="stellar-poster-container" id="stellarPoster">
-                <div class="stellar-space-decoration" id="stellarSpaceDecoration"></div>
-                <div class="stellar-header-section">
-                    <div class="stellar-logo-text">星际能源站</div>
-                    <div class="stellar-subtitle">玩赚宇宙能源时代</div>
-                </div>
-                <div class="stellar-character-section">
-                    <div class="stellar-spaceship"></div>
-                </div>
-                <div class="stellar-info-section">
-                    <div class="stellar-info-title">探索宇宙能源，积累数字资产</div>
-                    <div class="stellar-info-desc">立即加入星际能源站<br>探索宇宙能源，积累数字资产</div>
-                </div>
-                <div class="stellar-qr-section">
-                    <div class="stellar-qr-title">扫码加入星际能源站</div>
-                    <div class="stellar-qr-code" id="stellarPosterQrcode"></div>
-                    <div class="stellar-qr-tip">长按保存海报，扫码加入</div>
-                </div>
-                <div class="stellar-action-buttons">
-                    <button class="stellar-action-btn primary" id="stellarDownloadBtn">
-                        <i class="fas fa-download"></i> 保存海报
-                    </button>
-                    <button class="stellar-action-btn secondary" id="stellarShareBtn">
-                        <i class="fas fa-share-alt"></i> 分享邀请
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- 下载加载覆盖层 -->
-        <div class="stellar-download-overlay" id="stellarDownloadOverlay">
-            <div class="stellar-loading-spinner"></div>
-        </div>
-
-        <!-- 分享面板 -->
-        <div class="stellar-share-panel" id="stellarSharePanel">
-            <div class="stellar-share-header">
-                <div class="stellar-share-title">分享邀请链接</div>
-                <button class="stellar-share-close" id="stellarShareCloseBtn">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="stellar-share-options">
-                <div class="stellar-share-option" id="stellarShareTwitter">
-                    <i class="fab fa-twitter"></i>
-                    <span>Twitter</span>
-                </div>
-                <div class="stellar-share-option" id="stellarShareFacebook">
-                    <i class="fab fa-facebook"></i>
-                    <span>Facebook</span>
-                </div>
-                <div class="stellar-share-option" id="stellarShareWechat">
-                    <i class="fab fa-weixin"></i>
-                    <span>微信</span>
-                </div>
-                <div class="stellar-share-option" id="stellarShareQQ">
-                    <i class="fab fa-qq"></i>
-                    <span>QQ</span>
-                </div>
-                <div class="stellar-share-option" id="stellarShareTelegram">
-                    <i class="fab fa-telegram"></i>
-                    <span>Telegram</span>
-                </div>
-                <div class="stellar-share-option" id="stellarShareWhatsApp">
-                    <i class="fab fa-whatsapp"></i>
-                    <span>WhatsApp</span>
-                </div>
-                <div class="stellar-share-option" id="stellarShareLink">
-                    <i class="fas fa-link"></i>
-                    <span>复制链接</span>
-                </div>
-                <div class="stellar-share-option" id="stellarShareDigitalAsset">
-                    <i class="fas fa-wallet"></i>
-                    <span>数字资产</span>
-                </div>
-                <div class="stellar-share-option" id="stellarShareSystem">
-                    <i class="fas fa-share"></i>
-                    <span>系统分享</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- 数字资产分享模态框 -->
-        <div class="stellar-digital-asset-modal" id="stellarDigitalAssetModal">
-            <div class="stellar-digital-asset-content">
-                <h3>数字资产分享</h3>
-                <p>扫描二维码分享到数字资产应用</p>
-                <div class="stellar-digital-asset-qrcode" id="stellarDigitalAssetQrcode"></div>
-                <button class="stellar-digital-asset-close" id="stellarDigitalAssetCloseBtn">关闭</button>
-            </div>
-        </div>
-
-        <!-- 移动设备保存说明 -->
-        <div class="stellar-ios-save-instructions" id="stellarIosSaveInstructions">
-            <h3>保存海报到相册</h3>
-            <p>在移动设备上，请按照以下步骤保存海报：</p>
-            <p>1. 长按下面的图片</p>
-            <p>2. 选择"保存图片"选项</p>
-            <div id="stellarIosSaveImageContainer"></div>
-            <button class="stellar-ios-save-close" id="stellarIosSaveCloseBtn">关闭</button>
-        </div>
-    </div>
-
-    <!-- 主应用界面 -->
+    <!-- Main App Container -->
     <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <div class="logo-container">
-                <div class="logo-icon">
-                    <div class="hexagon"></div>
-                    <div class="inner-shape"></div>
-                    <div class="pulse"></div>
-                </div>
-                <div class="logo-text">Star Mining</div>
-            </div>
-            <div class="wallet-info" id="walletInfo">连接钱包</div>
-        </div>
-
-        <!-- Navigation -->
-        <div class="nav-container">
-            <div class="nav-item active" onclick="switchPage('dashboard')">
-                <i class="fas fa-tachometer-alt"></i>
-                <span id="homeNav">Home</span>
-            </div>
-            <div class="nav-item" onclick="switchPage('shop')">
-                <i class="fas fa-store"></i>
-                <span id="shopNav">Shop</span>
-            </div>
-            <div class="nav-item" onclick="switchPage('rewards')">
-                <i class="fas fa-user-friends"></i>
-                <span id="rewardsNav">Rewards</span>
-            </div>
-            <div class="nav-item" onclick="switchPage('global')">
-                <i class="fas fa-globe-americas"></i>
-                <span id="globalNav">Global</span>
-            </div>
-        </div>
-
         <!-- Dashboard Page -->
         <div class="page active" id="dashboardPage">
+            <div class="header">
+                <div class="logo-container">
+                    <div class="logo-icon">
+                        <div class="hexagon"></div>
+                        <div class="inner-shape"></div>
+                        <div class="pulse"></div>
+                    </div>
+                    <div class="logo-text">Star Mining</div>
+                </div>
+                <div class="wallet-info-container">
+                    <div class="wallet-info" id="walletInfo">连接钱包</div>
+                </div>
+            </div>
+
             <div class="card">
                 <div class="card-title">
                     <i class="fas fa-tachometer-alt"></i>
-                    <span id="dashboardTitle">Personal Dashboard</span>
+                    <span id="dashboardTitle">个人仪表盘</span>
                 </div>
-                <div class="balance-info">
-                    <div class="balance-item">
-                        <span id="balanceLabel">α Balance</span>
-                        <div id="tokenBalance">0.0000</div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="tokenBalance">0</div>
+                        <div class="stat-label">α余额</div>
                     </div>
-                    <div class="balance-item">
-                        <span id="earningsLabel">Total Earnings</span>
-                        <div id="totalEarnings">0.0000</div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalEarnings">0</div>
+                        <div class="stat-label">累计收益</div>
                     </div>
-                    <div class="balance-item">
-                        <span id="dailyLabel">Daily Reward</span>
-                        <div id="dailyReward">0.0000</div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="dailyReward">0</div>
+                        <div class="stat-label">今日收益</div>
                     </div>
-                    <div class="balance-item">
-                        <span id="unclaimedLabel">Unclaimed</span>
-                        <div id="unclaimedReward">0.0000</div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="unclaimedRewards">0</div>
+                        <div class="stat-label">未领取</div>
                     </div>
                 </div>
-                <button class="btn btn-primary" id="claimBtn" onclick="claimRewards()">
+
+                <button class="btn btn-primary btn-full" id="claimBtn">
                     <i class="fas fa-hand-holding-usd"></i>
-                    <span id="claimText">Claim Rewards</span>
+                    <span id="claimText">领取收益</span>
                 </button>
             </div>
+
             <div class="card">
                 <div class="card-title">
                     <i class="fas fa-microchip"></i>
-                    <span id="devicesTitle">Device Status</span>
+                    <span id="devicesTitle">设备状态</span>
                 </div>
-                <div id="deviceStatus">No devices</div>
+                
+                <div class="devices-grid">
+                    <div class="device-card">
+                        <div class="device-icon">
+                            <i class="fas fa-server"></i>
+                        </div>
+                        <div class="device-label">基础设备</div>
+                        <div class="device-count" id="normalMachineCount">0</div>
+                    </div>
+                    <div class="device-card">
+                        <div class="device-icon">
+                            <i class="fas fa-rocket"></i>
+                        </div>
+                        <div class="device-label">测试设备</div>
+                        <div class="device-count" id="testMachineCount">0</div>
+                    </div>
+                </div>
             </div>
         </div>
 
         <!-- Shop Page -->
         <div class="page" id="shopPage">
+            <div class="header">
+                <div class="logo-container">
+                    <div class="logo-icon">
+                        <div class="hexagon"></div>
+                        <div class="inner-shape"></div>
+                        <div class="pulse"></div>
+                    </div>
+                    <div class="logo-text">Star Mining</div>
+                </div>
+                <div class="wallet-info-container">
+                    <div class="wallet-info" id="walletInfo2">连接钱包</div>
+                </div>
+            </div>
+
             <div class="card">
                 <div class="card-title">
                     <i class="fas fa-store"></i>
-                    <span id="shopTitle">Device Shop</span>
+                    <span id="shopTitle">设备商店</span>
                 </div>
-                <div class="tab-container">
-                    <div class="tab active" onclick="switchTab('initial')">
-                        <span id="initialTab">Initial Device</span>
-                    </div>
-                    <div class="tab" onclick="switchTab('power')">
-                        <span id="powerTab">Power Device</span>
-                    </div>
-                    <div class="tab" onclick="switchTab('test')">
-                        <span id="testTab">Test Device</span>
-                    </div>
+                
+                <div class="tabs">
+                    <div class="tab active" onclick="switchTab('basic')">基础设备</div>
+                    <div class="tab" onclick="switchTab('power')">算力设备</div>
+                    <div class="tab" onclick="switchTab('test')">测试设备</div>
                 </div>
-                <div class="tab-content active" id="initialContent">
-                    <div class="device-item">
-                        <h4>Initial Machine</h4>
-                        <p>Power: 1.0</p>
-                        <p>Price: 0.01 BNB</p>
-                        <button class="btn btn-primary" onclick="buyInitialMachine()">
+
+                <!-- Basic Machines Content -->
+                <div class="tab-content" id="basicContent">
+                    <div class="machine-card">
+                        <div class="machine-icon">
+                            <i class="fas fa-server"></i>
+                        </div>
+                        <div class="machine-name">基础矿机</div>
+                        <div class="machine-desc">稳定可靠的入门级挖矿设备，适合新手玩家</div>
+                        <div class="machine-price" id="initialMachinePrice">价格: 0 BNB</div>
+                        <button class="btn btn-primary btn-full" id="buyInitialBtn">
                             <i class="fas fa-shopping-cart"></i>
-                            <span id="buyInitialText">Buy Device</span>
-                        </button>
-                    </div>
-                </div>
-                <div class="tab-content" id="powerContent">
-                    <div class="device-item">
-                        <h4>Moonlight Converter</h4>
-                        <p id="multiplier1">Multiplier: × 1.76</p>
-                        <p>Price: 0.02 BNB</p>
-                        <button class="btn btn-primary" onclick="buyPowerMachine(1)">
-                            <i class="fas fa-shopping-cart"></i>
-                            <span id="buyPowerText">Buy Device</span>
-                        </button>
-                    </div>
-                    <div class="device-item">
-                        <h4>Stardust Collector L1</h4>
-                        <p id="multiplier2">Multiplier: × 3.30</p>
-                        <p>Price: 0.05 BNB</p>
-                        <button class="btn btn-primary" onclick="buyPowerMachine(2)">
-                            <i class="fas fa-shopping-cart"></i>
-                            <span id="buyPowerText">Buy Device</span>
-                        </button>
-                    </div>
-                    <div class="device-item">
-                        <h4>Quantum Dandelion L2</h4>
-                        <p id="multiplier3">Multiplier: × 4.84</p>
-                        <p>Price: 0.1 BNB</p>
-                        <button class="btn btn-primary" onclick="buyPowerMachine(3)">
-                            <i class="fas fa-shopping-cart"></i>
-                            <span id="buyPowerText">Buy Device</span>
-                        </button>
-                    </div>
-                    <div class="device-item">
-                        <h4>Aurora Weaver L3</h4>
-                        <p id="multiplier4">Multiplier: × 7.15</p>
-                        <p>Price: 0.2 BNB</p>
-                        <button class="btn btn-primary" onclick="buyPowerMachine(4)">
-                            <i class="fas fa-shopping-cart"></i>
-                            <span id="buyPowerText">Buy Device</span>
+                            <span id="buyInitialText">购买设备</span>
                         </button>
                     </div>
                 </div>
-                <div class="tab-content" id="testContent">
-                    <div class="device-item">
-                        <h4>Galaxy Filter L4</h4>
-                        <p>Power: 10.0</p>
-                        <p>Price: 0.5 BNB</p>
-                        <button class="btn btn-primary" onclick="buyTestMachine()">
-                            <i class="fas fa-shopping-cart"></i>
-                            <span id="buyTestText">Buy Device</span>
-                        </button>
+
+                <!-- Power Machines Content -->
+                <div class="tab-content" id="powerContent" style="display: none;">
+                    <div class="machine-card">
+                        <div class="machine-icon">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <div class="machine-name">算力矿机 Tier 1</div>
+                        <div class="machine-desc" id="multiplier1">算力 × 1.76</div>
+                        <div class="machine-price" id="powerMachinePrice1">价格: 0 α</div>
+                        <div class="input-group">
+                            <input type="number" id="powerCount1" value="1" min="1">
+                            <button class="btn btn-primary" id="buyPowerBtn1">
+                                <i class="fas fa-shopping-cart"></i>
+                                购买
+                            </button>
+                        </div>
                     </div>
-                    <div id="noPermissionMessage" style="display: none; text-align: center; margin-top: 15px;">
-                        <p>您没有权限购买测试设备。</p>
-                        <p>此功能仅对管理员或合约所有者开放。</p>
+
+                    <div class="machine-card">
+                        <div class="machine-icon">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <div class="machine-name">算力矿机 Tier 2</div>
+                        <div class="machine-desc" id="multiplier2">算力 × 3.30</div>
+                        <div class="machine-price" id="powerMachinePrice2">价格: 0 α</div>
+                        <div class="input-group">
+                            <input type="number" id="powerCount2" value="1" min="1">
+                            <button class="btn btn-primary" id="buyPowerBtn2">
+                                <i class="fas fa-shopping-cart"></i>
+                                购买
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="machine-card">
+                        <div class="machine-icon">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <div class="machine-name">算力矿机 Tier 3</div>
+                        <div class="machine-desc" id="multiplier3">算力 × 4.84</div>
+                        <div class="machine-price" id="powerMachinePrice3">价格: 0 α</div>
+                        <div class="input-group">
+                            <input type="number" id="powerCount3" value="1" min="1">
+                            <button class="btn btn-primary" id="buyPowerBtn3">
+                                <i class="fas fa-shopping-cart"></i>
+                                购买
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="machine-card">
+                        <div class="machine-icon">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <div class="machine-name">算力矿机 Tier 4</div>
+                        <div class="machine-desc" id="multiplier4">算力 × 7.15</div>
+                        <div class="machine-price" id="powerMachinePrice4">价格: 0 α</div>
+                        <div class="input-group">
+                            <input type="number" id="powerCount4" value="1" min="1">
+                            <button class="btn btn-primary" id="buyPowerBtn4">
+                                <i class="fas fa-shopping-cart"></i>
+                                购买
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Test Machines Content -->
+                <div class="tab-content" id="testContent" style="display: none;">
+                    <div class="machine-card">
+                        <div class="machine-icon">
+                            <i class="fas fa-flask"></i>
+                        </div>
+                        <div class="machine-name">测试矿机</div>
+                        <div class="machine-desc">限量版测试设备，仅对特定用户开放</div>
+                        <div class="machine-price" id="testMachinePrice">价格: 0 BNB</div>
+                        <button class="btn btn-primary btn-full" id="buyTestBtn">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span id="buyTestText">购买设备</span>
+                        </button>
+                        
+                        <!-- 无权限提示 -->
+                        <div id="noPermissionMessage" style="display: none; text-align: center; margin-top: 15px;">
+                            <p>您没有权限购买测试设备。</p>
+                            <p>此功能仅对管理员或合约所有者开放。</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1054,17 +1354,35 @@
 
         <!-- Rewards Page -->
         <div class="page" id="rewardsPage">
+            <div class="header">
+                <div class="logo-container">
+                    <div class="logo-icon">
+                        <div class="hexagon"></div>
+                        <div class="inner-shape"></div>
+                        <div class="pulse"></div>
+                    </div>
+                    <div class="logo-text">Star Mining</div>
+                </div>
+                <div class="wallet-info-container">
+                    <div class="wallet-info" id="walletInfo3">连接钱包</div>
+                </div>
+            </div>
+
             <div class="card">
                 <div class="card-title">
                     <i class="fas fa-user-friends"></i>
-                    <span id="referralTitle">Referral System</span>
+                    <span id="referralTitle">推荐体系</span>
                 </div>
+                
                 <div class="referral-section">
                     <h3><i class="fas fa-user-plus"></i> 邀请人地址</h3>
                     <p>如果您是通过邀请链接加入，系统已自动填写邀请人地址</p>
                     <div class="referral-input">
                         <input type="text" id="referrerInput" placeholder="输入推荐人钱包地址">
-                        <button class="btn-secondary" id="setReferrerBtn" onclick="setReferrer()">设置</button>
+                        <button class="btn-secondary" id="setReferrerBtn" onclick="setReferrer()">
+                            <i class="fas fa-save"></i>
+                            <span id="saveText">设置</span>
+                        </button>
                     </div>
                     <div class="referral-auto" id="referralAuto">
                         <i class="fas fa-check-circle"></i> 已自动填写邀请人地址
@@ -1073,71 +1391,220 @@
                         <i class="fas fa-check-circle"></i> 邀请人地址已保存
                     </div>
                 </div>
+
                 <div class="qrcode-container">
-                    <div class="qrcode-header">我的邀请二维码</div>
-                    <div id="qrcode"></div>
+                    <div class="qrcode-header">我的邀请海报</div>
+                    <button class="btn btn-primary btn-full" id="generatePosterBtn">
+                        <i class="fas fa-image"></i>
+                        生成邀请海报
+                    </button>
                 </div>
             </div>
         </div>
 
         <!-- Global Stats Page -->
         <div class="page" id="globalPage">
+            <div class="header">
+                <div class="logo-container">
+                    <div class="logo-icon">
+                        <div class="hexagon"></div>
+                        <div class="inner-shape"></div>
+                        <div class="pulse"></div>
+                    </div>
+                    <div class="logo-text">Star Mining</div>
+                </div>
+                <div class="wallet-info-container">
+                    <div class="wallet-info" id="walletInfo4">连接钱包</div>
+                </div>
+            </div>
+
             <div class="card">
                 <div class="card-title">
                     <i class="fas fa-globe-americas"></i>
-                    <span id="globalTitle">Global Stats</span>
+                    <span id="globalTitle">全球数据</span>
                 </div>
-                <div class="stat-item">
-                    <span id="machinesLabel">Total Devices</span>
-                    <div id="totalMachines">0</div>
-                </div>
-                <div class="stat-item">
-                    <span id="powerLabel">Network Power</span>
-                    <div id="totalNetworkPower">0</div>
-                </div>
-                <div class="stat-item">
-                    <span id="poolLabel">Reward Pool</span>
-                    <div id="rewardPool">0.0000</div>
-                </div>
-                <div class="stat-item">
-                    <span>Total Tokens Minted</span>
-                    <div id="totalTokensMinted">0.0000</div>
-                </div>
-                <div class="stat-item">
-                    <span>Daily Production</span>
-                    <div id="dailyProduction">0.0000</div>
-                </div>
-                <div class="stat-item">
-                    <span>Current Block</span>
-                    <div id="currentBlock">0</div>
-                </div>
-                <div class="stat-item">
-                    <span>Base Reward</span>
-                    <div id="baseReward">0.0000</div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalUsers">0</div>
+                        <div class="stat-label">总用户数</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalMines">0</div>
+                        <div class="stat-label">总设备数</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="networkPower">0</div>
+                        <div class="stat-label" id="powerRatioText">总算力占比:</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="poolBalance">0</div>
+                        <div class="stat-label">奖池余额</div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Wallet Info Container -->
-    <div class="wallet-info-container">
-        <div class="wallet-info" id="walletInfoBottom">连接钱包</div>
-        <div>
-            <button class="btn btn-secondary" id="langBtn" onclick="switchLanguage()">
-                <span id="langText">中文</span>
-            </button>
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="switchPage('dashboard')">
+            <i class="fas fa-home"></i>
+            <span id="homeNav">首页</span>
+        </div>
+        <div class="nav-item" onclick="switchPage('shop')">
+            <i class="fas fa-store"></i>
+            <span id="shopNav">商店</span>
+        </div>
+        <div class="nav-item" onclick="switchPage('rewards')">
+            <i class="fas fa-gift"></i>
+            <span id="rewardsNav">奖励</span>
+        </div>
+        <div class="nav-item" onclick="switchPage('global')">
+            <i class="fas fa-chart-line"></i>
+            <span id="globalNav">数据</span>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <!-- Poster Generator Modal -->
+    <div class="stellar-poster-container" id="stellarPosterContainer">
+        <div class="stellar-poster-wrapper">
+            <div class="stellar-space-background" id="stellarSpaceBackground"></div>
+            <div class="stellar-poster-content">
+                <div class="stellar-header">
+                    <div class="stellar-logo">
+                        <div class="stellar-logo-icon">
+                            <div class="stellar-logo-inner"></div>
+                        </div>
+                    </div>
+                    <div class="stellar-title">Star Mining</div>
+                    <div class="stellar-subtitle">星际能源站</div>
+                </div>
+                
+                <div class="stellar-character">
+                    <div class="stellar-character-img" id="stellarCharacterImg"></div>
+                    <div class="stellar-text-container">
+                        <div class="stellar-character-name" id="stellarCharacterName">星际探险家</div>
+                        <div class="stellar-call-to-action">
+                            加入我的星际能源站，<br>一起开启宇宙能源采集之旅！
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stellar-poster-qrcode" id="stellarPosterQrcode"></div>
+                
+                <div class="stellar-action-buttons">
+                    <button class="stellar-action-btn" id="stellarDownloadBtn">
+                        <i class="fas fa-download"></i>
+                        <span id="downloadText">保存海报</span>
+                    </button>
+                    <button class="stellar-action-btn" id="stellarShareBtn">
+                        <i class="fas fa-share-alt"></i>
+                        <span id="shareText">分享</span>
+                    </button>
+                </div>
+            </div>
+            <div class="stellar-poster-close" id="stellarPosterCloseBtn">
+                <i class="fas fa-times"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Share Modal -->
+    <div class="stellar-share-modal" id="stellarShareModal">
+        <div class="stellar-share-content">
+            <div class="stellar-share-header">
+                <div class="stellar-share-title">分享邀请链接</div>
+                <div class="stellar-share-subtitle">让更多人加入星际能源站</div>
+            </div>
+            
+            <input type="text" class="stellar-share-input" id="stellarShareInput" readonly>
+            
+            <div class="stellar-share-options">
+                <div class="stellar-share-option" id="stellarShareTwitter">
+                    <div class="stellar-share-icon twitter">
+                        <i class="fab fa-twitter"></i>
+                    </div>
+                    <div class="stellar-share-label">Twitter</div>
+                </div>
+                
+                <div class="stellar-share-option" id="stellarShareTelegram">
+                    <div class="stellar-share-icon telegram">
+                        <i class="fab fa-telegram"></i>
+                    </div>
+                    <div class="stellar-share-label">Telegram</div>
+                </div>
+                
+                <div class="stellar-share-option" id="stellarShareReddit">
+                    <div class="stellar-share-icon reddit">
+                        <i class="fab fa-reddit"></i>
+                    </div>
+                    <div class="stellar-share-label">Reddit</div>
+                </div>
+                
+                <div class="stellar-share-option" id="stellarShareDiscord">
+                    <div class="stellar-share-icon discord">
+                        <i class="fab fa-discord"></i>
+                    </div>
+                    <div class="stellar-share-label">Discord</div>
+                </div>
+                
+                <div class="stellar-share-option" id="stellarShareWhatsApp">
+                    <div class="stellar-share-icon whatsapp">
+                        <i class="fab fa-whatsapp"></i>
+                    </div>
+                    <div class="stellar-share-label">WhatsApp</div>
+                </div>
+                
+                <div class="stellar-share-option" id="stellarShareDigitalAsset">
+                    <div class="stellar-share-icon copy">
+                        <i class="fas fa-qrcode"></i>
+                    </div>
+                    <div class="stellar-share-label">数字资产</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay for Poster -->
+    <div class="stellar-loading-overlay" id="stellarLoadingOverlay">
+        <div class="stellar-loading-spinner"></div>
+    </div>
+
+    <!-- Digital Asset Modal -->
+    <div class="stellar-digital-asset-modal" id="stellarDigitalAssetModal">
+        <div class="stellar-digital-asset-content">
+            <h3>数字资产分享</h3>
+            <p>扫描二维码分享到数字资产应用</p>
+            <div class="stellar-digital-asset-qrcode" id="stellarDigitalAssetQrcode"></div>
+            <button class="stellar-digital-asset-close" id="stellarDigitalAssetCloseBtn">关闭</button>
+        </div>
+    </div>
+
+    <!-- iOS Save Instructions -->
+    <div class="stellar-ios-save-instructions" id="stellarIosSaveInstructions">
+        <div class="stellar-ios-instructions-content">
+            <h3>保存海报到相册</h3>
+            <p>请点击右上角的分享按钮，然后选择"添加到主屏幕"或"保存图片"来保存您的海报。</p>
+            <button class="btn" id="stellarIosSaveCloseBtn">我知道了</button>
         </div>
     </div>
 
     <script>
-        // Contract Configuration
-        const CONTRACT_ADDRESS = '0x9dcced4ef738856d2c289d4116cd219c698b22ba';
-        const TOKEN_ADDRESS = '0x877f23dcFBa91cadd7d35565Da452c9673C27A33';
+        // Contract ABI and Address
+        const CONTRACT_ABI = [
+            {"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"BNBWithdrawn","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"InitialMachineBought","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"PowerMachineBought","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"ReferralRewardPaid","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"RewardsClaimed","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":true,"internalType":"address","name":"referrer","type":"address"},{"indexed":false,"internalType":"uint256","name":"reward","type":"uint256"}],"name":"UserReferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"TokensWithdrawn","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"subtractedValue","type":"uint256"}],"name":"decreaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"addedValue","type":"uint256"}],"name":"increaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"INITIAL_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"POWER_MACHINE_PRICE_ALPHA","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TEST_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TREASURY","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tierId","type":"uint256"}],"name":"getMachineTier","outputs":[{"internalType":"uint256","name":"priceToken","type":"uint256"},{"internalType":"uint256","name":"powerMultiplier","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getGlobalDashboard","outputs":[{"internalType":"uint256","name":"baseReward","type":"uint256"},{"internalType":"uint256","name":"totalMines","type":"uint256"},{"internalType":"uint256","name":"currentBlock","type":"uint256"},{"internalType":"uint256","name":"poolBalance","type":"uint256"},{"internalType":"uint256","name":"networkPower","type":"uint256"},{"internalType":"uint256","name":"dailyProduction","type":"uint256"},{"internalType":"uint256","name":"totalRefRewards","type":"uint256"},{"internalType":"uint256","name":"totalUsers","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getUserDashboard","outputs":[{"internalType":"uint256","name":"normal","type":"uint256"},{"internalType":"uint256","name":"test","type":"uint256"},{"internalType":"uint256[4]","name":"power","type":"uint256[4]"},{"internalType":"uint256","name":"dailyReward","type":"uint256"},{"internalType":"uint256","name":"unclaimed","type":"uint256"},{"internalType":"uint256","name":"totalRefReward","type":"uint256"},{"internalType":"uint256","name":"totalPower","type":"uint256"},{"internalType":"uint256","name":"tokenBalance","type":"uint256"},{"internalType":"uint256","name":"referralCount","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"isTestMachineAvailable","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"pause","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"rewardPool","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"rewardToken","outputs":[{"internalType":"contract IERC20","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"referrer","type":"address"}],"name":"setReferrer","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"unpause","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"withdrawBNB","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdrawTokens","outputs":[],"stateMutability":"nonpayable","type":"function"}];
+        const CONTRACT_ADDRESS = "0x6893f393245227776116840c7d92235777481748";
+        const TOKEN_ADDRESS = "0x55d398326f99059fF775485246999027B3197955";
         
-        const CONTRACT_ABI = [{"inputs":[{"internalType":"address","name":"_token","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"ClaimRewards","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"DepositBNB","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":true,"internalType":"address","name":"referrer","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"ReferralRewards","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"WithdrawBNB","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"WithdrawTokens","type":"event"},{"inputs":[],"name":"BNB","outputs":[{"internalType":"contract IERC20","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"INITIAL_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_REFERRAL_REWARD_RATE","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MIN_REFERRAL_REWARD_RATE","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"POWER_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"REFERRAL_REWARD_RATE","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TIER1_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TIER2_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TIER3_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TIER4_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TEST_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TREASURY","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"addAdmin","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"addRewardTokens","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"addToBlocklist","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"admin","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"baseRewardPerBlockPerPower","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"blocklist","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"buyInitialMachine","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"tierId","type":"uint256"}],"name":"buyPowerMachine","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"buyTestMachine","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"claimRewards","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"usr","type":"address"}],"name":"dailyRewardOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"usr","type":"address"}],"name":"getReferralInfo","outputs":[{"internalType":"uint256","name":"normalMachineCount","type":"uint256"},{"internalType":"uint256","name":"testMachineCount","type":"uint256"},{"internalType":"uint256","name":"rewardStartBlock","type":"uint256"},{"internalType":"address","name":"referrer","type":"address"},{"internalType":"uint256","name":"referralRewards","type":"uint256"},{"internalType":"bool","name":"hasBoughtInitial","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getTotalMachines","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getTotalNetworkPower","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getTokenBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getTotalReferralRewards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getTotalTokensMinted","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getUserInfo","outputs":[{"internalType":"uint256","name":"tokenBalance","type":"uint256"},{"internalType":"uint256","name":"totalEarnings","type":"uint256"},{"internalType":"uint256","name":"dailyReward","type":"uint256"},{"internalType":"uint256","name":"unclaimedReward","type":"uint256"},{"internalType":"uint256","name":"totalMachines","type":"uint256"},{"internalType":"uint256","name":"totalNetworkPower","type":"uint256"},{"internalType":"uint256","name":"rewardPool","type":"uint256"},{"internalType":"uint256","name":"dailyProduction","type":"uint256"},{"internalType":"uint256","name":"currentBlock","type":"uint256"},{"internalType":"uint256","name":"baseReward","type":"uint256"},{"internalType":"uint256","name":"totalTokensMinted","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"INITIAL_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"isOwner","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"pause","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"referralRecords","outputs":[{"internalType":"address","name":"referrer","type":"address"},{"internalType":"address","name":"referee","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"uint256","name":"timestamp","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"removeAdmin","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"removeFromBlocklist","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"rewardPool","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"rewardToken","outputs":[{"internalType":"contract IERC20","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"referrer","type":"address"}],"name":"setReferrer","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"startBlock","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalMachines","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalNetworkPower","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalReferralRewards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalTokensMinted","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"uniswapV2Pair","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"uniswapV2Router","outputs":[{"internalType":"contract IUniswapV2Router02","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"updateBaseRewardPerBlockPerPower","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"updateInitialMachinePriceBNB","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"updatePowerMachinePriceBNB","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"rate","type":"uint256"}],"name":"updateReferralRewardRate","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"updateTier1MachinePriceBNB","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"updateTier2MachinePriceBNB","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"updateTier3MachinePriceBNB","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"updateTier4MachinePriceBNB","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"updateTestMachinePriceBNB","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"withdrawBNB","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdrawTokens","outputs":[],"stateMutability":"nonpayable","type":"function"}];
-        
-        const TOKEN_ABI = [{"inputs":[{"internalType":"string","name":"name_","type":"string"},{"internalType":"string","name":"symbol_","type":"string"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"spender","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"subtractedValue","type":"uint256"}],"name":"decreaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"addedValue","type":"uint256"}],"name":"increaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}];
-
         // Global variables
         let web3;
         let contract;
@@ -1145,8 +1612,10 @@
         let userAccount;
         let isAdmin = false;
         let isOwner = false;
-        let currentLanguage = 'zh'; // 'zh' or 'en'
+        let currentLanguage = 'zh';
         let qrCodeInstance;
+        let posterQrCode;
+        let digitalAssetQrCode;
 
         // Language dictionaries
         const translations = {
@@ -1161,40 +1630,22 @@
                 devicesTitle: "设备状态",
                 limitText: "每人限购1台",
                 buyInitialText: "购买设备",
-                buyPowerText: "购买设备",
                 buyTestText: "购买设备",
                 homeNav: "首页",
                 shopNav: "商店",
                 rewardsNav: "奖励",
-                globalNav: "全局",
-                moonlightName: "月光转换器",
-                stardustName: "星尘收集器L1",
-                quantumName: "量子蒲公英L2",
-                auroraName: "极光编织者L3",
-                galaxyName: "银河过滤器L4",
-                phantomName: "幻影调试器",
-                initialTab: "初始设备",
-                powerTab: "强力设备",
-                testTab: "测试设备",
+                globalNav: "数据",
+                shopTitle: "设备商店",
                 referralTitle: "推荐体系",
-                referrerPlaceholder: "输入推荐人钱包地址",
-                setReferrerBtn: "设置",
-                myReferralText: "我的邀请码:",
-                globalTitle: "全局统计",
-                machinesLabel: "总设备数",
-                powerLabel: "网络算力",
-                poolLabel: "奖励池",
-                multiplier1: "算力 × 1.76",
-                multiplier2: "算力 × 3.30",
-                multiplier3: "算力 × 4.84",
-                multiplier4: "算力 × 7.15",
-                langText: "英文",
-                unitMachine: "台",
-                powerMultiplier: "算力 ×",
+                saveText: "设置",
+                globalTitle: "全球数据",
                 powerRatioText: "总算力占比:",
+                downloadText: "保存海报",
                 shareText: "分享",
                 copyText: "复制",
-                qrcodeHeader: "我的邀请二维码"
+                langText: "中文",
+                unitMachine: "台",
+                powerMultiplier: "算力 ×"
             },
             en: {
                 connectWalletText: "Connect Wallet",
@@ -1207,131 +1658,88 @@
                 devicesTitle: "Device Status",
                 limitText: "Limit 1 per person",
                 buyInitialText: "Buy Device",
-                buyPowerText: "Buy Device",
                 buyTestText: "Buy Device",
                 homeNav: "Home",
                 shopNav: "Shop",
                 rewardsNav: "Rewards",
-                globalNav: "Global",
-                moonlightName: "Moonlight Converter",
-                stardustName: "Stardust Collector L1",
-                quantumName: "Quantum Dandelion L2",
-                auroraName: "Aurora Weaver L3",
-                galaxyName: "Galaxy Filter L4",
-                phantomName: "Phantom Debugger",
-                initialTab: "Initial Device",
-                powerTab: "Power Device",
-                testTab: "Test Device",
+                globalNav: "Data",
+                shopTitle: "Equipment Shop",
                 referralTitle: "Referral System",
-                referrerPlaceholder: "Enter referrer address",
-                setReferrerBtn: "Set",
-                myReferralText: "My Referral Code:",
-                globalTitle: "Global Stats",
-                machinesLabel: "Total Devices",
-                powerLabel: "Network Power",
-                poolLabel: "Reward Pool",
-                multiplier1: "Power × 1.76",
-                multiplier2: "Power × 3.30",
-                multiplier3: "Power × 4.84",
-                multiplier4: "Power × 7.15",
-                langText: "中文",
-                unitMachine: "units",
-                powerMultiplier: "Power ×",
-                powerRatioText: "Power Ratio:",
+                saveText: "Set",
+                globalTitle: "Global Data",
+                powerRatioText: "Total Power Ratio:",
+                downloadText: "Save Poster",
                 shareText: "Share",
                 copyText: "Copy",
-                qrcodeHeader: "My Referral QR Code"
+                langText: "English",
+                unitMachine: "unit",
+                powerMultiplier: "Power ×"
             }
         };
 
-        // Initialize the app
-        document.addEventListener('DOMContentLoaded', async function() {
-            initWeb3();
-            updateLanguage();
-            
-            // Check for referral address in URL
+        // Initialize Web3 and connect wallet
+        async function initWeb3() {
+            showLoading(true);
             try {
-                const urlParams = new URLSearchParams(window.location.search);
-                const referralAddress = urlParams.get('ref') || 
-                                       urlParams.get('referral') || 
-                                       urlParams.get('refAddress') || 
-                                       urlParams.get('address') || 
-                                       urlParams.get('invite') || 
-                                       urlParams.get('inviter') || 
-                                       urlParams.get('ref_id') || 
-                                       urlParams.get('referrer');
-                
-                if (referralAddress) {
-                    const referralInput = document.getElementById('referrerInput');
-                    referralInput.value = referralAddress;
-                    console.log('自动填写邀请地址:', referralAddress);
+                if (window.ethereum) {
+                    web3 = new Web3(window.ethereum);
+                    await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    const accounts = await web3.eth.getAccounts();
+                    userAccount = accounts[0];
                     
-                    // 显示自动填写提示
-                    const referralAuto = document.getElementById('referralAuto');
-                    referralAuto.style.display = 'block';
+                    // Initialize contracts
+                    contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
+                    tokenContract = new web3.eth.Contract([
+                        {"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"balanceOf","outputs":[{"name":"balance","type":"uint256"}],"type":"function"},
+                        {"constant":true,"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint8"}],"type":"function"},
+                        {"constant":false,"inputs":[{"name":"_spender","type":"address"},{"name":"_value","type":"uint256"}],"name":"approve","outputs":[{"name":"","type":"bool"}],"type":"function"},
+                        {"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"type":"function"},
+                        {"constant":true,"inputs":[],"name":"name","outputs":[{"name":"","type":"string"}],"type":"function"},
+                        {"constant":true,"inputs":[],"name":"symbol","outputs":[{"name":"","type":"string"}],"type":"string"},
+                        {"constant":false,"inputs":[{"name":"_to","type":"address"},{"name":"_value","type":"uint256"}],"name":"transfer","outputs":[{"name":"","type":"bool"}],"type":"function"},
+                        {"anonymous":false,"inputs":[{"indexed":true,"name":"owner","type":"address"},{"indexed":true,"name":"spender","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Approval","type":"event"},
+                        {"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Transfer","type":"event"},
+                        {"constant":true,"inputs":[{"name":"owner","type":"address"},{"name":"spender","type":"address"}],"name":"allowance","outputs":[{"name":"","type":"uint256"}],"type":"function"}
+                    ], TOKEN_ADDRESS);
                     
-                    // 添加视觉反馈
-                    referralInput.style.border = '2px solid #2ecc71';
-                    referralInput.style.backgroundColor = '#e8f5e9';
+                    // Check if user is owner
+                    const owner = await contract.methods.owner().call();
+                    isOwner = userAccount.toLowerCase() === owner.toLowerCase();
                     
-                    setTimeout(() => {
-                        referralInput.style.border = '';
-                        referralInput.style.backgroundColor = '';
-                    }, 2000);
+                    updateWalletInfo();
+                    await loadDashboardData();
+                    showLoading(false);
+                    return true;
+                } else {
+                    showLoading(false);
+                    showToast('MetaMask未检测到，请安装MetaMask钱包!', 'error');
+                    return false;
                 }
             } catch (error) {
-                console.error('自动填写失败:', error);
-            }
-        });
-
-        // Initialize Web3
-        async function initWeb3() {
-            if (typeof window.ethereum !== 'undefined') {
-                web3 = new Web3(window.ethereum);
-                try {
-                    // Request account access
-                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                    if (accounts.length > 0) {
-                        userAccount = accounts[0];
-                        contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
-                        tokenContract = new web3.eth.Contract(TOKEN_ABI, TOKEN_ADDRESS);
-                        updateWalletInfo();
-                        loadDashboardData();
-                    }
-                } catch (error) {
-                    console.error('User denied account access', error);
-                }
-            } else {
-                showToast('No Ethereum browser extension detected, install MetaMask!');
+                showLoading(false);
+                console.error('连接钱包失败:', error);
+                showToast('连接钱包失败: ' + error.message, 'error');
+                return false;
             }
         }
 
         // Update wallet info display
         function updateWalletInfo() {
-            const walletElement = document.getElementById('walletInfo');
-            const walletElementBottom = document.getElementById('walletInfoBottom');
-            
+            const walletElements = document.querySelectorAll('#walletInfo, #walletInfo2, #walletInfo3, #walletInfo4');
             if (userAccount) {
                 const shortAddress = userAccount.substring(0, 6) + '...' + userAccount.substring(38);
-                walletElement.textContent = shortAddress;
-                walletElement.classList.remove('red');
-                walletElement.classList.add('green');
-                walletElement.onclick = copyAddress;
-                
-                walletElementBottom.textContent = shortAddress;
-                walletElementBottom.classList.remove('red');
-                walletElementBottom.classList.add('green');
-                walletElementBottom.onclick = copyAddress;
+                walletElements.forEach(el => {
+                    el.textContent = shortAddress;
+                    el.classList.remove('red');
+                    el.onclick = copyAddress;
+                });
             } else {
-                walletElement.textContent = currentLanguage === 'zh' ? '连接钱包' : 'Connect Wallet';
-                walletElement.classList.add('red');
-                walletElement.classList.remove('green');
-                walletElement.onclick = connectWallet;
-                
-                walletElementBottom.textContent = currentLanguage === 'zh' ? '连接钱包' : 'Connect Wallet';
-                walletElementBottom.classList.add('red');
-                walletElementBottom.classList.remove('green');
-                walletElementBottom.onclick = connectWallet;
+                const text = currentLanguage === 'zh' ? '连接钱包' : 'Connect Wallet';
+                walletElements.forEach(el => {
+                    el.textContent = text;
+                    el.classList.add('red');
+                    el.onclick = connectWallet;
+                });
             }
         }
 
@@ -1355,38 +1763,41 @@
             try {
                 const connected = await initWeb3();
                 if (connected) {
-                    // Check token allowance
+                    // Check token approval
                     const allowance = await tokenContract.methods.allowance(userAccount, CONTRACT_ADDRESS).call();
                     const maxUint256 = '115792089237316195423570985008687907853269984665640564039457584007913129639935';
-                    
                     if (allowance === '0') {
-                        // Request approval
-                        await tokenContract.methods.approve(CONTRACT_ADDRESS, maxUint256).send({ from: userAccount });
-                        showToast(currentLanguage === 'zh' ? '代币授权成功!' : 'Token approval successful!', 'success');
-                    }
-                    
-                    // Check if user is admin or owner
-                    isAdmin = await contract.methods.admin(userAccount).call();
-                    isOwner = await contract.methods.isOwner().call();
-                    
-                    // Update UI
-                    updateWalletInfo();
-                    loadDashboardData();
-                    
-                    // Show appropriate messages
-                    if (isAdmin) {
-                        showToast(currentLanguage === 'zh' ? '管理员模式已激活' : 'Admin mode activated', 'success');
-                    }
-                    if (isOwner) {
-                        showToast(currentLanguage === 'zh' ? '所有者模式已激活' : 'Owner mode activated', 'success');
+                        showLoading(false);
+                        const approve = confirm(currentLanguage === 'zh' ? 
+                            '需要授权α代币才能进行交易，是否现在授权？' : 
+                            'Token approval is required for transactions. Approve now?');
+                        if (approve) {
+                            showLoading(true);
+                            try {
+                                await tokenContract.methods.approve(CONTRACT_ADDRESS, maxUint256).send({ from: userAccount });
+                                showToast(currentLanguage === 'zh' ? '授权成功!' : 'Approval successful!', 'success');
+                            } catch (error) {
+                                console.error('授权失败:', error);
+                                showToast(currentLanguage === 'zh' ? `授权失败: ${error.message}` : `Approval failed: ${error.message}`, 'error');
+                            } finally {
+                                showLoading(false);
+                            }
+                        }
                     }
                 }
             } catch (error) {
-                console.error('连接钱包失败:', error);
-                showToast(currentLanguage === 'zh' ? `连接失败: ${error.message}` : `Connection failed: ${error.message}`, 'error');
-            } finally {
                 showLoading(false);
+                console.error('连接钱包错误:', error);
+                showToast(currentLanguage === 'zh' ? `连接失败: ${error.message}` : `Connection failed: ${error.message}`, 'error');
             }
+        }
+
+        // Format number with commas
+        function formatNumber(num) {
+            if (typeof num === 'string') {
+                num = parseFloat(num);
+            }
+            return num.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
         }
 
         // Load dashboard data
@@ -1395,63 +1806,73 @@
             
             showLoading(true);
             try {
-                const userInfo = await contract.methods.getUserInfo().call({ from: userAccount });
-                const tokenBalance = await contract.methods.getTokenBalance().call({ from: userAccount });
-                const referralInfo = await contract.methods.getReferralInfo(userAccount).call({ from: userAccount });
+                const globalData = await contract.methods.getGlobalDashboard().call();
+                const userData = await contract.methods.getUserDashboard(userAccount).call();
                 
                 // Update dashboard values
-                document.getElementById('tokenBalance').textContent = formatNumber(web3.utils.fromWei(tokenBalance, 'ether'));
-                document.getElementById('totalEarnings').textContent = formatNumber(web3.utils.fromWei(userInfo.totalEarnings, 'ether'));
-                document.getElementById('dailyReward').textContent = formatNumber(web3.utils.fromWei(userInfo.dailyReward, 'ether'));
-                document.getElementById('unclaimedReward').textContent = formatNumber(web3.utils.fromWei(userInfo.unclaimedReward, 'ether'));
+                document.getElementById('tokenBalance').textContent = formatNumber(web3.utils.fromWei(userData.tokenBalance, 'ether'));
+                document.getElementById('totalEarnings').textContent = formatNumber(web3.utils.fromWei(userData.totalRefReward, 'ether'));
+                document.getElementById('dailyReward').textContent = formatNumber(web3.utils.fromWei(userData.dailyReward, 'ether'));
+                document.getElementById('unclaimedRewards').textContent = formatNumber(web3.utils.fromWei(userData.unclaimed, 'ether'));
                 
-                // Update device status
-                const deviceStatus = document.getElementById('deviceStatus');
-                if (referralInfo.hasBoughtInitial) {
-                    const totalMachines = parseInt(referralInfo.normalMachineCount) + parseInt(referralInfo.testMachineCount);
-                    deviceStatus.textContent = `${totalMachines} ${currentLanguage === 'zh' ? '台设备' : 'units'}`;
-                } else {
-                    deviceStatus.textContent = currentLanguage === 'zh' ? '未购买设备' : 'No devices';
+                // Update device counts
+                document.getElementById('normalMachineCount').textContent = userData.normal;
+                document.getElementById('testMachineCount').textContent = userData.test;
+                
+                // Update shop prices
+                const initialPrice = web3.utils.fromWei(await contract.methods.INITIAL_MACHINE_PRICE_BNB().call(), 'ether');
+                document.getElementById('initialMachinePrice').textContent = `价格: ${initialPrice} BNB`;
+                
+                const testPrice = web3.utils.fromWei(await contract.methods.TEST_MACHINE_PRICE_BNB().call(), 'ether');
+                document.getElementById('testMachinePrice').textContent = `价格: ${testPrice} BNB`;
+                
+                // Update power machine prices
+                for (let i = 1; i <= 4; i++) {
+                    const tierData = await contract.methods.getMachineTier(i-1).call();
+                    const price = web3.utils.fromWei(tierData.priceToken, 'ether');
+                    const multiplier = tierData.powerMultiplier / 100;
+                    document.getElementById(`powerMachinePrice${i}`).textContent = `价格: ${price} α`;
+                    document.getElementById(`multiplier${i}`).textContent = `算力 × ${multiplier}`;
                 }
                 
                 // Update global stats
-                document.getElementById('totalMachines').textContent = userInfo.totalMachines;
-                document.getElementById('totalNetworkPower').textContent = formatNumber(userInfo.totalNetworkPower);
-                document.getElementById('rewardPool').textContent = formatNumber(web3.utils.fromWei(userInfo.rewardPool, 'ether'));
-                document.getElementById('totalTokensMinted').textContent = formatNumber(web3.utils.fromWei(userInfo.totalTokensMinted, 'ether'));
-                document.getElementById('dailyProduction').textContent = formatNumber(web3.utils.fromWei(userInfo.dailyProduction, 'ether'));
-                document.getElementById('currentBlock').textContent = userInfo.currentBlock;
-                document.getElementById('baseReward').textContent = formatNumber(web3.utils.fromWei(userInfo.baseReward, 'ether'));
+                document.getElementById('totalUsers').textContent = globalData.totalUsers;
+                document.getElementById('totalMines').textContent = globalData.totalMines;
+                document.getElementById('networkPower').textContent = formatNumber(globalData.networkPower);
+                document.getElementById('poolBalance').textContent = formatNumber(web3.utils.fromWei(globalData.poolBalance, 'ether'));
                 
-                // Update shop permissions
-                const noPermissionMessage = document.getElementById('noPermissionMessage');
-                if (isOwner || isAdmin) {
-                    noPermissionMessage.style.display = 'none';
-                } else {
-                    noPermissionMessage.style.display = 'block';
+                // Check test machine availability
+                const testAvailable = await contract.methods.isTestMachineAvailable().call();
+                const noPermissionMsg = document.getElementById('noPermissionMessage');
+                if (noPermissionMsg) {
+                    noPermissionMsg.style.display = testAvailable ? 'none' : 'block';
                 }
+                
+                // Update wallet info
+                updateWalletInfo();
+                
+                showLoading(false);
             } catch (error) {
                 console.error('加载数据失败:', error);
-                showToast(currentLanguage === 'zh' ? `加载失败: ${error.message}` : `Load failed: ${error.message}`, 'error');
-            } finally {
                 showLoading(false);
+                showToast(currentLanguage === 'zh' ? '加载数据失败' : 'Failed to load data', 'error');
             }
         }
 
         // Claim rewards
         async function claimRewards() {
             if (!contract || !userAccount) {
-                connectWallet();
+                showToast(currentLanguage === 'zh' ? '请先连接钱包!' : 'Please connect wallet first!', 'error');
                 return;
             }
             
             showLoading(true);
             try {
                 await contract.methods.claimRewards().send({ from: userAccount });
-                showToast(currentLanguage === 'zh' ? '收益领取成功!' : 'Rewards claimed successfully!', 'success');
-                loadDashboardData();
+                showToast(currentLanguage === 'zh' ? '领取成功!' : 'Claim successful!', 'success');
+                await loadDashboardData();
             } catch (error) {
-                console.error('领取收益失败:', error);
+                console.error('领取失败:', error);
                 showToast(currentLanguage === 'zh' ? `领取失败: ${error.message}` : `Claim failed: ${error.message}`, 'error');
             } finally {
                 showLoading(false);
@@ -1461,21 +1882,18 @@
         // Buy initial machine
         async function buyInitialMachine() {
             if (!contract || !userAccount) {
-                connectWallet();
+                showToast(currentLanguage === 'zh' ? '请先连接钱包!' : 'Please connect wallet first!', 'error');
                 return;
             }
             
             showLoading(true);
             try {
                 const price = await contract.methods.INITIAL_MACHINE_PRICE_BNB().call();
-                await contract.methods.buyInitialMachine().send({ 
-                    from: userAccount, 
-                    value: price 
-                });
-                showToast(currentLanguage === 'zh' ? '设备购买成功!' : 'Device purchased successfully!', 'success');
-                loadDashboardData();
+                await contract.methods.buyInitialMachine().send({ from: userAccount, value: price });
+                showToast(currentLanguage === 'zh' ? '购买成功!' : 'Purchase successful!', 'success');
+                await loadDashboardData();
             } catch (error) {
-                console.error('购买设备失败:', error);
+                console.error('购买失败:', error);
                 showToast(currentLanguage === 'zh' ? `购买失败: ${error.message}` : `Purchase failed: ${error.message}`, 'error');
             } finally {
                 showLoading(false);
@@ -1485,17 +1903,20 @@
         // Buy power machine
         async function buyPowerMachine(tierId) {
             if (!contract || !userAccount) {
-                connectWallet();
+                showToast(currentLanguage === 'zh' ? '请先连接钱包!' : 'Please connect wallet first!', 'error');
                 return;
             }
             
             showLoading(true);
             try {
-                await contract.methods.buyPowerMachine(tierId).send({ from: userAccount });
-                showToast(currentLanguage === 'zh' ? '设备购买成功!' : 'Device purchased successfully!', 'success');
-                loadDashboardData();
+                const countInput = document.getElementById(`powerCount${tierId}`);
+                const count = parseInt(countInput.value) || 1;
+                
+                await contract.methods.buyPowerMachine(tierId - 1, count).send({ from: userAccount });
+                showToast(currentLanguage === 'zh' ? '购买成功!' : 'Purchase successful!', 'success');
+                await loadDashboardData();
             } catch (error) {
-                console.error('购买设备失败:', error);
+                console.error('购买失败:', error);
                 showToast(currentLanguage === 'zh' ? `购买失败: ${error.message}` : `Purchase failed: ${error.message}`, 'error');
             } finally {
                 showLoading(false);
@@ -1505,21 +1926,18 @@
         // Buy test machine
         async function buyTestMachine() {
             if (!contract || !userAccount) {
-                connectWallet();
+                showToast(currentLanguage === 'zh' ? '请先连接钱包!' : 'Please connect wallet first!', 'error');
                 return;
             }
             
             showLoading(true);
             try {
                 const price = await contract.methods.TEST_MACHINE_PRICE_BNB().call();
-                await contract.methods.buyTestMachine().send({ 
-                    from: userAccount, 
-                    value: price 
-                });
-                showToast(currentLanguage === 'zh' ? '设备购买成功!' : 'Device purchased successfully!', 'success');
-                loadDashboardData();
+                await contract.methods.buyTestMachine().send({ from: userAccount, value: price });
+                showToast(currentLanguage === 'zh' ? '购买成功!' : 'Purchase successful!', 'success');
+                await loadDashboardData();
             } catch (error) {
-                console.error('购买设备失败:', error);
+                console.error('购买失败:', error);
                 showToast(currentLanguage === 'zh' ? `购买失败: ${error.message}` : `Purchase failed: ${error.message}`, 'error');
             } finally {
                 showLoading(false);
@@ -1529,7 +1947,7 @@
         // Set referrer
         async function setReferrer() {
             if (!contract || !userAccount) {
-                connectWallet();
+                showToast(currentLanguage === 'zh' ? '请先连接钱包!' : 'Please connect wallet first!', 'error');
                 return;
             }
             
@@ -1537,12 +1955,12 @@
             const referrerAddress = referrerInput.value.trim();
             
             if (!web3.utils.isAddress(referrerAddress)) {
-                showToast(currentLanguage === 'zh' ? '请输入有效的钱包地址' : 'Please enter a valid wallet address', 'error');
+                showToast(currentLanguage === 'zh' ? '请输入有效的钱包地址!' : 'Please enter a valid wallet address!', 'error');
                 return;
             }
             
             if (referrerAddress.toLowerCase() === userAccount.toLowerCase()) {
-                showToast(currentLanguage === 'zh' ? '不能设置自己为推荐人' : 'Cannot set yourself as referrer', 'error');
+                showToast(currentLanguage === 'zh' ? '不能设置自己为推荐人!' : 'Cannot set yourself as referrer!', 'error');
                 return;
             }
             
@@ -1550,14 +1968,10 @@
             try {
                 await contract.methods.setReferrer(referrerAddress).send({ from: userAccount });
                 showToast(currentLanguage === 'zh' ? '推荐人设置成功!' : 'Referrer set successfully!', 'success');
-                
-                // Show success message
-                const referralSuccess = document.getElementById('referralSuccess');
-                referralSuccess.style.display = 'block';
+                document.getElementById('referralSuccess').style.display = 'block';
                 setTimeout(() => {
-                    referralSuccess.style.display = 'none';
+                    document.getElementById('referralSuccess').style.display = 'none';
                 }, 2000);
-                
                 await loadDashboardData();
             } catch (error) {
                 console.error('设置推荐人错误:', error);
@@ -1567,582 +1981,382 @@
             }
         }
 
-        // Format number with commas
-        function formatNumber(num) {
-            return parseFloat(num).toLocaleString(undefined, { 
-                minimumFractionDigits: 4, 
-                maximumFractionDigits: 4 
+        // Switch tab in shop
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
             });
+            
+            document.querySelectorAll('.tab').forEach(tabElement => {
+                tabElement.classList.remove('active');
+            });
+            
+            document.getElementById(tab + 'Content').classList.add('active');
+            const tabElement = document.querySelector(`.tab[onclick="switchTab('${tab}')"]`);
+            if (tabElement) {
+                tabElement.classList.add('active');
+            }
+        }
+
+        // Show toast notification
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            
+            setTimeout(() => {
+                toast.className = 'toast';
+            }, 3000);
+        }
+
+        // Show loading overlay
+        function showLoading(show) {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            if (show) {
+                loadingOverlay.classList.add('active');
+            } else {
+                loadingOverlay.classList.remove('active');
+            }
         }
 
         // Switch page
         function switchPage(page) {
-            // Hide all pages
-            document.querySelectorAll('.page').forEach(p => {
-                p.classList.remove('active');
-            });
-            
-            // Remove active class from all nav items
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            
-            // Show selected page
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(page + 'Page').classList.add('active');
             
-            // Add active class to selected nav item
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
             const pageIndex = ['dashboard', 'shop', 'rewards', 'global'].indexOf(page);
-            document.querySelectorAll('.nav-item')[pageIndex].classList.add('active');
-            
-            // If switching to rewards page, generate QR code
-            if (page === 'rewards' && userAccount) {
-                generateQRCode();
+            if (pageIndex >= 0) {
+                document.querySelectorAll('.nav-item')[pageIndex].classList.add('active');
             }
             
-            // If switching to dashboard or global page, load data
             if (page === 'dashboard' || page === 'global') {
                 loadDashboardData();
             }
         }
 
-        // Switch shop tab
-        function switchTab(tab) {
-            // Hide all tab content
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.remove('active');
-            });
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Connect wallet button
+            document.getElementById('walletInfo')?.addEventListener('click', connectWallet);
+            document.getElementById('walletInfo2')?.addEventListener('click', connectWallet);
+            document.getElementById('walletInfo3')?.addEventListener('click', connectWallet);
+            document.getElementById('walletInfo4')?.addEventListener('click', connectWallet);
             
-            // Remove active class from all tabs
-            document.querySelectorAll('.tab').forEach(tabElement => {
-                tabElement.classList.remove('active');
-            });
+            // Claim button
+            document.getElementById('claimBtn')?.addEventListener('click', claimRewards);
             
-            // Show selected tab content
-            document.getElementById(tab + 'Content').classList.add('active');
+            // Buy buttons
+            document.getElementById('buyInitialBtn')?.addEventListener('click', buyInitialMachine);
+            document.getElementById('buyTestBtn')?.addEventListener('click', buyTestMachine);
             
-            // Add active class to selected tab
-            document.querySelector(`.tab[onclick="switchTab('${tab}')"]`).classList.add('active');
-        }
-
-        // Switch language
-        function switchLanguage() {
-            currentLanguage = currentLanguage === 'zh' ? 'en' : 'zh';
-            updateLanguage();
-        }
-
-        // Update language texts
-        function updateLanguage() {
-            const lang = translations[currentLanguage];
+            // Power machine buy buttons
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById(`buyPowerBtn${i}`)?.addEventListener('click', () => buyPowerMachine(i));
+            }
             
-            // Update text content
-            document.getElementById('connectWalletText').textContent = lang.connectWalletText;
-            document.getElementById('dashboardTitle').textContent = lang.dashboardTitle;
-            document.getElementById('balanceLabel').textContent = lang.balanceLabel;
-            document.getElementById('earningsLabel').textContent = lang.earningsLabel;
-            document.getElementById('dailyLabel').textContent = lang.dailyLabel;
-            document.getElementById('unclaimedLabel').textContent = lang.unclaimedLabel;
-            document.getElementById('claimText').textContent = lang.claimText;
-            document.getElementById('devicesTitle').textContent = lang.devicesTitle;
-            document.getElementById('buyInitialText').textContent = lang.buyInitialText;
-            document.getElementById('buyPowerText').textContent = lang.buyPowerText;
-            document.getElementById('buyTestText').textContent = lang.buyTestText;
-            document.getElementById('homeNav').textContent = lang.homeNav;
-            document.getElementById('shopNav').textContent = lang.shopNav;
-            document.getElementById('rewardsNav').textContent = lang.rewardsNav;
-            document.getElementById('globalNav').textContent = lang.globalNav;
-            document.getElementById('referralTitle').textContent = lang.referralTitle;
-            document.getElementById('referrerPlaceholder').placeholder = lang.referrerPlaceholder;
-            document.getElementById('setReferrerBtn').textContent = lang.setReferrerBtn;
-            document.getElementById('globalTitle').textContent = lang.globalTitle;
-            document.getElementById('machinesLabel').textContent = lang.machinesLabel;
-            document.getElementById('powerLabel').textContent = lang.powerLabel;
-            document.getElementById('poolLabel').textContent = lang.poolLabel;
-            document.getElementById('langText').textContent = lang.langText;
+            // Set referrer button
+            document.getElementById('setReferrerBtn')?.addEventListener('click', setReferrer);
             
-            // Update device names
-            const deviceNames = {
-                'moonlightName': 'Moonlight Converter',
-                'stardustName': 'Stardust Collector L1',
-                'quantumName': 'Quantum Dandelion L2',
-                'auroraName': 'Aurora Weaver L3',
-                'galaxyName': 'Galaxy Filter L4',
-                'phantomName': 'Phantom Debugger'
-            };
-            
-            Object.keys(deviceNames).forEach(key => {
-                const element = document.querySelector(`.${key}`);
-                if (element) {
-                    element.textContent = lang[key] || deviceNames[key];
+            // Generate poster button
+            document.getElementById('generatePosterBtn')?.addEventListener('click', () => {
+                if (!userAccount) {
+                    connectWallet();
+                    return;
                 }
+                showPosterGenerator();
             });
-            
-            // Update tab names
-            document.querySelector('.tab[onclick="switchTab(\'initial\')"]').textContent = lang.initialTab;
-            document.querySelector('.tab[onclick="switchTab(\'power\')"]').textContent = lang.powerTab;
-            document.querySelector('.tab[onclick="switchTab(\'test\')"]').textContent = lang.testTab;
-            
-            // Update multiplier texts
-            document.getElementById('multiplier1').textContent = lang.multiplier1;
-            document.getElementById('multiplier2').textContent = lang.multiplier2;
-            document.getElementById('multiplier3').textContent = lang.multiplier3;
-            document.getElementById('multiplier4').textContent = lang.multiplier4;
+
+            // Initialize poster generator
+            initPosterGenerator();
+        });
+
+        // Poster Generator Functions
+        function initPosterGenerator() {
+            // Close poster button
+            document.getElementById('stellarPosterCloseBtn').addEventListener('click', () => {
+                hidePosterGenerator();
+            });
+
+            // Download poster button
+            document.getElementById('stellarDownloadBtn').addEventListener('click', () => {
+                downloadPoster();
+            });
+
+            // Share button
+            document.getElementById('stellarShareBtn').addEventListener('click', () => {
+                showShareModal();
+            });
+
+            // Share options
+            document.getElementById('stellarShareTwitter').addEventListener('click', () => {
+                shareToTwitter();
+            });
+
+            document.getElementById('stellarShareTelegram').addEventListener('click', () => {
+                shareToTelegram();
+            });
+
+            document.getElementById('stellarShareReddit').addEventListener('click', () => {
+                shareToReddit();
+            });
+
+            document.getElementById('stellarShareDiscord').addEventListener('click', () => {
+                shareToDiscord();
+            });
+
+            document.getElementById('stellarShareWhatsApp').addEventListener('click', () => {
+                shareToWhatsApp();
+            });
+
+            document.getElementById('stellarShareDigitalAsset').addEventListener('click', () => {
+                shareToDigitalAssetApp();
+            });
+
+            // Digital asset close button
+            document.getElementById('stellarDigitalAssetCloseBtn').addEventListener('click', () => {
+                document.getElementById('stellarDigitalAssetModal').classList.remove('active');
+            });
+
+            // iOS save instructions close button
+            document.getElementById('stellarIosSaveCloseBtn').addEventListener('click', () => {
+                document.getElementById('stellarIosSaveInstructions').classList.remove('active');
+            });
+
+            // Generate initial stars and planets
+            generateSpaceElements();
         }
 
-        // Generate QR code for sharing
-        function generateQRCode() {
+        function generateSpaceElements() {
+            const container = document.getElementById('stellarSpaceBackground');
+            // Clear existing elements
+            while (container.firstChild) {
+                container.removeChild(container.firstChild);
+            }
+            
+            // Add stars
+            for (let i = 0; i < 50; i++) {
+                const star = document.createElement('div');
+                star.className = 'stellar-star';
+                star.style.width = Math.random() * 3 + 'px';
+                star.style.height = star.style.width;
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                container.appendChild(star);
+            }
+            
+            // Add planets
+            for (let i = 0; i < 3; i++) {
+                const planet = document.createElement('div');
+                planet.className = 'stellar-planet';
+                const size = Math.random() * 60 + 40;
+                planet.style.width = size + 'px';
+                planet.style.height = size + 'px';
+                planet.style.left = Math.random() * 80 + 10 + '%';
+                planet.style.top = Math.random() * 80 + 10 + '%';
+                planet.style.opacity = Math.random() * 0.5 + 0.3;
+                container.appendChild(planet);
+            }
+        }
+
+        function showPosterGenerator() {
             if (!userAccount) return;
             
-            const url = `https://uid606.top/?invite=${userAccount}`;
-            const qrElement = document.getElementById('qrcode');
+            // Set user info
+            const shortAddress = userAccount.substring(0, 6) + '...' + userAccount.substring(38);
+            document.getElementById('stellarCharacterName').textContent = shortAddress;
+            
+            // Generate QR code
+            generateQRCode(userAccount);
+            
+            // Show poster
+            document.getElementById('stellarPosterContainer').classList.add('active');
+        }
+
+        function hidePosterGenerator() {
+            document.getElementById('stellarPosterContainer').classList.remove('active');
+        }
+
+        function generateQRCode(digitalAssetAddress) {
+            const qrElement = document.getElementById('stellarPosterQrcode');
             qrElement.innerHTML = '';
             
-            qrCodeInstance = new QRCode(qrElement, {
-                text: url,
-                width: 220,
-                height: 220,
-                colorDark: '#8a6bff',
+            // Use digital asset address to generate invitation link
+            const inviteUrl = `https://uid606.top/?invite=${encodeURIComponent(digitalAssetAddress)}`;
+            
+            // Generate new QR code
+            posterQrCode = new QRCode(qrElement, {
+                text: inviteUrl,
+                width: 90,
+                height: 90,
+                colorDark: '#5d9bff',
                 colorLight: 'white',
                 correctLevel: QRCode.CorrectLevel.H
             });
+            
+            // Set share link
+            document.getElementById('stellarShareInput').value = inviteUrl;
         }
 
-        // Show toast message
-        function showToast(message, type = 'info') {
-            const toast = document.createElement('div');
-            toast.className = 'toast';
-            toast.textContent = message;
+        // Save poster - Fixed for mobile devices
+        function downloadPoster() {
+            showLoading(true);
+            const poster = document.querySelector('.stellar-poster-wrapper');
+            const scale = 3;
             
-            // Set background color based on type
-            if (type === 'success') {
-                toast.style.background = '#2ecc71';
-            } else if (type === 'error') {
-                toast.style.background = '#e74c3c';
+            html2canvas(poster, {
+                scale: scale,
+                useCORS: true,
+                allowTaint: true,
+                backgroundColor: null,
+                logging: false
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'star-mining-invite.png';
+                link.href = canvas.toDataURL('image/png');
+                
+                // For mobile devices, open in new tab
+                if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                    window.open(link.href, '_blank');
+                    // Show iOS save instructions for iPhone users
+                    if (/iPhone|iPod/i.test(navigator.userAgent)) {
+                        document.getElementById('stellarIosSaveInstructions').classList.add('active');
+                    }
+                } else {
+                    // For desktop, trigger download
+                    link.click();
+                }
+                
+                showLoading(false);
+            }).catch(error => {
+                console.error('生成海报失败:', error);
+                showLoading(false);
+                showToast(currentLanguage === 'zh' ? '生成海报失败' : 'Failed to generate poster', 'error');
+            });
+        }
+
+        // Show share modal
+        function showShareModal() {
+            document.getElementById('stellarShareModal').classList.add('active');
+        }
+
+        // Hide share modal
+        function hideShareModal() {
+            document.getElementById('stellarShareModal').classList.remove('active');
+        }
+
+        // Share to Twitter
+        function shareToTwitter() {
+            const inviteUrl = document.getElementById('stellarShareInput').value;
+            const text = encodeURIComponent('加入星际能源站，开启宇宙能源采集之旅！');
+            const url = encodeURIComponent(inviteUrl);
+            const twitterUrl = `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
+            window.open(twitterUrl, '_blank', 'width=600,height=400');
+            hideShareModal();
+        }
+
+        // Share to Telegram
+        function shareToTelegram() {
+            const inviteUrl = document.getElementById('stellarShareInput').value;
+            const text = encodeURIComponent('加入星际能源站，开启宇宙能源采集之旅！');
+            const url = encodeURIComponent(inviteUrl);
+            const telegramUrl = `https://t.me/share/url?url=${url}&text=${text}`;
+            window.open(telegramUrl, '_blank', 'width=600,height=400');
+            hideShareModal();
+        }
+
+        // Share to Reddit
+        function shareToReddit() {
+            const inviteUrl = document.getElementById('stellarShareInput').value;
+            const text = encodeURIComponent('加入星际能源站，开启宇宙能源采集之旅！');
+            const title = encodeURIComponent('星际能源站 - 宇宙能源采集之旅');
+            const redditUrl = `https://www.reddit.com/submit?url=${encodeURIComponent(inviteUrl)}&title=${title}`;
+            window.open(redditUrl, '_blank', 'width=600,height=400');
+            hideShareModal();
+        }
+
+        // Share to Discord
+        function shareToDiscord() {
+            const inviteUrl = document.getElementById('stellarShareInput').value;
+            const text = encodeURIComponent('加入星际能源站，开启宇宙能源采集之旅！');
+            const discordUrl = `https://discord.com/channels/@me?text=${text} ${inviteUrl}`;
+            window.open(discordUrl, '_blank', 'width=600,height=400');
+            hideShareModal();
+        }
+
+        // Share to WhatsApp
+        function shareToWhatsApp() {
+            const inviteUrl = document.getElementById('stellarShareInput').value;
+            const text = encodeURIComponent('加入星际能源站，开启宇宙能源采集之旅！');
+            const whatsappUrl = `https://api.whatsapp.com/send?text=${text} ${inviteUrl}`;
+            window.open(whatsappUrl, '_blank', 'width=600,height=400');
+            hideShareModal();
+        }
+
+        // Share to Digital Asset App
+        function shareToDigitalAssetApp() {
+            const inviteUrl = document.getElementById('stellarShareInput').value;
+            const modal = document.getElementById('stellarDigitalAssetModal');
+            const qrElement = document.getElementById('stellarDigitalAssetQrcode');
+            
+            // Generate digital asset share QR code
+            qrElement.innerHTML = '';
+            digitalAssetQrCode = new QRCode(qrElement, {
+                text: inviteUrl,
+                width: 200,
+                height: 200,
+                colorDark: '#50AF95',
+                colorLight: 'white',
+                correctLevel: QRCode.CorrectLevel.H
+            });
+            
+            // Show modal
+            modal.classList.add('active');
+            hideShareModal();
+        }
+
+        // Use system share (mobile only)
+        function shareViaSystem() {
+            const inviteUrl = document.getElementById('stellarShareInput').value;
+            if (navigator.share) {
+                navigator.share({
+                    title: '星际能源站',
+                    text: '加入星际能源站，开启宇宙能源采集之旅！',
+                    url: inviteUrl
+                }).catch(error => console.log('分享错误:', error));
             } else {
-                toast.style.background = 'rgba(0, 0, 0, 0.8)';
+                // Fallback to copy link
+                navigator.clipboard.writeText(inviteUrl).then(() => {
+                    showToast(currentLanguage === 'zh' ? '链接已复制!' : 'Link copied!', 'success');
+                }).catch(err => {
+                    console.error('复制失败:', err);
+                    showToast(currentLanguage === 'zh' ? '复制失败' : 'Copy failed', 'error');
+                });
             }
-            
-            document.body.appendChild(toast);
-            setTimeout(() => {
-                toast.classList.add('active');
-            }, 100);
-            
-            setTimeout(() => {
-                toast.classList.remove('active');
-                setTimeout(() => {
-                    document.body.removeChild(toast);
-                }, 300);
-            }, 3000);
+            hideShareModal();
         }
 
-        // Show loading indicator
-        function showLoading(show) {
-            const loadingOverlay = document.querySelector('.stellar-loading-overlay');
-            if (loadingOverlay) {
-                if (show) {
-                    loadingOverlay.classList.add('active');
-                } else {
-                    loadingOverlay.classList.remove('active');
+        // Add html2canvas script dynamically
+        function loadHtml2Canvas() {
+            return new Promise((resolve, reject) => {
+                if (window.html2canvas) {
+                    resolve();
+                    return;
                 }
-            }
+                
+                const script = document.createElement('script');
+                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+                script.onload = resolve;
+                script.onerror = reject;
+                document.head.appendChild(script);
+            });
         }
 
-        // Poster Generator Implementation
-        document.addEventListener('DOMContentLoaded', function() {
-            const digitalAssetAddress = null;
-            let digitalAssetAddress = null;
-            const downloadBtn = document.getElementById('stellarDownloadBtn');
-            const shareBtn = document.getElementById('stellarShareBtn');
-            const sharePanel = document.getElementById('stellarSharePanel');
-            const digitalAssetModal = document.getElementById('stellarDigitalAssetModal');
-            const iosSaveInstructions = document.getElementById('stellarIosSaveInstructions');
-            const loadingOverlay = document.getElementById('stellarLoadingOverlay');
-            const spaceDecoration = document.getElementById('stellarSpaceDecoration');
-
-            // Generate stars and planets
-            function generateSpaceElements() {
-                // Clear existing elements
-                spaceDecoration.innerHTML = '';
-                
-                // Generate stars
-                for (let i = 0; i < 50; i++) {
-                    const star = document.createElement('div');
-                    star.className = 'stellar-star';
-                    star.style.left = Math.random() * 100 + '%';
-                    star.style.top = Math.random() * 100 + '%';
-                    star.style.width = Math.random() * 3 + 'px';
-                    star.style.height = star.style.width;
-                    star.style.opacity = Math.random();
-                    star.style.animationDelay = Math.random() * 3 + 's';
-                    spaceDecoration.appendChild(star);
-                }
-                
-                // Generate planets
-                for (let i = 0; i < 5; i++) {
-                    const planet = document.createElement('div');
-                    planet.className = 'stellar-planet';
-                    planet.style.left = Math.random() * 100 + '%';
-                    planet.style.top = Math.random() * 100 + '%';
-                    planet.style.width = Math.random() * 20 + 10 + 'px';
-                    planet.style.height = planet.style.width;
-                    planet.style.opacity = Math.random() * 0.5 + 0.3;
-                    spaceDecoration.appendChild(planet);
-                }
-            }
-
-            // Initialize space elements
-            generateSpaceElements();
-
-            // Connect digital asset
-            async function connectDigitalAsset() {
-                loadingOverlay.style.opacity = '1';
-                loadingOverlay.style.pointerEvents = 'all';
-                
-                try {
-                    // Check if Web3 provider is available
-                    if (typeof window.ethereum === 'undefined') {
-                        throw new Error('未检测到数字资产扩展');
-                    }
-                    
-                    // Request access to user's account
-                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                    
-                    if (accounts.length === 0) {
-                        throw new Error('未获取到数字资产地址');
-                    }
-                    
-                    digitalAssetAddress = accounts[0];
-                    shareBtn.classList.remove('disabled');
-                    showToast('数字资产连接成功！');
-                } catch (error) {
-                    console.error('连接数字资产失败:', error);
-                    // 禁用按钮
-                    downloadBtn.classList.add('disabled');
-                    shareBtn.classList.add('disabled');
-                    showToast('数字资产连接失败，部分功能受限');
-                } finally {
-                    loadingOverlay.style.opacity = '0';
-                    loadingOverlay.style.pointerEvents = 'none';
-                }
-            }
-
-            // Save poster button event
-            downloadBtn.addEventListener('click', function() {
-                if (digitalAssetAddress) {
-                    downloadPoster();
-                } else {
-                    connectDigitalAsset();
-                }
-            });
-
-            // Share invite button event
-            shareBtn.addEventListener('click', function() {
-                if (digitalAssetAddress) {
-                    sharePanel.style.display = 'block';
-                } else {
-                    connectDigitalAsset();
-                }
-            });
-
-            // Close share panel
-            document.getElementById('stellarShareCloseBtn').addEventListener('click', function() {
-                sharePanel.style.display = 'none';
-            });
-
-            // Close digital asset share modal
-            document.getElementById('stellarDigitalAssetCloseBtn').addEventListener('click', function() {
-                digitalAssetModal.style.opacity = '0';
-                digitalAssetModal.style.pointerEvents = 'none';
-            });
-
-            // Close mobile device save instructions
-            document.getElementById('stellarIosSaveCloseBtn').addEventListener('click', function() {
-                iosSaveInstructions.style.opacity = '0';
-                iosSaveInstructions.style.pointerEvents = 'none';
-            });
-
-            // Copy share link
-            document.getElementById('stellarShareLink').addEventListener('click', function() {
-                if (digitalAssetAddress) {
-                    const shareInput = document.getElementById('stellarShareInput');
-                    shareInput.select();
-                    document.execCommand('copy');
-                    showToast('分享链接已复制！');
-                } else {
-                    connectDigitalAsset();
-                }
-            });
-
-            // Generate QR code
-            function generateQRCode(digitalAssetAddress) {
-                const qrElement = document.getElementById('stellarPosterQrcode');
-                qrElement.innerHTML = '';
-                
-                // Use digital asset address to generate invite link
-                const inviteUrl = `https://dapp-hb.pages.dev/?invite=${encodeURIComponent(digitalAssetAddress)}`;
-                
-                // Generate new QR code
-                new QRCode(qrElement, {
-                    text: inviteUrl,
-                    width: 90,
-                    height: 90,
-                    colorDark: '#5d9bff',
-                    colorLight: 'white',
-                    correctLevel: QRCode.CorrectLevel.H
-                });
-                
-                // Set share link
-                document.getElementById('stellarShareInput').value = inviteUrl;
-            }
-
-            // Save poster - fix mobile device issues
-            function downloadPoster() {
-                const overlay = document.getElementById('stellarDownloadOverlay');
-                const container = document.getElementById('stellarMainContainer');
-                
-                // Show loading indicator
-                overlay.style.opacity = '1';
-                overlay.style.pointerEvents = 'all';
-                
-                // Temporarily remove animation to prevent scaling issues
-                container.classList.add('no-animation');
-                
-                // Delay generating poster, giving browser time to render UI changes
-                setTimeout(() => {
-                    const poster = document.getElementById('stellarPoster');
-                    html2canvas(poster, {
-                        scale: 2,
-                        backgroundColor: null,
-                        useCORS: true,
-                        allowTaint: true,
-                        logging: false
-                    }).then(canvas => {
-                        // Check if it's a mobile device
-                        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-                        
-                        if (isMobile) {
-                            // Mobile device special handling
-                            const mobileInstructions = document.getElementById('stellarIosSaveInstructions');
-                            const mobileImageContainer = document.getElementById('stellarIosSaveImageContainer');
-                            
-                            // Create image element
-                            const img = document.createElement('img');
-                            img.src = canvas.toDataURL('image/png');
-                            img.style.width = '90%';
-                            img.style.maxWidth = '300px';
-                            img.style.borderRadius = '10px';
-                            img.style.boxShadow = '0 0 20px rgba(255, 255, 255, 0.2)';
-                            
-                            // Clear container and add image
-                            mobileImageContainer.innerHTML = '';
-                            mobileImageContainer.appendChild(img);
-                            
-                            // Show mobile device save instructions
-                            mobileInstructions.style.opacity = '1';
-                            mobileInstructions.style.pointerEvents = 'all';
-                        } else {
-                            // Normal download for non-mobile devices
-                            const link = document.createElement('a');
-                            link.download = '星际能源站-推广海报.png';
-                            link.href = canvas.toDataURL('image/png');
-                            
-                            // Trigger click event
-                            const clickEvent = new MouseEvent('click', {
-                                'view': window,
-                                'bubbles': true,
-                                'cancelable': false
-                            });
-                            link.dispatchEvent(clickEvent);
-                        }
-                        
-                        // Restore interface
-                        setTimeout(() => {
-                            container.classList.remove('no-animation');
-                            overlay.style.opacity = '0';
-                            overlay.style.pointerEvents = 'none';
-                            showToast('海报生成成功！');
-                        }, 500);
-                    }).catch(error => {
-                        console.error('生成海报失败:', error);
-                        showToast('海报保存失败，请重试');
-                        container.classList.remove('no-animation');
-                        overlay.style.opacity = '0';
-                        overlay.style.pointerEvents = 'none';
-                    });
-                }, 100);
-            }
-
-            // Share to Twitter/X
-            function shareToTwitter(inviteUrl) {
-                const text = encodeURIComponent('加入星际能源站，开启宇宙能源采集之旅！');
-                const url = encodeURIComponent(inviteUrl);
-                const twitterUrl = `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
-                window.open(twitterUrl, '_blank', 'width=600,height=400');
-            }
-
-            // Share to Facebook
-            function shareToFacebook(inviteUrl) {
-                const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(inviteUrl)}`;
-                window.open(facebookUrl, '_blank', 'width=600,height=400');
-            }
-
-            // Share to WeChat
-            function shareToWechat(inviteUrl) {
-                // For WeChat, show QR code in modal
-                const modal = document.getElementById('stellarDigitalAssetModal');
-                const qrElement = document.getElementById('stellarDigitalAssetQrcode');
-                
-                qrElement.innerHTML = '';
-                new QRCode(qrElement, {
-                    text: inviteUrl,
-                    width: 200,
-                    height: 200,
-                    colorDark: '#50AF95',
-                    colorLight: 'white',
-                    correctLevel: QRCode.CorrectLevel.H
-                });
-                
-                modal.style.opacity = '1';
-                modal.style.pointerEvents = 'all';
-            }
-
-            // Share to QQ
-            function shareToQQ(inviteUrl) {
-                const qqUrl = `https://connect.qq.com/widget/shareqq/index.html?url=${encodeURIComponent(inviteUrl)}&title=加入星际能源站，开启宇宙能源采集之旅！`;
-                window.open(qqUrl, '_blank', 'width=600,height=400');
-            }
-
-            // Share to Telegram
-            function shareToTelegram(inviteUrl) {
-                const text = encodeURIComponent('加入星际能源站，开启宇宙能源采集之旅！');
-                const telegramUrl = `https://t.me/share/url?url=${inviteUrl}&text=${text}`;
-                window.open(telegramUrl, '_blank');
-            }
-
-            // Share to WhatsApp
-            function shareToWhatsApp(inviteUrl) {
-                const text = encodeURIComponent('加入星际能源站，开启宇宙能源采集之旅！');
-                const whatsappUrl = `https://api.whatsapp.com/send?text=${text} ${inviteUrl}`;
-                window.open(whatsappUrl, '_blank', 'width=600,height=400');
-            }
-
-            // Share to digital asset app
-            function shareToDigitalAssetApp(inviteUrl) {
-                const modal = document.getElementById('stellarDigitalAssetModal');
-                const qrElement = document.getElementById('stellarDigitalAssetQrcode');
-                
-                qrElement.innerHTML = '';
-                new QRCode(qrElement, {
-                    text: inviteUrl,
-                    width: 200,
-                    height: 200,
-                    colorDark: '#50AF95',
-                    colorLight: 'white',
-                    correctLevel: QRCode.CorrectLevel.H
-                });
-                
-                modal.style.opacity = '1';
-                modal.style.pointerEvents = 'all';
-            }
-
-            // Use system sharing
-            function shareWithSystem(inviteUrl) {
-                if (navigator.share) {
-                    navigator.share({
-                        title: '星际能源站',
-                        text: '加入星际能源站，开启宇宙能源采集之旅！',
-                        url: inviteUrl
-                    }).catch(error => console.log('分享错误:', error));
-                } else {
-                    navigator.clipboard.writeText(inviteUrl).then(() => {
-                        showToast('链接已复制！');
-                    }).catch(err => {
-                        console.error('复制失败:', err);
-                        showToast('复制失败');
-                    });
-                }
-            }
-
-            // Share button events
-            document.getElementById('stellarShareTwitter').addEventListener('click', function() {
-                if (digitalAssetAddress) {
-                    const inviteUrl = `https://dapp-hb.pages.dev/?invite=${encodeURIComponent(digitalAssetAddress)}`;
-                    shareToTwitter(inviteUrl);
-                } else {
-                    connectDigitalAsset();
-                }
-            });
-
-            document.getElementById('stellarShareFacebook').addEventListener('click', function() {
-                if (digitalAssetAddress) {
-                    const inviteUrl = `https://dapp-hb.pages.dev/?invite=${encodeURIComponent(digitalAssetAddress)}`;
-                    shareToFacebook(inviteUrl);
-                } else {
-                    connectDigitalAsset();
-                }
-            });
-
-            document.getElementById('stellarShareWechat').addEventListener('click', function() {
-                if (digitalAssetAddress) {
-                    const inviteUrl = `https://dapp-hb.pages.dev/?invite=${encodeURIComponent(digitalAssetAddress)}`;
-                    shareToWechat(inviteUrl);
-                } else {
-                    connectDigitalAsset();
-                }
-            });
-
-            document.getElementById('stellarShareQQ').addEventListener('click', function() {
-                if (digitalAssetAddress) {
-                    const inviteUrl = `https://dapp-hb.pages.dev/?invite=${encodeURIComponent(digitalAssetAddress)}`;
-                    shareToQQ(inviteUrl);
-                } else {
-                    connectDigitalAsset();
-                }
-            });
-
-            document.getElementById('stellarShareTelegram').addEventListener('click', function() {
-                if (digitalAssetAddress) {
-                    const inviteUrl = `https://dapp-hb.pages.dev/?invite=${encodeURIComponent(digitalAssetAddress)}`;
-                    shareToTelegram(inviteUrl);
-                } else {
-                    connectDigitalAsset();
-                }
-            });
-
-            document.getElementById('stellarShareWhatsApp').addEventListener('click', function() {
-                if (digitalAssetAddress) {
-                    const inviteUrl = `https://dapp-hb.pages.dev/?invite=${encodeURIComponent(digitalAssetAddress)}`;
-                    shareToWhatsApp(inviteUrl);
-                } else {
-                    connectDigitalAsset();
-                }
-            });
-
-            document.getElementById('stellarShareLink').addEventListener('click', function() {
-                if (digitalAssetAddress) {
-                    const inviteUrl = `https://dapp-hb.pages.dev/?invite=${encodeURIComponent(digitalAssetAddress)}`;
-                    shareWithSystem(inviteUrl);
-                } else {
-                    connectDigitalAsset();
-                }
-            });
-
-            document.getElementById('stellarShareDigitalAsset').addEventListener('click', function() {
-                if (digitalAssetAddress) {
-                    const inviteUrl = `https://dapp-hb.pages.dev/?invite=${encodeURIComponent(digitalAssetAddress)}`;
-                    shareToDigitalAssetApp(inviteUrl);
-                } else {
-                    connectDigitalAsset();
-                }
-            });
-
-            document.getElementById('stellarShareSystem').addEventListener('click', function() {
-                if (digitalAssetAddress) {
-                    const inviteUrl = `https://dapp-hb.pages.dev/?invite=${encodeURIComponent(digitalAssetAddress)}`;
-                    shareWithSystem(inviteUrl);
-                } else {
-                    connectDigitalAsset();
-                }
-            });
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadHtml2Canvas();
+            console.log('html2canvas loaded');
         });
     </script>
 </body>
