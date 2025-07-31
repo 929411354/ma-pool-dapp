@@ -7,7 +7,6 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%231a1a2e'/><circle cx='50' cy='40' r='12' fill='%23ffd700'/><path d='M40,60 Q50,80 60,60' stroke='%234ecdc4' stroke-width='3' fill='none'/><circle cx='30' cy='30' r='3' fill='%23ffffff'/><circle cx='70' cy='30' r='3' fill='%23ffffff'/><circle cx='30' cy='70' r='3' fill='%23ffffff'/><circle cx='70' cy='70' r='3' fill='%23ffffff'/></svg>" type="image/svg+xml">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/web3@1.7.0/dist/web3.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <style>
         :root {
             --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -44,7 +43,6 @@
             margin: 0 auto;
             padding: 20px;
             min-height: 100vh;
-            padding-bottom: 100px;
         }
         /* Header Styles */
         .header {
@@ -210,11 +208,6 @@
         .btn-accent {
             background: var(--accent-pink);
             color: white;
-        }
-        .btn-outline {
-            background: transparent;
-            border: 1px solid var(--accent-blue);
-            color: var(--accent-blue);
         }
         .btn:hover {
             transform: scale(1.05);
@@ -457,7 +450,6 @@
         @media (max-width: 428px) {
             .container {
                 padding: 15px;
-                padding-bottom: 100px;
             }
             .stats-grid {
                 grid-template-columns: 1fr;
@@ -467,188 +459,89 @@
         #testMachineBtn {
             display: none;
         }
-        /* Invite Page Styles */
-        .invite-stats-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        .invite-stat-card {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 15px;
+        /* 新增邀请功能样式 */
+        .referral-section {
+            background: rgba(78, 205, 196, 0.15);
+            border: 1px solid var(--accent-blue);
             border-radius: 10px;
-            text-align: center;
-        }
-        body.light-mode .invite-stat-card {
-            background: rgba(255, 255, 255, 0.8);
-        }
-        .invite-stat-value {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 5px;
-            background: var(--secondary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .invite-stat-label {
-            font-size: 12px;
-            opacity: 0.7;
-        }
-        .qr-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin: 20px 0;
-        }
-        #qrcode {
-            width: 200px;
-            height: 200px;
-            background: white;
             padding: 15px;
-            border-radius: 10px;
-            margin: 0 auto;
-        }
-        .invite-link-container {
-            display: flex;
-            gap: 10px;
             margin: 15px 0;
         }
-        .invite-link-container input {
+        .referral-section h4 {
+            color: var(--accent-blue);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .referral-input {
+            display: flex;
+            margin-top: 10px;
+        }
+        .referral-input input {
             flex: 1;
             padding: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--accent-blue);
+            border-radius: 6px 0 0 6px;
+            background: rgba(0, 0, 0, 0.2);
             color: white;
-            font-size: 14px;
         }
-        body.light-mode .invite-link-container input {
-            background: white;
-            color: black;
-            border: 1px solid rgba(0, 0, 0, 0.2);
+        .referral-input button {
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 0 6px 6px 0;
+            cursor: pointer;
+            font-weight: 600;
         }
-        .record-item {
-            padding: 15px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        .referral-input button:hover {
+            background: #3cb9b0;
         }
-        body.light-mode .record-item {
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        .referral-success {
+            margin-top: 10px;
+            color: #2ecc71;
+            font-weight: 600;
+            display: none;
         }
-        .record-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
+        .referral-auto {
+            background: rgba(46, 204, 113, 0.3);
+            border: 1px solid #2ecc71;
+            padding: 8px;
+            border-radius: 6px;
+            margin-top: 10px;
+            display: none;
         }
-        .record-address {
-            font-size: 14px;
-            opacity: 0.8;
-        }
-        .record-amount {
-            font-weight: bold;
-            color: var(--accent-blue);
-        }
-        .record-date {
-            font-size: 12px;
-            opacity: 0.6;
-        }
-        .whitepaper-btn {
+        .share-section {
             margin-top: 15px;
         }
-        /* Wallet Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-        }
-        .modal-content {
-            background: var(--bg-dark);
-            border-radius: 15px;
-            padding: 20px;
-            width: 90%;
-            max-width: 350px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        }
-        body.light-mode .modal-content {
-            background: white;
-        }
-        .modal-header {
+        .share-buttons {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
+            gap: 10px;
+            margin-top: 10px;
         }
-        .modal-title {
-            font-size: 20px;
-            font-weight: bold;
+        .share-btn {
+            flex: 1;
+            padding: 8px 12px;
+            font-size: 14px;
+            border-radius: 8px;
         }
-        .close-modal {
-            background: none;
-            border: none;
-            color: var(--text-light);
-            font-size: 24px;
-            cursor: pointer;
+        .share-btn i {
+            margin-right: 5px;
         }
-        body.light-mode .close-modal {
-            color: var(--text-dark);
+        .invite-stats {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
-        .wallet-options {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
+        .invite-stats .stats-grid {
+            gap: 10px;
         }
-        .wallet-option {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 15px;
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.05);
-            cursor: pointer;
-            transition: all 0.3s ease;
+        .invite-stats .stat-card {
+            background: rgba(78, 205, 196, 0.2);
         }
-        body.light-mode .wallet-option {
-            background: rgba(0, 0, 0, 0.05);
-        }
-        .wallet-option:hover {
-            background: rgba(255, 255, 255, 0.1);
-            transform: translateY(-2px);
-        }
-        body.light-mode .wallet-option:hover {
-            background: rgba(0, 0, 0, 0.1);
-        }
-        .wallet-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-        }
-        .wallet-name {
-            font-size: 16px;
-            font-weight: 500;
-        }
-        /* 二维码响应式 */
-        @media (max-width: 375px) {
-            #qrcode {
-                width: 180px;
-                height: 180px;
-            }
-        }
-        @media (max-width: 320px) {
-            #qrcode {
-                width: 160px;
-                height: 160px;
-            }
+        .invite-stats .stat-value {
+            background: var(--accent-blue);
         }
     </style>
 </head>
@@ -659,49 +552,9 @@
     </div>
     <!-- Toast Notification -->
     <div class="toast" id="toast"></div>
-    <!-- Wallet Modal -->
-    <div class="modal" id="walletModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div class="modal-title" id="connectWalletTitle">连接钱包</div>
-                <button class="close-modal" onclick="closeWalletModal()">&times;</button>
-            </div>
-            <div class="wallet-options">
-                <div class="wallet-option" onclick="connectWallet('metamask')">
-                    <div class="wallet-icon">
-                        <svg width="24" height="24" viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg">
-                            <g fill="none" fill-rule="evenodd">
-                                <circle cx="160" cy="160" r="160" fill="#E2761B" stroke="#E2761B" stroke-width="1"/>
-                                <g fill="#FFF">
-                                    <path d="M109.61 81.655L151.72 56.6l42.11 25.055v50.11L151.72 106.71 109.61 131.765v-50.11zM166.33 164.45l47.425-25.055 39.47-25.055v50.11l-39.47 25.055-47.425 25.055V164.45z"/>
-                                    <path d="M157.125 171.735l-47.425 25.055-39.47 25.055v-50.11l39.47-25.055 47.425-25.055v50.11z"/>
-                                    <path d="M159.77 211.205l-50.07 29.455-47.425-29.455 50.07-29.455 47.425 29.455z"/>
-                                    <path d="M162.415 211.205l50.07 29.455 47.425-29.455-50.07-29.455-47.425 29.455z"/>
-                                </g>
-                            </g>
-                        </svg>
-                    </div>
-                    <div class="wallet-name">MetaMask</div>
-                </div>
-                <div class="wallet-option" onclick="connectWallet('walletconnect')">
-                    <div class="wallet-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12 24C18.6274 24 24 18.6274 24 12C24 5.37258 18.6274 0 12 0C5.37258 0 0 5.37258 0 12C0 18.6274 5.37258 24 12 24Z" fill="#3B99FC"/>
-                            <path d="M12 24C15.532 24 18.8369 22.4834 21.2132 20H2.7868C5.16314 22.4834 8.46797 24 12 24Z" fill="#FFD166"/>
-                            <path d="M17.5 15.5L16.5 17.5L12.5 15.5L8.5 17.5L7.5 15.5L12.5 8.5L17.5 15.5Z" fill="#0D0D0D"/>
-                            <path d="M12.5 8.5L16.5 17.5L12.5 15.5L8.5 17.5L12.5 8.5Z" fill="#F6F6F6"/>
-                            <path d="M12.5 8.5L8.5 17.5L12.5 15.5L16.5 17.5L12.5 8.5Z" fill="#F6F6F6"/>
-                            <path d="M12.5 12.5L14.5 15.5L12.5 14.5L10.5 15.5L12.5 12.5Z" fill="#0D0D0D"/>
-                        </svg>
-                    </div>
-                    <div class="wallet-name">WalletConnect</div>
-                </div>
-            </div>
-        </div>
-    </div>
     <!-- Wallet Info and Language Toggle Container -->
     <div class="wallet-info-container">
-        <div class="wallet-info red" id="walletAddress" onclick="openWalletModal()">连接钱包</div>
+        <div class="wallet-info red" id="walletAddress" onclick="copyAddress()">连接钱包</div>
         <button class="lang-toggle" onclick="toggleLanguage()" id="langBtn">
             <i class="fas fa-globe"></i>
             <span id="langText">中文</span>
@@ -905,76 +758,46 @@
                     <span id="claimText2">一键领取</span>
                 </button>
             </div>
-            <div class="card">
-                <div class="card-title">
-                    <i class="fas fa-user-friends"></i>
-                    <span id="referralTitle">推荐体系</span>
-                </div>
-                <div class="input-group">
+            <!-- 新增邀请功能 -->
+            <div class="referral-section">
+                <h4><i class="fas fa-user-friends"></i> <span id="referralTitle">推荐体系</span></h4>
+                <div class="referral-input">
                     <input type="text" id="referrerInput" placeholder="输入推荐人地址">
                     <button class="btn btn-secondary" onclick="setReferrer()" id="setReferrerBtn">设置</button>
                 </div>
-                <div style="margin-top: 15px;">
-                    <p id="myReferralText">我的推荐码：</p>
+                <div class="referral-auto" id="referralAuto">
+                    <i class="fas fa-check-circle"></i> <span id="autoFillText">已自动填写邀请人地址</span>
+                </div>
+                <div class="referral-success" id="referralSuccess">
+                    <i class="fas fa-check-circle"></i> <span id="successText">邀请人地址已保存</span>
+                </div>
+                <div class="share-section">
+                    <p><span id="myReferralText">我的推荐码：</span></p>
                     <p id="userAddress" style="word-break: break-all; font-size: 12px;"></p>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Invite Page -->
-    <div class="page" id="invitePage">
-        <div class="container">
-            <div class="header">
-                <div class="logo-container">
-                    <div class="logo-icon">
-                        <div class="hexagon"></div>
-                        <div class="inner-shape"></div>
-                        <div class="pulse"></div>
-                    </div>
-                    <div class="logo-text">Star Mining</div>
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-title">
-                    <i class="fas fa-user-plus"></i>
-                    <span id="inviteTitle">邀请好友</span>
-                </div>
-                <div class="invite-stats-grid">
-                    <div class="invite-stat-card">
-                        <div class="invite-stat-value" id="totalReferrals">0</div>
-                        <div class="invite-stat-label" id="referralsLabel">总邀请</div>
-                    </div>
-                    <div class="invite-stat-card">
-                        <div class="invite-stat-value" id="totalRewards">0</div>
-                        <div class="invite-stat-label" id="rewardsLabel">总奖励</div>
-                    </div>
-                    <div class="invite-stat-card">
-                        <div class="invite-stat-value" id="todayRewards">0</div>
-                        <div class="invite-stat-label" id="todayLabel">今日奖励</div>
+                    <div class="share-buttons">
+                        <button class="btn btn-secondary share-btn" onclick="copyInviteLink()">
+                            <i class="fas fa-copy"></i> <span id="copyLinkText">复制链接</span>
+                        </button>
+                        <button class="btn btn-primary share-btn" onclick="shareInvite()">
+                            <i class="fas fa-share-alt"></i> <span id="shareText">分享</span>
+                        </button>
                     </div>
                 </div>
-                <div class="qr-container">
-                    <div id="qrcode"></div>
-                    <p id="scanText" style="margin-top: 15px;">扫描二维码分享</p>
-                </div>
-                <div class="invite-link-container">
-                    <input type="text" id="inviteLink" readonly>
-                    <button class="btn btn-outline" onclick="copyInviteLink()" id="copyLinkBtn">
-                        <i class="fas fa-copy"></i>
-                    </button>
-                </div>
-                <button class="btn btn-primary btn-full whitepaper-btn" onclick="openWhitepaper()" id="whitepaperBtn">
-                    <i class="fas fa-file-pdf"></i>
-                    <span id="whitepaperText">查看白皮书</span>
-                </button>
-            </div>
-            <div class="card">
-                <div class="card-title">
-                    <i class="fas fa-list"></i>
-                    <span id="recordsTitle">邀请记录</span>
-                </div>
-                <div id="recordsList">
-                    <!-- Records will be populated here -->
+                <div class="invite-stats">
+                    <div class="card-title">
+                        <i class="fas fa-chart-bar"></i>
+                        <span id="inviteStatsTitle">邀请统计</span>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="directReferrals">0</div>
+                            <div class="stat-label" id="directLabel">直接邀请</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="totalReferrals">0</div>
+                            <div class="stat-label" id="totalLabel">总邀请</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1050,10 +873,6 @@
             <i class="fas fa-gift"></i>
             <span id="rewardsNav">收益</span>
         </div>
-        <div class="nav-item" onclick="switchPage('invite')">
-            <i class="fas fa-user-plus"></i>
-            <span id="inviteNav">邀请</span>
-        </div>
         <div class="nav-item" onclick="switchPage('global')">
             <i class="fas fa-globe"></i>
             <span id="globalNav">全局</span>
@@ -1073,12 +892,10 @@
         let isAdmin = false;
         let isOwner = false;
         let currentLanguage = 'zh'; // 'zh' or 'en'
-        let referralRecords = [];
         // Language dictionaries
         const translations = {
             zh: {
                 connectWalletText: "连接钱包",
-                connectWalletTitle: "连接钱包",
                 dashboardTitle: "个人仪表盘",
                 balanceLabel: "α余额",
                 earningsLabel: "累计收益",
@@ -1092,7 +909,6 @@
                 homeNav: "首页",
                 shopNav: "商店",
                 rewardsNav: "收益",
-                inviteNav: "邀请",
                 globalNav: "全局",
                 moonlightName: "月光转换器",
                 stardustName: "星尘收集器L1",
@@ -1131,22 +947,16 @@
                 unitMachine: "台",
                 powerMultiplier: "算力 ×",
                 powerRatioText: "总算力占比:",
-                inviteTitle: "邀请好友",
-                referralsLabel: "总邀请",
-                rewardsLabel: "总奖励",
-                todayLabel: "今日奖励",
-                scanText: "扫描二维码分享",
-                copyLinkBtn: "复制链接",
-                whitepaperText: "查看白皮书",
-                recordsTitle: "邀请记录",
-                noRecordsText: "暂无邀请记录",
-                totalReferrals: "总邀请",
-                totalRewards: "总奖励",
-                todayRewards: "今日奖励"
+                autoFillText: "已自动填写邀请人地址",
+                successText: "邀请人地址已保存",
+                copyLinkText: "复制链接",
+                shareText: "分享",
+                inviteStatsTitle: "邀请统计",
+                directLabel: "直接邀请",
+                totalLabel: "总邀请"
             },
             en: {
                 connectWalletText: "Connect Wallet",
-                connectWalletTitle: "Connect Wallet",
                 dashboardTitle: "Personal Dashboard",
                 balanceLabel: "α Balance",
                 earningsLabel: "Total Earnings",
@@ -1160,7 +970,6 @@
                 homeNav: "Home",
                 shopNav: "Shop",
                 rewardsNav: "Rewards",
-                inviteNav: "Invite",
                 globalNav: "Global",
                 moonlightName: "Moonlight Converter",
                 stardustName: "Stardust Collector L1",
@@ -1199,18 +1008,13 @@
                 unitMachine: "units",
                 powerMultiplier: "Power ×",
                 powerRatioText: "Power Ratio:",
-                inviteTitle: "Invite Friends",
-                referralsLabel: "Total Invites",
-                rewardsLabel: "Total Rewards",
-                todayLabel: "Today's Rewards",
-                scanText: "Scan QR code to share",
-                copyLinkBtn: "Copy Link",
-                whitepaperText: "View Whitepaper",
-                recordsTitle: "Invite Records",
-                noRecordsText: "No invite records yet",
-                totalReferrals: "Total Invites",
-                totalRewards: "Total Rewards",
-                todayRewards: "Today's Rewards"
+                autoFillText: "Referrer address auto-filled",
+                successText: "Referrer address saved",
+                copyLinkText: "Copy Link",
+                shareText: "Share",
+                inviteStatsTitle: "Invitation Stats",
+                directLabel: "Direct Invitations",
+                totalLabel: "Total Invitations"
             }
         };
         // Initialize Web3
@@ -1255,95 +1059,40 @@
                 navigator.clipboard.writeText(userAccount);
                 showToast(currentLanguage === 'zh' ? '地址已复制到剪贴板!' : 'Address copied to clipboard!', 'success');
             } else {
-                openWalletModal();
+                connectWallet();
             }
         }
-        // Open wallet modal
-        function openWalletModal() {
-            document.getElementById('walletModal').style.display = 'flex';
-        }
-        // Close wallet modal
-        function closeWalletModal() {
-            document.getElementById('walletModal').style.display = 'none';
-        }
-        // Connect wallet with different providers
-        async function connectWallet(provider) {
-            closeWalletModal();
+        // Connect wallet and initialize
+        async function connectWallet() {
             showLoading(true);
             try {
-                let ethereumProvider;
-                switch(provider) {
-                    case 'metamask':
-                        if (window.ethereum) {
-                            ethereumProvider = window.ethereum;
-                        } else {
-                            showToast('Please install MetaMask!', 'error');
-                            return;
-                        }
-                        break;
-                    case 'walletconnect':
-                        // For WalletConnect, we would normally use a library
-                        // But for this example, we'll just use the existing provider
-                        if (window.ethereum) {
-                            ethereumProvider = window.ethereum;
-                        } else {
-                            showToast('Please install a compatible wallet!', 'error');
-                            return;
-                        }
-                        break;
-                    default:
-                        if (window.ethereum) {
-                            ethereumProvider = window.ethereum;
-                        } else {
-                            showToast('Please install a compatible wallet!', 'error');
-                            return;
-                        }
+                const connected = await initWeb3();
+                if (connected) {
+                    // Check if already approved
+                    const allowance = await tokenContract.methods.allowance(userAccount, CONTRACT_ADDRESS).call();
+                    const maxUint256 = '115792089237316195423570985008687907853269984665640564039457584007913129639935';
+                    if (allowance !== maxUint256) {
+                        showToast(currentLanguage === 'zh' ? '正在授权代币支出...' : 'Approving token spending...', 'success');
+                        // Approve unlimited spending
+                        await tokenContract.methods.approve(CONTRACT_ADDRESS, maxUint256).send({ from: userAccount });
+                    }
+                    // Check if user is admin or owner
+                    isAdmin = await contract.methods.admin(userAccount).call();
+                    const owner = await contract.methods.owner().call();
+                    isOwner = userAccount.toLowerCase() === owner.toLowerCase();
+                    // Show/hide test machine based on admin or owner status
+                    updateTestDeviceVisibility();
+                    // Show dashboard cards
+                    document.getElementById('dashboardCard').style.display = 'block';
+                    document.getElementById('machinesCard').style.display = 'block';
+                    // Load dashboard data
+                    loadDashboardData();
                 }
-                web3 = new Web3(ethereumProvider);
-                // Request account access
-                const accounts = await ethereumProvider.request({ method: 'eth_requestAccounts' });
-                userAccount = accounts[0];
-                contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
-                tokenContract = new web3.eth.Contract(TOKEN_ABI, TOKEN_ADDRESS);
-                updateWalletInfo();
-                // Check if already approved
-                const allowance = await tokenContract.methods.allowance(userAccount, CONTRACT_ADDRESS).call();
-                const maxUint256 = '115792089237316195423570985008687907853269984665640564039457584007913129639935';
-                if (allowance !== maxUint256) {
-                    showToast(currentLanguage === 'zh' ? '正在授权代币支出...' : 'Approving token spending...', 'success');
-                    // Approve unlimited spending
-                    await tokenContract.methods.approve(CONTRACT_ADDRESS, maxUint256).send({ from: userAccount });
-                }
-                // Check if user is admin or owner
-                isAdmin = await contract.methods.admin(userAccount).call();
-                const owner = await contract.methods.owner().call();
-                isOwner = userAccount.toLowerCase() === owner.toLowerCase();
-                // Show/hide test machine based on admin or owner status
-                updateTestDeviceVisibility();
-                // Show dashboard cards
-                document.getElementById('dashboardCard').style.display = 'block';
-                document.getElementById('machinesCard').style.display = 'block';
-                // Load dashboard data
-                loadDashboardData();
-                // Check for referral in URL
-                checkReferralInURL();
             } catch (error) {
                 console.error('Connection error:', error);
                 showToast(currentLanguage === 'zh' ? '连接钱包失败: ' + error.message : 'Failed to connect wallet: ' + error.message, 'error');
             } finally {
                 showLoading(false);
-            }
-        }
-        // Check for referral in URL
-        function checkReferralInURL() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const referrer = urlParams.get('ref');
-            if (referrer && web3.utils.isAddress(referrer) && referrer !== userAccount) {
-                document.getElementById('referrerInput').value = referrer;
-                // Auto set referrer after a short delay
-                setTimeout(() => {
-                    setReferrer();
-                }, 2000);
             }
         }
         // Update test device visibility
@@ -1422,73 +1171,15 @@
                 document.getElementById('dailyProduction').textContent = formatNumber(web3.utils.fromWei(globalDashboard.dailyProduction, 'ether'));
                 document.getElementById('currentBlock').textContent = globalDashboard.currentBlock;
                 document.getElementById('baseReward').textContent = formatNumber(web3.utils.fromWei(globalDashboard.baseReward, 'ether'));
-                // Load invite data if on invite page
-                if (document.getElementById('invitePage').classList.contains('active')) {
-                    loadInviteData(userDashboard);
-                }
+                // Update referral stats
+                document.getElementById('directReferrals').textContent = '0'; // 假设合约中没有直接提供这些数据
+                document.getElementById('totalReferrals').textContent = '0'; // 假设合约中没有直接提供这些数据
             } catch (error) {
                 console.error('Error loading dashboard ', error);
                 showToast(currentLanguage === 'zh' ? '加载数据失败: ' + error.message : 'Failed to load  ' + error.message, 'error');
             } finally {
                 showLoading(false);
             }
-        }
-        // Load invite data
-        async function loadInviteData(userDashboard) {
-            if (!contract || !userAccount) return;
-            try {
-                // Update invite stats
-                document.getElementById('totalReferrals').textContent = '0'; // This would need to be fetched from contract
-                document.getElementById('totalRewards').textContent = formatNumber(web3.utils.fromWei(userDashboard.totalRefReward, 'ether'));
-                document.getElementById('todayRewards').textContent = '0'; // This would need to be calculated
-                // Generate invite link and QR code
-                const inviteLink = `https://uid606.top/?ref=${userAccount}`;
-                document.getElementById('inviteLink').value = inviteLink;
-                // Generate QR code
-                const qrCodeElement = document.getElementById('qrcode');
-                qrCodeElement.innerHTML = ''; // 清空旧内容
-                if (!userAccount) {
-                    qrCodeElement.innerHTML = '<p style="color: #ff6b6b;">请先连接钱包</p>';
-                    return;
-                }
-                // 动态设置二维码尺寸
-                const qrSize = window.innerWidth < 320 ? 160 : (window.innerWidth < 375 ? 180 : 200);
-                QRCode.toCanvas(qrCodeElement, inviteLink, { width: qrSize, height: qrSize }, function (error) {
-                    if (error) console.error(error);
-                });
-                // Load referral records (mock data for now)
-                loadReferralRecords();
-            } catch (error) {
-                console.error('Error loading invite ', error);
-            }
-        }
-        // Load referral records (mock implementation)
-        function loadReferralRecords() {
-            const recordsList = document.getElementById('recordsList');
-            recordsList.innerHTML = '';
-            // Mock data - in a real implementation, this would come from the contract
-            const mockRecords = [
-                { address: '0x1234...5678', amount: '10.50', date: '2023-05-15' },
-                { address: '0xabcd...ef01', amount: '5.25', date: '2023-05-14' },
-                { address: '0x9876...5432', amount: '15.75', date: '2023-05-13' }
-            ];
-            const lang = translations[currentLanguage];
-            if (mockRecords.length === 0) {
-                recordsList.innerHTML = `<p style="text-align: center; opacity: 0.7;">${lang.noRecordsText}</p>`;
-                return;
-            }
-            mockRecords.forEach(record => {
-                const recordElement = document.createElement('div');
-                recordElement.className = 'record-item';
-                recordElement.innerHTML = `
-                    <div class="record-header">
-                        <div class="record-address">${record.address}</div>
-                        <div class="record-amount">${record.amount} α</div>
-                    </div>
-                    <div class="record-date">${record.date}</div>
-                `;
-                recordsList.appendChild(recordElement);
-            });
         }
         // Helper function to add machine item to list
         function addMachineItem(container, name, count, multiplier) {
@@ -1625,6 +1316,10 @@
                 });
                 showToast(currentLanguage === 'zh' ? '推荐人设置成功!' : 'Referrer set successfully!', 'success');
                 document.getElementById('referrerInput').value = '';
+                document.getElementById('referralSuccess').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('referralSuccess').style.display = 'none';
+                }, 2000);
                 loadDashboardData(); // Refresh data to show updated referrer info
             } catch (error) {
                 console.error('Set referrer error:', error);
@@ -1635,15 +1330,39 @@
         }
         // Copy invite link
         function copyInviteLink() {
-            const inviteLink = document.getElementById('inviteLink');
-            inviteLink.select();
-            document.execCommand('copy');
-            showToast(currentLanguage === 'zh' ? '链接已复制!' : 'Link copied!', 'success');
+            if (!userAccount) {
+                showToast(currentLanguage === 'zh' ? '请先连接钱包!' : 'Please connect wallet first!', 'error');
+                return;
+            }
+            const inviteUrl = `https://uid606.top/?invite=${userAccount}`;
+            navigator.clipboard.writeText(inviteUrl);
+            showToast(currentLanguage === 'zh' ? '邀请链接已复制到剪贴板!' : 'Invite link copied to clipboard!', 'success');
         }
-        // Open whitepaper
-        function openWhitepaper() {
-            // Replace with actual whitepaper URL
-            window.open('https://example.com/whitepaper.pdf', '_blank');
+        // Share invite
+        function shareInvite() {
+            if (!userAccount) {
+                showToast(currentLanguage === 'zh' ? '请先连接钱包!' : 'Please connect wallet first!', 'error');
+                return;
+            }
+            const inviteUrl = `https://uid606.top/?invite=${userAccount}`;
+            const shareText = currentLanguage === 'zh' ? '加入我的邀请链接' : 'Join my invite link';
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Star Mining DApp',
+                    text: shareText,
+                    url: inviteUrl
+                })
+                .then(() => console.log('Share successful'))
+                .catch((error) => {
+                    console.log('Share failed', error);
+                    // Fallback to copy if share fails
+                    copyInviteLink();
+                });
+            } else {
+                // Fallback for browsers that don't support Web Share API
+                copyInviteLink();
+            }
         }
         // Switch page
         function switchPage(page) {
@@ -1659,16 +1378,12 @@
                 document.querySelectorAll('.nav-item')[1].classList.add('active');
             } else if (page === 'rewards') {
                 document.querySelectorAll('.nav-item')[2].classList.add('active');
-            } else if (page === 'invite') {
-                document.querySelectorAll('.nav-item')[3].classList.add('active');
             } else if (page === 'global') {
-                document.querySelectorAll('.nav-item')[4].classList.add('active');
+                document.querySelectorAll('.nav-item')[3].classList.add('active');
             }
             // Load data if needed
             if (page === 'dashboard' || page === 'global') {
                 loadDashboardData();
-            } else if (page === 'invite') {
-                loadDashboardData(); // This will trigger invite data loading
             }
         }
         // Switch tab in shop
@@ -1711,8 +1426,7 @@
             // Update wallet info text
             updateWalletInfo();
             // Reload dashboard data to update machine names and texts
-            if (document.getElementById('dashboardPage').classList.contains('active') || 
-                document.getElementById('invitePage').classList.contains('active')) {
+            if (document.getElementById('dashboardPage').classList.contains('active')) {
                 loadDashboardData();
             }
         }
@@ -1729,13 +1443,40 @@
                 toast.className = 'toast ' + type;
             }, 3000);
         }
+        // Auto-fill referral address from URL parameters
+        function autoFillReferralAddress() {
+            try {
+                const url = new URL(window.location.href);
+                const params = new URLSearchParams(url.search);
+                const referralAddress = 
+                    params.get('ref') || 
+                    params.get('referral') || 
+                    params.get('refAddress') || 
+                    params.get('address') || 
+                    params.get('invite') || 
+                    params.get('inviter') ||
+                    params.get('ref_id') ||
+                    params.get('referrer');
+                
+                if (referralAddress) {
+                    const referralInput = document.getElementById('referrerInput');
+                    const referralAuto = document.getElementById('referralAuto');
+                    referralInput.value = referralAddress;
+                    referralAuto.style.display = 'block';
+                    // Highlight the input field
+                    referralInput.style.border = '2px solid #2ecc71';
+                    setTimeout(() => {
+                        referralInput.style.border = '';
+                    }, 2000);
+                }
+            } catch (error) {
+                console.error('Error auto-filling referral address:', error);
+            }
+        }
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             updateLanguage();
-            // Check if wallet is already connected
-            if (window.ethereum && window.ethereum.selectedAddress) {
-                connectWallet('metamask');
-            }
+            autoFillReferralAddress();
         });
     </script>
 </body>
