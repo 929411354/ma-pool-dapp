@@ -510,15 +510,6 @@
             text-align: center;
             margin: 20px 0;
         }
-        /* Responsive */
-        @media (max-width: 428px) {
-            .container {
-                padding: 15px;
-            }
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-        }
         /* 测试设备按钮默认隐藏 */
         #testMachineBtn {
             display: none;
@@ -1840,15 +1831,47 @@
         }
         // 保存海报
         function downloadPoster() {
+            const overlay = document.getElementById('downloadOverlay');
             const container = document.getElementById('poster');
-            // 生成海报二维码
-            generateQRCode(userAccount);
-            
-            // 直接显示海报，让用户长按保存
-            container.style.display = 'block';
-            
-            // 显示提示信息
-            showToast('请长按二维码保存图片');
+            // 显示加载指示器
+            overlay.style.opacity = '1';
+            overlay.style.pointerEvents = 'all';
+            // 延迟生成海报，给浏览器时间渲染UI变化
+            setTimeout(() => {
+                // 生成海报二维码
+                generateQRCode(userAccount);
+                // 使用html2canvas生成海报
+                html2canvas(container, {
+                    scale: 2,
+                    backgroundColor: null,
+                    useCORS: true,
+                    allowTaint: true,
+                    logging: false
+                }).then(canvas => {
+                    // 创建下载链接
+                    const link = document.createElement('a');
+                    link.download = '星际能源站-推广海报.png';
+                    link.href = canvas.toDataURL('image/png');
+                    // 触发点击事件
+                    const clickEvent = new MouseEvent('click', {
+                        'view': window,
+                        'bubbles': true,
+                        'cancelable': false
+                    });
+                    link.dispatchEvent(clickEvent);
+                    // 恢复界面
+                    setTimeout(() => {
+                        overlay.style.opacity = '0';
+                        overlay.style.pointerEvents = 'none';
+                        showToast('海报生成成功！');
+                    }, 500);
+                }).catch(error => {
+                    console.error('生成海报失败:', error);
+                    overlay.style.opacity = '0';
+                    overlay.style.pointerEvents = 'none';
+                    showToast('海报保存失败，请重试');
+                });
+            }, 300);
         }
         // 分享到Twitter/X
         function shareToTwitter(inviteUrl) {
