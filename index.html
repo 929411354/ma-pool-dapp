@@ -1840,6 +1840,8 @@
             setTimeout(() => {
                 // 生成海报二维码
                 generateQRCode(userAccount);
+                // 显示海报容器
+                container.style.display = 'block';
                 // 使用html2canvas生成海报
                 html2canvas(container, {
                     scale: 2,
@@ -1863,12 +1865,14 @@
                     setTimeout(() => {
                         overlay.style.opacity = '0';
                         overlay.style.pointerEvents = 'none';
+                        container.style.display = 'none';
                         showToast('海报生成成功！');
                     }, 500);
                 }).catch(error => {
                     console.error('生成海报失败:', error);
                     overlay.style.opacity = '0';
                     overlay.style.pointerEvents = 'none';
+                    container.style.display = 'none';
                     showToast('海报保存失败，请重试');
                 });
             }, 300);
