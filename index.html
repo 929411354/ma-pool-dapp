@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Star Mining DApp</title>
     <link rel="icon" href="image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%231a1a2e'/><circle cx='50' cy='40' r='12' fill='%23ffd700'/><path d='M40,60 Q50,80 60,60' stroke='%234ecdc4' stroke-width='3' fill='none'/><circle cx='30' cy='30' r='3' fill='%23ffffff'/><circle cx='70' cy='30' r='3' fill='%23ffffff'/><circle cx='30' cy='70' r='3' fill='%23ffffff'/><circle cx='70' cy='70' r='3' fill='%23ffffff'/></svg>" type="image/svg+xml">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -34,6 +34,7 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'Arial Rounded MT Bold', 'Segoe UI', sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
         body {
             background: var(--background-gradient);
@@ -846,25 +847,58 @@
             display: block !important;
         }
         /* 新增长按保存提示 */
-        .save-instruction {
+        .mobile-save-instructions {
             position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             z-index: 1002;
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 20px;
-            border-radius: 15px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
             text-align: center;
-            font-size: 16px;
-            box-shadow: 0 0 30px rgba(138, 107, 255, 0.2);
-            display: none;
+            padding: 20px;
         }
-        .save-instruction i {
+        .mobile-save-instructions h3 {
+            color: #ffcf5c;
+            margin-bottom: 20px;
             font-size: 24px;
-            margin-bottom: 10px;
-            color: #5d9bff;
+        }
+        .mobile-save-instructions p {
+            color: white;
+            margin-bottom: 15px;
+            font-size: 18px;
+            line-height: 1.5;
+        }
+        .mobile-save-instructions img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 15px 0;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+        }
+        .mobile-save-close {
+            background: #5d9bff;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 18px;
+            margin-top: 20px;
+        }
+        /* 修复点击穿透问题 */
+        .mobile-save-instructions, .download-overlay {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
     </style>
 </head>
@@ -1156,8 +1190,13 @@
             </div>
         </div>
     </div>
-    <div class="loading-overlay" id="loadingOverlay">
-        <div class="loading-spinner"></div>
+    <div class="mobile-save-instructions" id="mobileSaveInstructions">
+        <h3>保存海报到相册</h3>
+        <p>请按照以下步骤保存海报：</p>
+        <p>1. 长按下面的图片</p>
+        <p>2. 选择"保存图片"选项</p>
+        <div id="mobileSaveImageContainer"></div>
+        <button class="mobile-save-close" id="mobileSaveCloseBtn">关闭</button>
     </div>
     <div class="poster-container" id="poster">
         <div class="space-decoration" id="spaceDecoration"></div>
@@ -1189,10 +1228,6 @@
                 <div class="call-to-action">快来扫码加入吧!<br>探索宇宙能源，积累数字资产</div>
             </div>
         </div>
-    </div>
-    <div class="save-instruction" id="saveInstruction">
-        <i class="fas fa-hand-point-down"></i>
-        <div>长按图片保存到相册</div>
     </div>
     <div class="share-panel" id="sharePanel">
         <div class="share-header">
@@ -1747,8 +1782,8 @@
             const downloadBtn = document.getElementById('downloadBtn');
             const shareBtn = document.getElementById('shareBtn');
             const shareCloseBtn = document.getElementById('shareCloseBtn');
-            const saveInstruction = document.getElementById('saveInstruction');
-            const poster = document.getElementById('poster');
+            const mobileSaveCloseBtn = document.getElementById('mobileSaveCloseBtn');
+            const mobileSaveInstructions = document.getElementById('mobileSaveInstructions');
             
             if (downloadBtn) {
                 downloadBtn.addEventListener('click', function() {
@@ -1811,14 +1846,10 @@
                 }
             });
             
-            // 点击海报显示保存提示
-            poster.addEventListener('click', function() {
-                if (poster.style.display !== 'none') {
-                    saveInstruction.style.display = 'block';
-                    setTimeout(() => {
-                        saveInstruction.style.display = 'none';
-                    }, 3000);
-                }
+            // 关闭移动设备保存说明
+            mobileSaveCloseBtn.addEventListener('click', function() {
+                mobileSaveInstructions.style.opacity = '0';
+                mobileSaveInstructions.style.pointerEvents = 'none';
             });
         }
         // 创建宇宙装饰
@@ -1877,7 +1908,8 @@
         function downloadPoster() {
             const overlay = document.getElementById('downloadOverlay');
             const container = document.getElementById('poster');
-            const saveInstruction = document.getElementById('saveInstruction');
+            const mobileInstructions = document.getElementById('mobileSaveInstructions');
+            const mobileImageContainer = document.getElementById('mobileSaveImageContainer');
             
             // 显示加载指示器
             overlay.style.opacity = '1';
@@ -1887,10 +1919,6 @@
             setTimeout(() => {
                 // 生成海报二维码
                 generateQRCode(userAccount);
-                // 显示海报容器
-                container.style.display = 'block';
-                // 隐藏保存提示
-                saveInstruction.style.display = 'none';
                 
                 // 使用html2canvas生成海报
                 html2canvas(container, {
@@ -1898,41 +1926,57 @@
                     backgroundColor: null,
                     useCORS: true,
                     allowTaint: true,
-                    logging: false
+                    logging: false,
+                    // 提高图像质量
+                    imageTimeout: 15000,
+                    // 确保字体和样式正确加载
+                    foreignObjectRendering: false
                 }).then(canvas => {
-                    // 创建下载链接
-                    const link = document.createElement('a');
-                    link.download = '星际能源站-推广海报.png';
-                    link.href = canvas.toDataURL('image/png');
+                    // 检查是否是移动设备
+                    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
                     
-                    // 触发点击事件
-                    const clickEvent = new MouseEvent('click', {
-                        'view': window,
-                        'bubbles': true,
-                        'cancelable': false
-                    });
-                    link.dispatchEvent(clickEvent);
-                    
-                    // 显示长按保存提示
-                    setTimeout(() => {
-                        saveInstruction.style.display = 'block';
-                        setTimeout(() => {
-                            saveInstruction.style.display = 'none';
-                        }, 3000);
-                    }, 500);
+                    if (isMobile) {
+                        // 移动设备特殊处理 - 显示长按保存说明
+                        // 创建图片元素
+                        const img = document.createElement('img');
+                        img.src = canvas.toDataURL('image/png');
+                        img.style.width = '90%';
+                        img.style.maxWidth = '300px';
+                        img.style.borderRadius = '10px';
+                        img.style.boxShadow = '0 0 20px rgba(255, 255, 255, 0.2)';
+                        
+                        // 清空容器并添加图片
+                        mobileImageContainer.innerHTML = '';
+                        mobileImageContainer.appendChild(img);
+                        
+                        // 显示移动设备保存说明
+                        mobileInstructions.style.opacity = '1';
+                        mobileInstructions.style.pointerEvents = 'all';
+                    } else {
+                        // 非移动设备正常下载
+                        const link = document.createElement('a');
+                        link.download = '星际能源站-推广海报.png';
+                        link.href = canvas.toDataURL('image/png');
+                        
+                        // 触发点击事件
+                        const clickEvent = new MouseEvent('click', {
+                            'view': window,
+                            'bubbles': true,
+                            'cancelable': false
+                        });
+                        link.dispatchEvent(clickEvent);
+                    }
                     
                     // 恢复界面
                     setTimeout(() => {
                         overlay.style.opacity = '0';
                         overlay.style.pointerEvents = 'none';
-                        container.style.display = 'none';
-                        showToast('海报已生成，请长按图片保存');
-                    }, 1000);
+                        showToast('海报已生成，长按图片保存到相册');
+                    }, 500);
                 }).catch(error => {
                     console.error('生成海报失败:', error);
                     overlay.style.opacity = '0';
                     overlay.style.pointerEvents = 'none';
-                    container.style.display = 'none';
                     showToast('海报保存失败，请重试');
                 });
             }, 300);
