@@ -407,6 +407,406 @@
             margin-top: 10px;
             display: none;
         }
+        /* Poster Styles */
+        .poster-container {
+            background: linear-gradient(to bottom, #2a1957, #0d0b2b);
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(103, 72, 186, 0.3);
+            padding: 25px 15px;
+        }
+        .space-decoration {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .star {
+            position: absolute;
+            background-color: #fff;
+            border-radius: 50%;
+            animation: twinkle 5s infinite ease-in-out;
+        }
+        .planet {
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #6a4ce4, #3a1c82);
+            top: 20%;
+            right: 10%;
+            box-shadow: 0 0 20px rgba(106, 76, 228, 0.8);
+        }
+        .header-section {
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            background: linear-gradient(to bottom, rgba(138, 107, 255, 0.15), transparent);
+            padding: 0 0 15px;
+        }
+        .logo-text-poster {
+            font-size: 28px;
+            font-weight: bold;
+            background: linear-gradient(to right, #8a6bff, #5d9bff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 1px;
+            text-shadow: 0 0 15px rgba(138, 107, 255, 0.5);
+        }
+        .subtitle {
+            font-size: 18px;
+            margin-top: 8px;
+            color: #ffcf5c;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        .character-section {
+            position: relative;
+            height: 230px;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            margin: 15px 0;
+        }
+        .spaceship {
+            position: absolute;
+            top: 20px;
+            right: 25%;
+            font-size: 80px;
+            color: #ff6b6b;
+            transform: rotate(-20deg);
+            text-shadow: 0 0 25px rgba(255, 107, 107, 0.7);
+            animation: float 4s infinite ease-in-out;
+        }
+        .miner {
+            position: relative;
+            width: 140px;
+            height: 150px;
+            z-index: 2;
+        }
+        .miner-body {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 110px;
+            background: linear-gradient(to bottom, #4ecdc4, #3a9d9d);
+            border-radius: 50% 50% 35% 35%;
+            display: flex;
+            justify-content: center;
+        }
+        .miner-helmet {
+            position: absolute;
+            top: -30px;
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle at 30% 30%, #5d9bff, #3465a0);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 4px solid #3a71bd;
+        }
+        .miner-glass {
+            width: 55px;
+            height: 40px;
+            background: rgba(173, 216, 230, 0.5);
+            border-radius: 50%;
+            position: relative;
+            overflow: hidden;
+        }
+        .miner-ore {
+            position: absolute;
+            right: -40px;
+            top: 30px;
+            font-size: 50px;
+            color: #ffcf5c;
+            transform: rotate(-30deg);
+            text-shadow: 0 0 20px rgba(255, 207, 92, 0.8);
+        }
+        .info-section {
+            background: rgba(0, 0, 0, 0.65);
+            padding: 20px 15px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+        .qrcode-container {
+            flex: 0 0 auto;
+            background: white;
+            padding: 8px;
+            border-radius: 10px;
+            margin-right: 15px;
+        }
+        #posterQrcode {
+            width: 90px;
+            height: 90px;
+        }
+        .text-container {
+            flex: 1;
+        }
+        .character-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #5d9bff;
+            margin-bottom: 5px;
+        }
+        .call-to-action {
+            font-size: 14px;
+            color: #ffcf5c;
+            line-height: 1.4;
+        }
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            z-index: 10;
+            position: relative;
+        }
+        .action-btn {
+            background: linear-gradient(to right, #8a6bff, #5d9bff);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 5px 15px rgba(138, 107, 255, 0.4);
+            min-width: 140px;
+            justify-content: center;
+        }
+        .action-btn:active {
+            transform: scale(0.95);
+        }
+        .action-btn.secondary {
+            background: linear-gradient(to right, #ff6b6b, #ff9b5d);
+        }
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.4; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.1); }
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(-20deg); }
+            50% { transform: translateY(-10px) rotate(-22deg); }
+        }
+        @media (max-width: 360px) {
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            .action-btn {
+                width: 90%;
+            }
+        }
+        .download-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        .download-message {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            color: #333;
+            font-weight: bold;
+        }
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 30px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(138, 107, 255, 0.3);
+            border-top: 5px solid #8a6bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .share-panel {
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            padding: 15px;
+            margin-top: 20px;
+            display: none;
+        }
+        .share-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .share-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #5d9bff;
+        }
+        .share-close {
+            background: none;
+            border: none;
+            color: #ff6b6b;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        .share-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .share-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 10px;
+            transition: background 0.3s;
+        }
+        .share-option:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .share-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+        .share-icon.twitter {
+            background: #1DA1F2;
+            color: white;
+        }
+        .share-icon.telegram {
+            background: #0088cc;
+            color: white;
+        }
+        .share-icon.share {
+            background: #8a6bff;
+            color: white;
+        }
+        .share-label {
+            font-size: 12px;
+            text-align: center;
+        }
+        .share-url {
+            display: flex;
+            margin-top: 10px;
+        }
+        .share-input {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px 0 0 8px;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 14px;
+        }
+        .share-copy {
+            background: #5d9bff;
+            color: white;
+            border: none;
+            padding: 0 15px;
+            border-radius: 0 8px 8px 0;
+            cursor: pointer;
+        }
+        .mobile-save-instructions {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            text-align: center;
+            padding: 20px;
+        }
+        .mobile-save-instructions h3 {
+            color: #ffcf5c;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        .mobile-save-instructions p {
+            color: white;
+            margin-bottom: 15px;
+            font-size: 18px;
+            line-height: 1.5;
+        }
+        .mobile-save-close {
+            background: #5d9bff;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 18px;
+            margin-top: 20px;
+        }
         /* Bottom Navigation */
         .bottom-nav {
             position: fixed;
@@ -514,408 +914,6 @@
         /* 测试设备按钮默认隐藏 */
         #testMachineBtn {
             display: none;
-        }
-        /* 新的海报和分享样式 */
-        .download-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-        .download-message {
-            background: rgba(0, 0, 0, 0.9);
-            color: white;
-            padding: 20px 30px;
-            border-radius: 15px;
-            text-align: center;
-            font-size: 18px;
-            box-shadow: 0 0 30px rgba(138, 107, 255, 0.2);
-        }
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-        .loading-spinner {
-            width: 60px;
-            height: 60px;
-            border: 5px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top: 5px solid #667eea;
-            animation: spin 1s linear infinite;
-        }
-        .poster-container {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 1001;
-            width: 375px;
-            height: 667px;
-            background: linear-gradient(to bottom, #2a1957, #0d0b2b);
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
-            display: none;
-        }
-        .space-decoration {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -1;
-        }
-        .star {
-            position: absolute;
-            background: white;
-            border-radius: 50%;
-            animation: twinkle 3s infinite;
-        }
-        .planet {
-            position: absolute;
-            border-radius: 50%;
-            background: radial-gradient(circle at 30% 30%, #ff6b6b, #4ecdc4);
-            box-shadow: 0 0 20px rgba(78, 205, 196, 0.5);
-        }
-        @keyframes twinkle {
-            0% { opacity: 0.3; }
-            50% { opacity: 1; }
-            100% { opacity: 0.3; }
-        }
-        .header-section {
-            position: relative;
-            z-index: 2;
-            text-align: center;
-            padding: 30px 20px 10px;
-        }
-        .logo-text {
-            font-size: 28px;
-            font-weight: bold;
-            color: #5d9bff;
-            text-shadow: 0 0 10px rgba(93, 155, 255, 0.5);
-        }
-        .subtitle {
-            font-size: 16px;
-            color: #ffcf5c;
-            margin-top: 5px;
-        }
-        .character-section {
-            position: relative;
-            z-index: 2;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 200px;
-            margin: 20px 0;
-        }
-        .spaceship {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(to bottom, #ff6b6b, #ff9b5d);
-            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
-        }
-        .spaceship::before {
-            content: "";
-            position: absolute;
-            width: 20px;
-            height: 30px;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            top: 15px;
-            left: 5px;
-        }
-        .miner {
-            margin-left: 20px;
-        }
-        .miner-body {
-            width: 40px;
-            height: 60px;
-            background: linear-gradient(to bottom, #4ecdc4, #2a1957);
-            border-radius: 20px 20px 0 0;
-            position: relative;
-        }
-        .miner-helmet {
-            width: 30px;
-            height: 30px;
-            background: #4ecdc4;
-            border-radius: 50%;
-            position: absolute;
-            top: -15px;
-            left: 5px;
-        }
-        .miner-glass {
-            width: 20px;
-            height: 15px;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 10px;
-            position: absolute;
-            top: 8px;
-            left: 5px;
-        }
-        .miner-ore {
-            position: absolute;
-            top: -10px;
-            right: -10px;
-            color: #ffd700;
-            font-size: 24px;
-        }
-        .info-section {
-            position: relative;
-            z-index: 2;
-            display: flex;
-            padding: 0 20px;
-        }
-        .qrcode-container {
-            width: 90px;
-            height: 90px;
-            background: white;
-            border-radius: 15px;
-            padding: 5px;
-            margin-right: 15px;
-            box-shadow: 0 0 20px rgba(138, 107, 255, 0.3);
-        }
-        .text-container {
-            flex: 1;
-        }
-        .character-name {
-            font-size: 18px;
-            font-weight: bold;
-            color: #5d9bff;
-            margin-bottom: 5px;
-        }
-        .call-to-action {
-            font-size: 14px;
-            color: #ffcf5c;
-            line-height: 1.4;
-        }
-        .action-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 20px;
-            z-index: 10;
-            position: relative;
-        }
-        .action-btn {
-            background: linear-gradient(to right, #8a6bff, #5d9bff);
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 16px;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .action-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(138, 107, 255, 0.4);
-        }
-        .action-btn.secondary {
-            background: rgba(255, 255, 255, 0.1);
-        }
-        .share-panel {
-            background: rgba(0, 0, 0, 0.7);
-            border-radius: 15px;
-            padding: 15px;
-            margin-top: 20px;
-            display: none;
-        }
-        .share-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        .share-title {
-            font-size: 18px;
-            font-weight: bold;
-            color: #5d9bff;
-        }
-        .share-close {
-            background: none;
-            border: none;
-            color: #ff6b6b;
-            font-size: 20px;
-            cursor: pointer;
-        }
-        .share-options {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        .share-option {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 10px;
-            transition: background 0.3s;
-        }
-        .share-option:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-        .share-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 20px;
-            margin-bottom: 5px;
-        }
-        .share-icon.twitter {
-            background: #1DA1F2;
-            color: white;
-        }
-        .share-icon.telegram {
-            background: #0088cc;
-            color: white;
-        }
-        .share-icon.share {
-            background: #8a6bff;
-            color: white;
-        }
-        .share-label {
-            font-size: 12px;
-            text-align: center;
-        }
-        .share-url {
-            display: flex;
-            margin-top: 10px;
-        }
-        .share-input {
-            flex: 1;
-            padding: 10px;
-            border-radius: 8px 0 0 8px;
-            border: none;
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            font-size: 14px;
-        }
-        .share-copy {
-            background: #5d9bff;
-            color: white;
-            border: none;
-            padding: 0 15px;
-            border-radius: 0 8px 8px 0;
-            cursor: pointer;
-        }
-        /* 修复二维码显示问题 */
-        #posterQrcode {
-            width: 100% !important;
-            height: 100% !important;
-        }
-        #posterQrcode canvas {
-            width: 100% !important;
-            height: 100% !important;
-        }
-        /* 修复首页显示问题 */
-        #dashboardCard, #machinesCard {
-            display: block !important;
-        }
-        /* 新增长按保存提示 */
-        .mobile-save-instructions {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 1002;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-            text-align: center;
-            padding: 20px;
-        }
-        .mobile-save-instructions h3 {
-            color: #ffcf5c;
-            margin-bottom: 20px;
-            font-size: 24px;
-        }
-        .mobile-save-instructions p {
-            color: white;
-            margin-bottom: 15px;
-            font-size: 18px;
-            line-height: 1.5;
-        }
-        .mobile-save-instructions img {
-            max-width: 100%;
-            border-radius: 10px;
-            margin: 15px 0;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
-        }
-        .mobile-save-close {
-            background: #5d9bff;
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 18px;
-            margin-top: 20px;
-        }
-        /* 修复点击穿透问题 */
-        .mobile-save-instructions, .download-overlay {
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-        }
-        /* QR Code Error State */
-        .qrcode-error {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 90px;
-            height: 90px;
-            background: #f44336;
-            border-radius: 15px;
-            padding: 5px;
-            margin-right: 15px;
-            box-shadow: 0 0 20px rgba(138, 107, 255, 0.3);
-        }
-        .qrcode-error i {
-            color: white;
-            font-size: 24px;
         }
     </style>
 </head>
@@ -1099,7 +1097,7 @@
             </div>
         </div>
     </div>
-    <!-- Rewards Page -->
+    <!-- Rewards Page (Updated with Poster) -->
     <div class="page" id="rewardsPage">
         <div class="container">
             <div class="header">
@@ -1131,6 +1129,45 @@
                         <i class="fas fa-check-circle"></i> 邀请人地址已保存
                     </div>
                 </div>
+            </div>
+            
+            <!-- 推广海报功能 -->
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-bullhorn"></i>
+                    <span id="posterTitle">推广海报</span>
+                </div>
+                <div class="poster-container" id="poster">
+                    <div class="space-decoration" id="spaceDecoration"></div>
+                    <div class="header-section">
+                        <div class="logo-text-poster">星际能源站</div>
+                        <div class="subtitle">玩赚宇宙能源时代</div>
+                    </div>
+                    <div class="character-section">
+                        <div class="spaceship">
+                            <i class="fas fa-rocket"></i>
+                        </div>
+                        <div class="miner">
+                            <div class="miner-body">
+                                <div class="miner-helmet">
+                                    <div class="miner-glass"></div>
+                                </div>
+                            </div>
+                            <div class="miner-ore">
+                                <i class="fas fa-gem"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="info-section">
+                        <div class="qrcode-container">
+                            <div id="posterQrcode"></div>
+                        </div>
+                        <div class="text-container">
+                            <div class="character-name" id="referralName">星际探索者 鲁卡</div>
+                            <div class="call-to-action">快来扫码加入吧!<br>探索宇宙能源，积累数字资产</div>
+                        </div>
+                    </div>
+                </div>
                 <div class="action-buttons">
                     <button class="action-btn" id="downloadBtn">
                         <i class="fas fa-download"></i> 保存海报
@@ -1138,6 +1175,40 @@
                     <button class="action-btn secondary" id="shareBtn">
                         <i class="fas fa-share-alt"></i> 分享邀请
                     </button>
+                </div>
+                <div class="share-panel" id="sharePanel">
+                    <div class="share-header">
+                        <div class="share-title">分享邀请链接</div>
+                        <button class="share-close" id="shareCloseBtn">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="share-options">
+                        <div class="share-option" id="shareTwitter">
+                            <div class="share-icon twitter">
+                                <i class="fab fa-twitter"></i>
+                            </div>
+                            <div class="share-label">Twitter/X</div>
+                        </div>
+                        <div class="share-option" id="shareTelegram">
+                            <div class="share-icon telegram">
+                                <i class="fab fa-telegram"></i>
+                            </div>
+                            <div class="share-label">Telegram</div>
+                        </div>
+                        <div class="share-option" id="shareShare">
+                            <div class="share-icon share">
+                                <i class="fas fa-share-alt"></i>
+                            </div>
+                            <div class="share-label">共享</div>
+                        </div>
+                    </div>
+                    <div class="share-url">
+                        <input type="text" class="share-input" id="shareInput" readonly>
+                        <button class="share-copy" id="shareCopyBtn">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1199,87 +1270,6 @@
             </div>
         </div>
     </div>
-    <!-- Poster Generator Components -->
-    <div class="download-overlay" id="downloadOverlay">
-        <div class="download-message">海报生成中，请稍候...
-            <div style="margin-top: 10px;">
-                <i class="fas fa-spinner fa-spin"></i>
-            </div>
-        </div>
-    </div>
-    <div class="mobile-save-instructions" id="mobileSaveInstructions">
-        <h3>保存海报到相册</h3>
-        <p>请按照以下步骤保存海报：</p>
-        <p>1. 长按下面的图片</p>
-        <p>2. 选择"保存图片"选项</p>
-        <div id="mobileSaveImageContainer"></div>
-        <button class="mobile-save-close" id="mobileSaveCloseBtn">关闭</button>
-    </div>
-    <div class="poster-container" id="poster">
-        <div class="space-decoration" id="spaceDecoration"></div>
-        <div class="header-section">
-            <div class="logo-text">星际能源站</div>
-            <div class="subtitle">玩赚宇宙能源时代</div>
-        </div>
-        <div class="character-section">
-            <div class="spaceship">
-                <i class="fas fa-rocket"></i>
-            </div>
-            <div class="miner">
-                <div class="miner-body">
-                    <div class="miner-helmet">
-                        <div class="miner-glass"></div>
-                    </div>
-                </div>
-                <div class="miner-ore">
-                    <i class="fas fa-gem"></i>
-                </div>
-            </div>
-        </div>
-        <div class="info-section">
-            <div class="qrcode-container" id="qrcodeContainer">
-                <div id="posterQrcode"></div>
-            </div>
-            <div class="text-container">
-                <div class="character-name">星际探索者 鲁卡</div>
-                <div class="call-to-action">快来扫码加入吧!<br>探索宇宙能源，积累数字资产</div>
-            </div>
-        </div>
-    </div>
-    <div class="share-panel" id="sharePanel">
-        <div class="share-header">
-            <div class="share-title">分享邀请链接</div>
-            <button class="share-close" id="shareCloseBtn">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        <div class="share-options">
-            <div class="share-option" id="shareTwitter">
-                <div class="share-icon twitter">
-                    <i class="fab fa-twitter"></i>
-                </div>
-                <div class="share-label">Twitter/X</div>
-            </div>
-            <div class="share-option" id="shareTelegram">
-                <div class="share-icon telegram">
-                    <i class="fab fa-telegram"></i>
-                </div>
-                <div class="share-label">Telegram</div>
-            </div>
-            <div class="share-option" id="shareShare">
-                <div class="share-icon share">
-                    <i class="fas fa-share-alt"></i>
-                </div>
-                <div class="share-label">共享</div>
-            </div>
-        </div>
-        <div class="share-url">
-            <input type="text" class="share-input" id="shareInput" readonly>
-            <button class="share-copy" id="shareCopyBtn">
-                <i class="fas fa-copy"></i>
-            </button>
-        </div>
-    </div>
     <!-- Bottom Navigation -->
     <div class="bottom-nav">
         <div class="nav-item active" onclick="switchPage('dashboard')">
@@ -1292,13 +1282,35 @@
         </div>
         <div class="nav-item" onclick="switchPage('rewards')">
             <i class="fas fa-gift"></i>
-            <span id="rewardsNav">收益</span>
+            <span id="rewardsNav">邀请</span>
         </div>
         <div class="nav-item" onclick="switchPage('global')">
             <i class="fas fa-globe"></i>
             <span id="globalNav">全局</span>
         </div>
     </div>
+    
+    <!-- Overlays -->
+    <div class="download-overlay" id="downloadOverlay">
+        <div class="download-message">
+            海报生成中，请稍候...
+            <div style="margin-top: 10px;">
+                <i class="fas fa-spinner fa-spin"></i>
+            </div>
+        </div>
+    </div>
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+    </div>
+    <div class="mobile-save-instructions" id="mobileSaveInstructions">
+        <h3>保存海报到相册</h3>
+        <p>请按照以下步骤保存海报：</p>
+        <p>1. 长按下面的图片</p>
+        <p>2. 选择"保存图片"选项</p>
+        <div id="mobileSaveImageContainer"></div>
+        <button class="mobile-save-close" id="mobileSaveCloseBtn">关闭</button>
+    </div>
+
     <script>
         // 修复钱包连接问题：在页面加载时初始化 Web3
         document.addEventListener('DOMContentLoaded', function() {
@@ -1310,12 +1322,13 @@
                 }
                 // 无论是否连接，都更新语言设置
                 updateLanguage();
-                // 初始化海报生成器
-                initializePosterGenerator();
+                // 初始化自动填写邀请地址功能
+                autoFillReferralAddress();
+                // 初始化推广海报
+                initPoster();
             });
-            // 初始化自动填写邀请地址功能
-            autoFillReferralAddress();
         });
+        
         // 1. 首先定义自动填写函数
         function autoFillReferralAddress() {
             try {
@@ -1352,10 +1365,223 @@
                 console.error('自动填写失败:', error);
             }
         }
+        
+        // 推广海报初始化
+        function initPoster() {
+            const poster = document.getElementById('poster');
+            if (!poster) return;
+            
+            // 创建宇宙装饰
+            createSpaceDecoration();
+            
+            // 设置默认的推荐人名称
+            const userName = localStorage.getItem('userName') || '星际探索者 ' + Math.floor(Math.random() * 1000);
+            document.getElementById('referralName').textContent = userName;
+            
+            // 设置点击事件
+            document.getElementById('downloadBtn').addEventListener('click', downloadPoster);
+            document.getElementById('shareBtn').addEventListener('click', function() {
+                document.getElementById('sharePanel').style.display = 'block';
+            });
+            document.getElementById('shareCloseBtn').addEventListener('click', function() {
+                document.getElementById('sharePanel').style.display = 'none';
+            });
+            document.getElementById('shareCopyBtn').addEventListener('click', function() {
+                const shareInput = document.getElementById('shareInput');
+                navigator.clipboard.writeText(shareInput.value);
+                showToast('链接已复制到剪贴板！', 'success');
+            });
+            
+            // 分享选项
+            document.getElementById('shareTwitter').addEventListener('click', function() {
+                shareToTwitter();
+            });
+            document.getElementById('shareTelegram').addEventListener('click', function() {
+                shareToTelegram();
+            });
+            document.getElementById('shareShare').addEventListener('click', function() {
+                shareWithSystem();
+            });
+            
+            // 移动设备保存说明关闭按钮
+            document.getElementById('mobileSaveCloseBtn').addEventListener('click', function() {
+                document.getElementById('mobileSaveInstructions').style.opacity = '0';
+                document.getElementById('mobileSaveInstructions').style.pointerEvents = 'none';
+            });
+            
+            // 如果有连接钱包，生成二维码
+            if (userAccount) {
+                generateQRCode(userAccount);
+            }
+        }
+        
+        // 创建宇宙装饰
+        function createSpaceDecoration() {
+            const spaceContainer = document.getElementById('spaceDecoration');
+            if (!spaceContainer) return;
+            spaceContainer.innerHTML = ''; // 清空现有内容
+            
+            const starCount = 100;
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                // 随机位置和大小
+                const size = Math.random() * 3;
+                const posX = Math.random() * 100;
+                const posY = Math.random() * 100;
+                const delay = Math.random() * 5;
+                const duration = 2 + Math.random() * 3;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.left = `${posX}%`;
+                star.style.top = `${posY}%`;
+                star.style.animationDelay = `${delay}s`;
+                star.style.animationDuration = `${duration}s`;
+                spaceContainer.appendChild(star);
+            }
+            // 添加行星
+            const planet = document.createElement('div');
+            planet.classList.add('planet');
+            spaceContainer.appendChild(planet);
+        }
+        
+        // 生成二维码
+        function generateQRCode(walletAddress) {
+            const qrElement = document.getElementById('posterQrcode');
+            if (!qrElement) return;
+            
+            qrElement.innerHTML = '';
+            // 使用钱包地址生成邀请链接
+            const inviteUrl = `https://uid606.top/?invite=${encodeURIComponent(walletAddress)}`;
+            // 生成新二维码
+            new QRCode(qrElement, {
+                text: inviteUrl,
+                width: 90,
+                height: 90,
+                colorDark: '#5d9bff',
+                colorLight: 'white',
+                correctLevel: QRCode.CorrectLevel.H
+            });
+            // 设置分享链接
+            document.getElementById('shareInput').value = inviteUrl;
+        }
+        
+        // 保存海报
+        function downloadPoster() {
+            const overlay = document.getElementById('downloadOverlay');
+            const container = document.getElementById('mainContainer');
+            // 显示加载指示器
+            overlay.style.opacity = '1';
+            overlay.style.pointerEvents = 'all';
+            // 延迟生成海报，给浏览器时间渲染UI变化
+            setTimeout(() => {
+                const poster = document.getElementById('poster');
+                html2canvas(poster, {
+                    scale: 2,
+                    backgroundColor: null,
+                    useCORS: true,
+                    allowTaint: true,
+                    logging: false
+                }).then(canvas => {
+                    // 检查是否是移动设备
+                    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+                    if (isMobile) {
+                        // 移动设备特殊处理
+                        const mobileInstructions = document.getElementById('mobileSaveInstructions');
+                        const mobileImageContainer = document.getElementById('mobileSaveImageContainer');
+                        // 创建图片元素
+                        const img = document.createElement('img');
+                        img.src = canvas.toDataURL('image/png');
+                        img.style.width = '90%';
+                        img.style.maxWidth = '300px';
+                        img.style.borderRadius = '10px';
+                        img.style.boxShadow = '0 0 20px rgba(255, 255, 255, 0.2)';
+                        // 清空容器并添加图片
+                        mobileImageContainer.innerHTML = '';
+                        mobileImageContainer.appendChild(img);
+                        // 显示移动设备保存说明
+                        mobileInstructions.style.opacity = '1';
+                        mobileInstructions.style.pointerEvents = 'all';
+                    } else {
+                        // 非移动设备正常下载
+                        const link = document.createElement('a');
+                        link.download = '星际能源站-推广海报.png';
+                        link.href = canvas.toDataURL('image/png');
+                        // 触发点击事件
+                        const clickEvent = new MouseEvent('click', {
+                            'view': window,
+                            'bubbles': true,
+                            'cancelable': false
+                        });
+                        link.dispatchEvent(clickEvent);
+                    }
+                    // 恢复界面
+                    setTimeout(() => {
+                        overlay.style.opacity = '0';
+                        overlay.style.pointerEvents = 'none';
+                    }, 500);
+                }).catch(error => {
+                    console.error('生成海报失败:', error);
+                    overlay.style.opacity = '0';
+                    overlay.style.pointerEvents = 'none';
+                    showToast('海报生成失败', 'error');
+                });
+            }, 300);
+        }
+        
+        // 分享到Twitter/X
+        function shareToTwitter() {
+            if (!userAccount) {
+                connectWallet();
+                return;
+            }
+            
+            const inviteUrl = document.getElementById('shareInput').value;
+            const text = encodeURIComponent('加入星际能源站，开启宇宙能源采集之旅！');
+            const url = encodeURIComponent(inviteUrl);
+            const twitterUrl = `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
+            window.open(twitterUrl, '_blank', 'width=600,height=400');
+        }
+        
+        // 分享到Telegram
+        function shareToTelegram() {
+            if (!userAccount) {
+                connectWallet();
+                return;
+            }
+            
+            const inviteUrl = document.getElementById('shareInput').value;
+            const text = encodeURIComponent('加入星际能源站，开启宇宙能源采集之旅！');
+            const url = encodeURIComponent(inviteUrl);
+            const telegramUrl = `https://t.me/share/url?url=${url}&text=${text}`;
+            window.open(telegramUrl, '_blank', 'width=600,height=400');
+        }
+        
+        // 使用共享功能
+        function shareWithSystem() {
+            if (!userAccount) {
+                connectWallet();
+                return;
+            }
+            
+            const inviteUrl = document.getElementById('shareInput').value;
+            if (navigator.share) {
+                navigator.share({
+                    title: '星际能源站',
+                    text: '加入星际能源站，开启宇宙能源采集之旅！',
+                    url: inviteUrl
+                });
+            } else {
+                // 如果不支持Web Share API，复制邀请链接
+                navigator.clipboard.writeText(inviteUrl);
+                showToast('链接已复制到剪贴板！', 'success');
+            }
+        }
+        
         // Contract Configuration
         const CONTRACT_ADDRESS = '0x9dcced4ef738856d2c289d4116cd219c698b22ba';
         const TOKEN_ADDRESS = '0x877f23dcFBa91cadd7d35565Da452c9673C27A33';
-        const CONTRACT_ABI = [{"inputs":[{"internalType":"address","name":"_rewardToken","type":"address"},{"internalType":"address","name":"_treasury","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"newAdmin","type":"address"}],"name":"AdminAdded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"oldAdmin","type":"address"}],"name":"AdminRemoved","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"receiver","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"BNBWithdrawn","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"price","type":"uint256"}],"name":"InitialMachinePurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"tierId","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"count","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"totalPrice","type":"uint256"}],"name":"PowerMachinePurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"referrer","type":"address"},{"indexed":true,"internalType":"address","name":"referee","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"ReferralRewardPaid","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"claimer","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"RewardsClaimed","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"price","type":"uint256"}],"name":"TestMachinePurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"adder","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"TokensAdded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"receiver","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"TokensWithdrawn","type":"event"},{"inputs":[],"name":"BLOCKS_PER_DAY","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"INITIAL_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_BUY_COUNT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"REFERRAL_PERCENT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TEST_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TREASURY","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"addAdmin","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"addRewardTokens","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"addToBlocklist","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"admin","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"baseRewardPerBlockPerPower","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"blocklist","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"buyInitialMachine","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"tierId","type":"uint256"},{"internalType":"uint256","name":"count","type":"uint256"}],"name":"buyPowerMachine","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"buyTestMachine","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"claimRewards","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"usr","type":"address"}],"name":"dailyRewardOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getGlobalDashboard","outputs":[{"internalType":"uint256","name":"baseReward","type":"uint256"},{"internalType":"uint256","name":"totalMines","type":"uint256"},{"internalType":"uint256","name":"currentBlock","type":"uint256"},{"internalType":"uint256","name":"poolBalance","type":"uint256"},{"internalType":"uint256","name":"networkPower","type":"uint256"},{"internalType":"uint256","name":"dailyProduction","type":"uint256"},{"internalType":"uint256","name":"totalRefRewards","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getUserDashboard","outputs":[{"internalType":"uint256","name":"normal","type":"uint256"},{"internalType":"uint256","name":"test","type":"uint256"},{"internalType":"uint256[4]","name":"power","type":"uint256[4]"},{"internalType":"uint256","name":"dailyReward","type":"uint256"},{"internalType":"uint256","name":"unclaimed","type":"uint256"},{"internalType":"uint256","name":"totalRefReward","type":"uint256"},{"internalType":"uint256","name":"totalPower","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"machineTiers","outputs":[{"internalType":"uint256","name":"priceToken","type":"uint256"},{"internalType":"uint256","name":"powerMultiplier","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"pause","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"referralRecords","outputs":[{"internalType":"address","name":"referrer","type":"address"},{"internalType":"address","name":"referee","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"uint256","name":"timestamp","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"removeAdmin","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"removeFromBlocklist","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"rewardPool","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"rewardToken","outputs":[{"internalType":"contract IERC20","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"referrer","type":"address"}],"name":"setReferrer","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"startBlock","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalMachines","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalNetworkPower","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalReferralRewards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalTokensMinted","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalUsers","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"unpause","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"userInfo","outputs":[{"internalType":"uint256","name":"normalMachineCount","type":"uint256"},{"internalType":"uint256","name":"testMachineCount","type":"uint256"},{"internalType":"uint256","name":"rewardStartBlock","type":"uint256"},{"internalType":"address","name":"referrer","type":"address"},{"internalType":"uint256","name":"referralRewards","type":"uint256"},{"internalType":"bool","name":"hasBoughtInitial","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"withdrawBNB","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdrawTokens","outputs":[],"stateMutability":"nonpayable","type":"function"}];
+        const CONTRACT_ABI = [{"inputs":[{"internalType":"address","name":"_rewardToken","type":"address"},{"internalType":"address","name":"_treasury","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"newAdmin","type":"address"}],"name":"AdminAdded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"oldAdmin","type":"address"}],"name":"AdminRemoved","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"receiver","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"BNBWithdrawn","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"price","type":"uint256"}],"name":"InitialMachinePurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"tierId","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"count","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"totalPrice","type":"uint256"}],"name":"PowerMachinePurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"referrer","type":"address"},{"indexed":true,"internalType":"address","name":"referee","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"ReferralRewardPaid","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"claimer","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"RewardsClaimed","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"price","type":"uint256"}],"name":"TestMachinePurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"adder","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"TokensAdded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"receiver","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"TokensWithdrawn","type":"event"},{"inputs":[],"name":"BLOCKS_PER_DAY","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"INITIAL_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_BUY_COUNT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"REFERRAL_PERCENT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TEST_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TREASURY","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"addAdmin","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"addRewardTokens","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"addToBlocklist","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"admin","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"baseRewardPerBlockPerPower","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"blocklist","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"buyInitialMachine","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"tierId","type":"uint256"},{"internalType":"uint256","name":"count","type":"uint256"}],"name":"buyPowerMachine","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"buyTestMachine","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"claimRewards","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"usr","type":"address"}],"name":"dailyRewardOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getGlobalDashboard","outputs":[{"internalType":"uint256","name":"baseReward","type":"uint256"},{"internalType":"uint256","name":"totalMines","type":"uint256"},{"internalType":"uint256","name":"currentBlock","type":"uint256"},{"internalType":"uint256","name":"poolBalance","type":"uint256"},{"internalType":"uint256","name":"networkPower","type":"uint256"},{"internalType":"uint256","name":"dailyProduction","type":"uint256"},{"internalType":"uint256","name":"totalRefRewards","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getUserDashboard","outputs":[{"internalType":"uint256","name":"normal","type":"uint256"},{"internalType":"uint256","name":"test","type":"uint256"},{"internalType":"uint256[4]","name":"power","type":"uint256[4]"},{"internalType":"uint256","name":"dailyReward","type":"uint256"},{"internalType":"uint256","name":"unclaimed","type":"uint256"},{"internalType":"uint256","name":"totalRefReward","type":"uint256"},{"internalType":"uint256","name":"totalPower","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"machineTiers","outputs":[{"internalType":"uint256","name":"priceToken","type":"uint256"},{"internalType":"uint256","name":"powerMultiplier","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"pause","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"referralRecords","outputs":[{"internalType":"address","name":"referrer","type":"address"},{"internalType":"address","name":"referee","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"uint256","name":"timestamp","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"removeAdmin","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"removeFromBlocklist","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"rewardPool","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"contract": "IERC20", "name": "", "type": "address"}], "name": "rewardToken", "outputs": [{"contract": "IERC20", "name": "", "type": "address"}], "stateMutability": "view", "type": "function"}, {"inputs":[{"internalType":"address","name":"referrer","type":"address"}],"name":"setReferrer","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"startBlock","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalMachines","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalNetworkPower","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalReferralRewards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalTokensMinted","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalUsers","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"unpause","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"userInfo","outputs":[{"internalType":"uint256","name":"normalMachineCount","type":"uint256"},{"internalType":"uint256","name":"testMachineCount","type":"uint256"},{"internalType":"uint256","name":"rewardStartBlock","type":"uint256"},{"internalType":"address","name":"referrer","type":"address"},{"internalType":"uint256","name":"referralRewards","type":"uint256"},{"internalType":"bool","name":"hasBoughtInitial","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"withdrawBNB","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdrawTokens","outputs":[],"stateMutability":"nonpayable","type":"function"}];
         const TOKEN_ABI = [{"inputs":[{"internalType":"string","name":"name_","type":"string"},{"internalType":"string","name":"symbol_","type":"string"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"spender","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"subtractedValue","type":"uint256"}],"name":"decreaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"addedValue","type":"uint256"}],"name":"increaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"}];
         // Global variables
         let web3;
@@ -1365,8 +1591,6 @@
         let isAdmin = false;
         let isOwner = false;
         let currentLanguage = 'zh'; // 'zh' or 'en'
-        let qrCodeInstance;
-        let qrcodeGenerated = false;
         // Language dictionaries
         const translations = {
             zh: {
@@ -1383,7 +1607,7 @@
                 buyTestText: "购买设备",
                 homeNav: "首页",
                 shopNav: "商店",
-                rewardsNav: "收益",
+                rewardsNav: "邀请",
                 globalNav: "全局",
                 moonlightName: "月光转换器",
                 stardustName: "星尘收集器L1",
@@ -1395,6 +1619,7 @@
                 powerTab: "进阶设备",
                 testTab: "测试设备",
                 referralTitle: "推荐体系",
+                posterTitle: "推广海报",
                 referrerPlaceholder: "输入推荐人地址",
                 setReferrerBtn: "设置",
                 myReferralText: "我的推荐码：",
@@ -1419,9 +1644,7 @@
                 powerMultiplier: "算力 ×",
                 powerRatioText: "总算力占比:",
                 shareText: "分享",
-                copyText: "复制",
-                qrcodeError: "二维码生成失败，请重试",
-                qrcodeLoading: "生成二维码中..."
+                copyText: "复制"
             },
             en: {
                 connectWalletText: "Connect Wallet",
@@ -1437,7 +1660,7 @@
                 buyTestText: "Buy Device",
                 homeNav: "Home",
                 shopNav: "Shop",
-                rewardsNav: "Rewards",
+                rewardsNav: "Invite",
                 globalNav: "Global",
                 moonlightName: "Moonlight Converter",
                 stardustName: "Stardust Collector L1",
@@ -1449,6 +1672,7 @@
                 powerTab: "Power Device",
                 testTab: "Test Device",
                 referralTitle: "Referral System",
+                posterTitle: "Promotion Poster",
                 referrerPlaceholder: "Enter referrer address",
                 setReferrerBtn: "Set",
                 myReferralText: "My Referral Code:",
@@ -1473,9 +1697,7 @@
                 powerMultiplier: "Power ×",
                 powerRatioText: "Power Ratio:",
                 shareText: "Share",
-                copyText: "Copy",
-                qrcodeError: "QR Code generation failed, please retry",
-                qrcodeLoading: "Generating QR Code..."
+                copyText: "Copy"
             }
         };
         // 初始化 Web3 并连接钱包
@@ -1490,6 +1712,8 @@
                         contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
                         tokenContract = new web3.eth.Contract(TOKEN_ABI, TOKEN_ADDRESS);
                         updateWalletInfo();
+                        // 生成二维码
+                        generateQRCode(userAccount);
                         return true;
                     }
                 } catch (error) {
@@ -1562,10 +1786,6 @@
                     document.getElementById('machinesCard').style.display = 'block';
                     // 加载仪表盘数据
                     await loadDashboardData();
-                    // 如果当前在奖励页面，生成二维码
-                    if (document.getElementById('rewardsPage').classList.contains('active')) {
-                        generateQRCode(userAccount);
-                    }
                 }
             } catch (error) {
                 console.error('连接错误:', error);
@@ -1648,10 +1868,6 @@
                 document.getElementById('dailyProduction').textContent = formatNumber(web3.utils.fromWei(globalDashboard.dailyProduction, 'ether'));
                 document.getElementById('currentBlock').textContent = globalDashboard.currentBlock;
                 document.getElementById('baseReward').textContent = formatNumber(web3.utils.fromWei(globalDashboard.baseReward, 'ether'));
-                // 如果当前在奖励页面，重新生成二维码
-                if (document.getElementById('rewardsPage').classList.contains('active')) {
-                    generateQRCode(userAccount);
-                }
             } catch (error) {
                 console.error('加载数据失败:', error);
                 showToast(currentLanguage === 'zh' ? `加载数据失败: ${error.message}` : `Failed to load  ${error.message}`, 'error');
@@ -1806,254 +2022,6 @@
                 showLoading(false);
             }
         }
-        // 初始化海报生成器
-        function initializePosterGenerator() {
-            createSpaceDecoration();
-            const downloadBtn = document.getElementById('downloadBtn');
-            const shareBtn = document.getElementById('shareBtn');
-            const shareCloseBtn = document.getElementById('shareCloseBtn');
-            const mobileSaveCloseBtn = document.getElementById('mobileSaveCloseBtn');
-            const mobileSaveInstructions = document.getElementById('mobileSaveInstructions');
-            if (downloadBtn) {
-                downloadBtn.addEventListener('click', function() {
-                    if (userAccount) {
-                        downloadPoster();
-                    } else {
-                        showToast('请先连接钱包');
-                    }
-                });
-            }
-            if (shareBtn) {
-                shareBtn.addEventListener('click', function() {
-                    if (userAccount) {
-                        document.getElementById('sharePanel').style.display = 'block';
-                    } else {
-                        showToast('请先连接钱包');
-                    }
-                });
-            }
-            if (shareCloseBtn) {
-                shareCloseBtn.addEventListener('click', function() {
-                    document.getElementById('sharePanel').style.display = 'none';
-                });
-            }
-            // 分享链接复制
-            document.getElementById('shareCopyBtn').addEventListener('click', function() {
-                const shareInput = document.getElementById('shareInput');
-                shareInput.select();
-                document.execCommand('copy');
-                showToast('链接已复制到剪贴板！');
-            });
-            // 分享到Twitter
-            document.getElementById('shareTwitter').addEventListener('click', function() {
-                if (userAccount) {
-                    shareToTwitter(`https://uid606.top/?invite=${userAccount}`);
-                } else {
-                    showToast('请先连接钱包');
-                }
-            });
-            // 分享到Telegram
-            document.getElementById('shareTelegram').addEventListener('click', function() {
-                if (userAccount) {
-                    shareToTelegram(`https://uid606.top/?invite=${userAccount}`);
-                } else {
-                    showToast('请先连接钱包');
-                }
-            });
-            // 使用系统共享
-            document.getElementById('shareShare').addEventListener('click', function() {
-                if (userAccount) {
-                    shareWithSystem(`https://uid606.top/?invite=${userAccount}`);
-                } else {
-                    showToast('请先连接钱包');
-                }
-            });
-            // 关闭移动设备保存说明
-            mobileSaveCloseBtn.addEventListener('click', function() {
-                mobileSaveInstructions.style.opacity = '0';
-                mobileSaveInstructions.style.pointerEvents = 'none';
-            });
-        }
-        // 创建宇宙装饰
-        function createSpaceDecoration() {
-            const spaceContainer = document.getElementById('spaceDecoration');
-            spaceContainer.innerHTML = '';
-            const starCount = 100;
-            for (let i = 0; i < starCount; i++) {
-                const star = document.createElement('div');
-                star.className = 'star';
-                star.style.width = Math.random() * 3 + 'px';
-                star.style.height = star.style.width;
-                star.style.left = Math.random() * 100 + '%';
-                star.style.top = Math.random() * 100 + '%';
-                star.style.opacity = Math.random();
-                star.style.animationDelay = Math.random() * 3 + 's';
-                spaceContainer.appendChild(star);
-            }
-            // 添加行星
-            const planetCount = 3;
-            for (let i = 0; i < planetCount; i++) {
-                const planet = document.createElement('div');
-                planet.className = 'planet';
-                const size = Math.random() * 20 + 10;
-                planet.style.width = size + 'px';
-                planet.style.height = size + 'px';
-                planet.style.left = Math.random() * 100 + '%';
-                planet.style.top = Math.random() * 100 + '%';
-                spaceContainer.appendChild(planet);
-            }
-        }
-        // 生成二维码
-        function generateQRCode(walletAddress) {
-            const qrElement = document.getElementById('posterQrcode');
-            qrElement.innerHTML = '';
-            // 使用钱包地址生成邀请链接
-            const inviteUrl = `https://dapp-hb.pages.dev/?invite=${encodeURIComponent(walletAddress)}`;
-            // 生成新二维码
-            new QRCode(qrElement, {
-                text: inviteUrl,
-                width: 90,
-                height: 90,
-                colorDark: '#5d9bff',
-                colorLight: 'white',
-                correctLevel: QRCode.CorrectLevel.H
-            });
-            // 设置分享链接
-            document.getElementById('shareInput').value = inviteUrl;
-        }
-        // 保存海报 - 修复乱码问题
-        function downloadPoster() {
-            const overlay = document.getElementById('downloadOverlay');
-            const container = document.getElementById('poster');
-            const mobileInstructions = document.getElementById('mobileSaveInstructions');
-            const mobileImageContainer = document.getElementById('mobileSaveImageContainer');
-            
-            // 显示加载指示器
-            overlay.style.opacity = '1';
-            overlay.style.pointerEvents = 'all';
-            
-            // 延迟生成海报，给浏览器时间渲染UI变化
-            setTimeout(() => {
-                // 确保有用户账户
-                if (!userAccount) {
-                    overlay.style.opacity = '0';
-                    overlay.style.pointerEvents = 'none';
-                    showToast('请先连接钱包');
-                    return;
-                }
-                
-                // 生成海报二维码
-                generateQRCode(userAccount);
-                
-                // 等待二维码生成完成
-                setTimeout(() => {
-                    // 使用html2canvas生成海报
-                    html2canvas(container, {
-                        scale: 2,
-                        backgroundColor: null,
-                        useCORS: true,
-                        allowTaint: true,
-                        logging: false,
-                        imageTimeout: 15000,
-                        foreignObjectRendering: false
-                    }).then(canvas => {
-                        // 检查是否是移动设备
-                        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-                        if (isMobile) {
-                            // 移动设备特殊处理 - 显示长按保存说明
-                            // 创建图片元素
-                            const img = document.createElement('img');
-                            img.src = canvas.toDataURL('image/png');
-                            img.style.width = '90%';
-                            img.style.maxWidth = '300px';
-                            img.style.borderRadius = '10px';
-                            img.style.boxShadow = '0 0 20px rgba(255, 255, 255, 0.2)';
-                            // 清空容器并添加图片
-                            mobileImageContainer.innerHTML = '';
-                            mobileImageContainer.appendChild(img);
-                            // 显示移动设备保存说明
-                            mobileInstructions.style.opacity = '1';
-                            mobileInstructions.style.pointerEvents = 'all';
-                        } else {
-                            // 非移动设备正常下载
-                            const link = document.createElement('a');
-                            link.download = '星际能源站-推广海报.png';
-                            link.href = canvas.toDataURL('image/png');
-                            // 触发点击事件
-                            const clickEvent = new MouseEvent('click', {
-                                'view': window,
-                                'bubbles': true,
-                                'cancelable': false
-                            });
-                            link.dispatchEvent(clickEvent);
-                        }
-                        // 恢复界面
-                        setTimeout(() => {
-                            overlay.style.opacity = '0';
-                            overlay.style.pointerEvents = 'none';
-                            showToast('海报已生成，长按图片保存到相册');
-                        }, 500);
-                    }).catch(error => {
-                        console.error('生成海报失败:', error);
-                        overlay.style.opacity = '0';
-                        overlay.style.pointerEvents = 'none';
-                        showToast('海报保存失败，请重试');
-                    });
-                }, 500); // 等待二维码生成
-            }, 300);
-        }
-        // 获取钱包地址
-        async function getWalletAddress() {
-            return new Promise((resolve, reject) => {
-                // 检查是否安装了以太坊钱包
-                if (typeof window.ethereum === 'undefined') {
-                    reject('未检测到数字资产扩展');
-                    return;
-                }
-                // 请求访问账户
-                window.ethereum.request({ method: 'eth_requestAccounts' }).then(accounts => {
-                    if (accounts.length === 0) {
-                        reject('未获取到数字资产地址');
-                    } else {
-                        const walletAddress = accounts[0];
-                        resolve(walletAddress);
-                    }
-                }).catch(error => {
-                    console.error('获取钱包地址失败:', error);
-                    reject(error);
-                });
-            });
-        }
-        // 分享到Twitter/X
-        function shareToTwitter(inviteUrl) {
-            const text = encodeURIComponent('加入星际能源站，开启宇宙能源采集之旅！');
-            const url = encodeURIComponent(inviteUrl);
-            const twitterUrl = `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
-            window.open(twitterUrl, '_blank', 'width=600,height=400');
-        }
-        // 分享到Telegram
-        function shareToTelegram(inviteUrl) {
-            const text = encodeURIComponent('加入星际能源站，开启宇宙能源采集之旅！');
-            const url = encodeURIComponent(inviteUrl);
-            const telegramUrl = `https://t.me/share/url?url=${url}&text=${text}`;
-            window.open(telegramUrl, '_blank', 'width=600,height=400');
-        }
-        // 使用系统共享功能
-        function shareWithSystem(inviteUrl) {
-            if (navigator.share) {
-                navigator.share({
-                    title: '星际能源站',
-                    text: '加入星际能源站，开启宇宙能源采集之旅！',
-                    url: inviteUrl
-                }).then(() => showToast('分享成功'))
-                  .catch(error => showToast('分享取消'));
-            } else {
-                // 如果不支持Web Share API，复制邀请链接
-                navigator.clipboard.writeText(inviteUrl)
-                    .then(() => showToast('链接已复制到剪贴板！'))
-                    .catch(() => showToast('复制失败，请手动复制'));
-            }
-        }
         // 切换页面
         function switchPage(page) {
             // 隐藏所有页面
@@ -2066,17 +2034,13 @@
             if (pageIndex >= 0) {
                 document.querySelectorAll('.nav-item')[pageIndex].classList.add('active');
             }
-            // 如果切换到奖励页面，生成二维码
-            if (page === 'rewards' && userAccount) {
-                generateQRCode(userAccount);
-            }
             // 如果切换到仪表盘或全局页面，加载数据
             if (page === 'dashboard' || page === 'global') {
                 loadDashboardData();
             }
-            // 如果关闭了海报，隐藏它
-            if (page !== 'rewards') {
-                document.getElementById('poster').style.display = 'none';
+            // 如果切换到邀请页面，初始化海报
+            if (page === 'rewards' && userAccount) {
+                generateQRCode(userAccount);
             }
         }
         // 切换商店标签页
@@ -2121,10 +2085,6 @@
             // 如果在仪表盘页面，重新加载数据以更新机器名称和文本
             if (document.getElementById('dashboardPage').classList.contains('active')) {
                 loadDashboardData();
-            }
-            // 如果在奖励页面，重新生成二维码文本
-            if (document.getElementById('rewardsPage').classList.contains('active') && userAccount) {
-                generateQRCode(userAccount);
             }
         }
         // 显示/隐藏加载状态
