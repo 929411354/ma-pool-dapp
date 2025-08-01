@@ -8,10 +8,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/web3@1.7.0/dist/web3.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root {
             --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --secondary-gradient: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
+            --secondary-gradient: linear-gradient(to right, #ff6b6b, #ff9b5d);
             --accent-pink: #ff6b6b;
             --accent-blue: #4ecdc4;
             --bg-dark: #1a1a2e;
@@ -21,19 +22,28 @@
             --text-light: #fff;
             --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             --neon-glow: 0 0 20px rgba(102, 126, 234, 0.5);
+            --background-gradient: linear-gradient(135deg, #091947 0%, #0a0529 100%);
+            --text-color: #fff;
+            --accent-color: #ffcf5c;
+            --card-bg: linear-gradient(to bottom, #2a1957, #0d0b2b);
+            --border-color: rgba(103, 72, 186, 0.3);
+            --shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
         }
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Arial Rounded MT Bold', 'Segoe UI', sans-serif;
         }
         body {
-            background: var(--bg-dark);
-            color: var(--text-light);
+            background: var(--background-gradient);
+            color: var(--text-color);
             min-height: 100vh;
             transition: background 0.3s ease;
             padding-bottom: 80px;
+            position: relative;
+            overflow: auto;
+            touch-action: manipulation;
         }
         body.light-mode {
             background: var(--bg-light);
@@ -155,13 +165,13 @@
         }
         /* Card Styles */
         .card {
-            background: rgba(255, 255, 255, 0.05);
+            background: var(--card-bg);
             backdrop-filter: blur(10px);
             border-radius: 15px;
             padding: 20px;
             margin-bottom: 20px;
-            box-shadow: var(--card-shadow);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
         body.light-mode .card {
@@ -561,6 +571,319 @@
         #testMachineBtn {
             display: none;
         }
+        
+        /* 新的海报和分享样式 */
+        .download-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .download-message {
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 15px;
+            text-align: center;
+            font-size: 18px;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+        }
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 5px solid #667eea;
+            animation: spin 1s linear infinite;
+        }
+        .share-panel {
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            padding: 15px;
+            margin-top: 20px;
+            display: none;
+        }
+        .share-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .share-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #5d9bff;
+        }
+        .share-close {
+            background: none;
+            border: none;
+            color: #ff6b6b;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        .share-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .share-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 10px;
+            transition: background 0.3s;
+        }
+        .share-option:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .share-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+        .share-icon.twitter {
+            background: #1DA1F2;
+            color: white;
+        }
+        .share-icon.telegram {
+            background: #0088cc;
+            color: white;
+        }
+        .share-icon.share {
+            background: #8a6bff;
+            color: white;
+        }
+        .share-label {
+            font-size: 12px;
+            text-align: center;
+        }
+        .share-url {
+            display: flex;
+            margin-top: 10px;
+        }
+        .share-input {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px 0 0 8px;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 14px;
+        }
+        .share-copy {
+            background: #5d9bff;
+            color: white;
+            border: none;
+            padding: 0 15px;
+            border-radius: 0 8px 8px 0;
+            cursor: pointer;
+        }
+        .poster-container {
+            position: fixed;
+            top: -9999px;
+            left: -9999px;
+            width: 375px;
+            height: 667px;
+            background: linear-gradient(135deg, #091947 0%, #0a0529 100%);
+            border-radius: 15px;
+            overflow: hidden;
+            z-index: -1;
+        }
+        .space-decoration {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+        .planet {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #ff6b6b, #4ecdc4);
+            box-shadow: 0 0 20px rgba(78, 205, 196, 0.5);
+        }
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+        .header-section {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            padding: 30px 20px 10px;
+        }
+        .logo-text {
+            font-size: 28px;
+            font-weight: bold;
+            color: #5d9bff;
+            text-shadow: 0 0 10px rgba(93, 155, 255, 0.5);
+        }
+        .subtitle {
+            font-size: 16px;
+            color: #ffcf5c;
+            margin-top: 5px;
+        }
+        .character-section {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+            margin: 20px 0;
+        }
+        .spaceship {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(to bottom, #ff6b6b, #ff9b5d);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
+        }
+        .spaceship::before {
+            content: "";
+            position: absolute;
+            width: 20px;
+            height: 30px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            top: 15px;
+        }
+        .miner {
+            margin-left: 20px;
+        }
+        .miner-body {
+            width: 40px;
+            height: 60px;
+            background: linear-gradient(to bottom, #4ecdc4, #2a1957);
+            border-radius: 20px 20px 0 0;
+            position: relative;
+        }
+        .miner-helmet {
+            width: 30px;
+            height: 30px;
+            background: #4ecdc4;
+            border-radius: 50%;
+            position: absolute;
+            top: -15px;
+            left: 5px;
+        }
+        .miner-glass {
+            width: 20px;
+            height: 15px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            position: absolute;
+            top: 8px;
+            left: 5px;
+        }
+        .miner-ore {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            color: #ffd700;
+            font-size: 24px;
+        }
+        .info-section {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            padding: 0 20px;
+        }
+        .qrcode-container {
+            width: 90px;
+            height: 90px;
+            background: white;
+            border-radius: 15px;
+            padding: 5px;
+            margin-right: 15px;
+            box-shadow: 0 0 20px rgba(138, 107, 255, 0.3);
+        }
+        .text-container {
+            flex: 1;
+        }
+        .character-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #5d9bff;
+            margin-bottom: 5px;
+        }
+        .call-to-action {
+            font-size: 14px;
+            color: #ffcf5c;
+            line-height: 1.4;
+        }
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            z-index: 10;
+            position: relative;
+        }
+        .action-btn {
+            background: linear-gradient(to right, #8a6bff, #5d9bff);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(138, 107, 255, 0.4);
+        }
+        .action-btn.secondary {
+            background: rgba(255, 255, 255, 0.1);
+        }
     </style>
 </head>
 <body>
@@ -779,11 +1102,11 @@
                     <div class="qrcode-header">我的邀请二维码</div>
                     <div id="qrcode"></div>
                     <div class="share-actions">
-                        <button class="share-btn" id="shareBtn">
-                            <i class="fas fa-share-alt"></i> 分享
+                        <button class="share-btn" id="downloadBtn">
+                            <i class="fas fa-download"></i> 保存海报
                         </button>
-                        <button class="share-btn copy-btn" id="copyLinkBtn">
-                            <i class="fas fa-copy"></i> 复制
+                        <button class="share-btn copy-btn" id="shareBtn">
+                            <i class="fas fa-share-alt"></i> 分享邀请
                         </button>
                     </div>
                 </div>
@@ -847,6 +1170,84 @@
             </div>
         </div>
     </div>
+    
+    <!-- Poster Generator Components -->
+    <div class="download-overlay" id="downloadOverlay">
+        <div class="download-message">海报生成中，请稍候...
+            <div style="margin-top: 10px;">
+                <i class="fas fa-spinner fa-spin"></i>
+            </div>
+        </div>
+    </div>
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+    </div>
+    <div class="poster-container" id="poster">
+        <div class="space-decoration" id="spaceDecoration"></div>
+        <div class="header-section">
+            <div class="logo-text">星际能源站</div>
+            <div class="subtitle">玩赚宇宙能源时代</div>
+        </div>
+        <div class="character-section">
+            <div class="spaceship">
+                <i class="fas fa-rocket"></i>
+            </div>
+            <div class="miner">
+                <div class="miner-body">
+                    <div class="miner-helmet">
+                        <div class="miner-glass"></div>
+                    </div>
+                </div>
+                <div class="miner-ore">
+                    <i class="fas fa-gem"></i>
+                </div>
+            </div>
+        </div>
+        <div class="info-section">
+            <div class="qrcode-container">
+                <div id="posterQrcode"></div>
+            </div>
+            <div class="text-container">
+                <div class="character-name">星际探索者 鲁卡</div>
+                <div class="call-to-action">快来扫码加入吧!<br>探索宇宙能源，积累数字资产</div>
+            </div>
+        </div>
+    </div>
+    <div class="share-panel" id="sharePanel">
+        <div class="share-header">
+            <div class="share-title">分享邀请链接</div>
+            <button class="share-close" id="shareCloseBtn">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="share-options">
+            <div class="share-option" id="shareTwitter">
+                <div class="share-icon twitter">
+                    <i class="fab fa-twitter"></i>
+                </div>
+                <div class="share-label">Twitter/X</div>
+            </div>
+            <div class="share-option" id="shareTelegram">
+                <div class="share-icon telegram">
+                    <i class="fab fa-telegram"></i>
+                </div>
+                <div class="share-label">Telegram</div>
+            </div>
+            <div class="share-option" id="shareShare">
+                <div class="share-icon share">
+                    <i class="fas fa-share-alt"></i>
+                </div>
+                <div class="share-label">共享</div>
+            </div>
+        </div>
+        <div class="share-url">
+            <input type="text" class="share-input" id="shareInput" readonly>
+            <button class="share-copy" id="shareCopyBtn">
+                <i class="fas fa-copy"></i>
+            </button>
+        </div>
+    </div>
+    
     <!-- Bottom Navigation -->
     <div class="bottom-nav">
         <div class="nav-item active" onclick="switchPage('dashboard')">
@@ -877,6 +1278,8 @@
                 }
                 // 无论是否连接，都更新语言设置
                 updateLanguage();
+                // 初始化海报生成器
+                initializePosterGenerator();
             });
             
             // 初始化自动填写邀请地址功能
@@ -1082,7 +1485,7 @@
                 
                 // 如果在奖励页面，生成二维码
                 if (document.getElementById('rewardsPage').classList.contains('active')) {
-                    generateQRCode();
+                    generateQRCode(userAccount);
                 }
             } else {
                 walletElement.textContent = currentLanguage === 'zh' ? '连接钱包' : 'Connect Wallet';
@@ -1239,7 +1642,7 @@
                 
                 // 如果在奖励页面，生成二维码
                 if (document.getElementById('rewardsPage').classList.contains('active')) {
-                    generateQRCode();
+                    generateQRCode(userAccount);
                 }
                 
             } catch (error) {
@@ -1412,73 +1815,231 @@
             }
         }
 
-        // 生成二维码
-        function generateQRCode() {
-            if (!userAccount) return;
-            
-            const url = `https://uid606.top/?invite=${userAccount}`;
-            const qrElement = document.getElementById('qrcode');
-            qrElement.innerHTML = '';
-            
-            qrCodeInstance = new QRCode(qrElement, {
-                text: url,
-                width: 220,
-                height: 220,
-                colorDark: '#8a6bff',
-                colorLight: '#1e1e2e',
-                correctLevel: QRCode.CorrectLevel.H
-            });
-        }
-
-        // 分享或复制链接
-        document.addEventListener('DOMContentLoaded', function() {
+        // 初始化海报生成器
+        function initializePosterGenerator() {
+            createSpaceDecoration();
+            const downloadBtn = document.getElementById('downloadBtn');
             const shareBtn = document.getElementById('shareBtn');
-            const copyLinkBtn = document.getElementById('copyLinkBtn');
+            const shareCloseBtn = document.getElementById('shareCloseBtn');
+            
+            if (downloadBtn) {
+                downloadBtn.addEventListener('click', function() {
+                    if (userAccount) {
+                        downloadPoster();
+                    } else {
+                        showToast('请先连接钱包');
+                    }
+                });
+            }
             
             if (shareBtn) {
                 shareBtn.addEventListener('click', function() {
-                    if (!userAccount) {
-                        connectWallet();
-                        return;
-                    }
-                    const url = `https://uid606.top/?invite=${userAccount}`;
-                    if (navigator.share) {
-                        navigator.share({
-                            title: 'Join Star Mining DApp',
-                            text: 'Check out this amazing mining dapp!',
-                            url: url
-                        }).catch(error => console.log('分享错误:', error));
+                    if (userAccount) {
+                        document.getElementById('sharePanel').style.display = 'block';
                     } else {
-                        navigator.clipboard.writeText(url)
-                            .then(() => {
-                                showToast(currentLanguage === 'zh' ? '链接已复制!' : 'Link copied!', 'success');
-                            })
-                            .catch(err => {
-                                console.error('复制失败:', err);
-                                showToast(currentLanguage === 'zh' ? '复制失败' : 'Copy failed', 'error');
-                            });
+                        showToast('请先连接钱包');
                     }
                 });
             }
             
-            if (copyLinkBtn) {
-                copyLinkBtn.addEventListener('click', function() {
-                    if (!userAccount) {
-                        connectWallet();
-                        return;
-                    }
-                    const url = `https://uid606.top/?invite=${userAccount}`;
-                    navigator.clipboard.writeText(url)
-                        .then(() => {
-                            showToast(currentLanguage === 'zh' ? '链接已复制!' : 'Link copied!', 'success');
-                        })
-                        .catch(err => {
-                            console.error('复制失败:', err);
-                            showToast(currentLanguage === 'zh' ? '复制失败' : 'Copy failed', 'error');
-                        });
+            if (shareCloseBtn) {
+                shareCloseBtn.addEventListener('click', function() {
+                    document.getElementById('sharePanel').style.display = 'none';
                 });
             }
-        });
+            
+            // 分享链接复制
+            document.getElementById('shareCopyBtn').addEventListener('click', function() {
+                const shareInput = document.getElementById('shareInput');
+                shareInput.select();
+                document.execCommand('copy');
+                showToast('链接已复制到剪贴板！');
+            });
+            
+            // 分享到Twitter
+            document.getElementById('shareTwitter').addEventListener('click', function() {
+                if (userAccount) {
+                    shareToTwitter(`https://uid606.top/?invite=${userAccount}`);
+                } else {
+                    showToast('请先连接钱包');
+                }
+            });
+            
+            // 分享到Telegram
+            document.getElementById('shareTelegram').addEventListener('click', function() {
+                if (userAccount) {
+                    shareToTelegram(`https://uid606.top/?invite=${userAccount}`);
+                } else {
+                    showToast('请先连接钱包');
+                }
+            });
+            
+            // 使用系统共享
+            document.getElementById('shareShare').addEventListener('click', function() {
+                if (userAccount) {
+                    shareWithSystem(`https://uid606.top/?invite=${userAccount}`);
+                } else {
+                    showToast('请先连接钱包');
+                }
+            });
+        }
+
+        // 创建宇宙装饰
+        function createSpaceDecoration() {
+            const spaceContainer = document.getElementById('spaceDecoration');
+            spaceContainer.innerHTML = '';
+            const starCount = 100;
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.width = Math.random() * 3 + 'px';
+                star.style.height = star.style.width;
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.opacity = Math.random();
+                star.style.animationDelay = Math.random() * 3 + 's';
+                spaceContainer.appendChild(star);
+            }
+            
+            // 添加行星
+            const planetCount = 3;
+            for (let i = 0; i < planetCount; i++) {
+                const planet = document.createElement('div');
+                planet.className = 'planet';
+                const size = Math.random() * 20 + 10;
+                planet.style.width = size + 'px';
+                planet.style.height = size + 'px';
+                planet.style.left = Math.random() * 100 + '%';
+                planet.style.top = Math.random() * 100 + '%';
+                spaceContainer.appendChild(planet);
+            }
+        }
+
+        // 生成二维码
+        function generateQRCode(walletAddress) {
+            if (!walletAddress) return;
+            
+            // 更新奖励页面的二维码
+            const qrElement = document.getElementById('qrcode');
+            qrElement.innerHTML = '';
+            
+            // 使用钱包地址生成邀请链接
+            const inviteUrl = `https://uid606.top/?invite=${encodeURIComponent(walletAddress)}`;
+            
+            // 生成新二维码
+            new QRCode(qrElement, {
+                text: inviteUrl,
+                width: 220,
+                height: 220,
+                colorDark: '#8a6bff',
+                colorLight: 'white',
+                correctLevel: QRCode.CorrectLevel.H
+            });
+            
+            // 同时更新海报的二维码
+            const posterQrElement = document.getElementById('posterQrcode');
+            if (posterQrElement) {
+                posterQrElement.innerHTML = '';
+                new QRCode(posterQrElement, {
+                    text: inviteUrl,
+                    width: 90,
+                    height: 90,
+                    colorDark: '#5d9bff',
+                    colorLight: 'white',
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+            }
+            
+            // 设置分享链接
+            const shareInput = document.getElementById('shareInput');
+            if (shareInput) {
+                shareInput.value = inviteUrl;
+            }
+        }
+
+        // 保存海报
+        function downloadPoster() {
+            const overlay = document.getElementById('downloadOverlay');
+            const container = document.getElementById('poster');
+            const inviteUrl = `https://uid606.top/?invite=${userAccount}`;
+            
+            // 显示加载指示器
+            overlay.style.opacity = '1';
+            overlay.style.pointerEvents = 'all';
+            
+            // 延迟生成海报，给浏览器时间渲染UI变化
+            setTimeout(() => {
+                // 生成海报二维码
+                generateQRCode(userAccount);
+                
+                // 使用html2canvas生成海报
+                html2canvas(container, {
+                    scale: 2,
+                    backgroundColor: null,
+                    useCORS: true,
+                    allowTaint: true,
+                    logging: false
+                }).then(canvas => {
+                    // 创建下载链接
+                    const link = document.createElement('a');
+                    link.download = '星际能源站-推广海报.png';
+                    link.href = canvas.toDataURL('image/png');
+                    
+                    // 触发点击事件
+                    const clickEvent = new MouseEvent('click', {
+                        'view': window,
+                        'bubbles': true,
+                        'cancelable': false
+                    });
+                    link.dispatchEvent(clickEvent);
+                    
+                    // 恢复界面
+                    setTimeout(() => {
+                        overlay.style.opacity = '0';
+                        overlay.style.pointerEvents = 'none';
+                        showToast('海报生成成功！');
+                    }, 500);
+                }).catch(error => {
+                    console.error('生成海报失败:', error);
+                    overlay.style.opacity = '0';
+                    overlay.style.pointerEvents = 'none';
+                    showToast('海报保存失败，请重试');
+                });
+            }, 300);
+        }
+
+        // 分享到Twitter/X
+        function shareToTwitter(inviteUrl) {
+            const text = encodeURIComponent('加入星际能源站，开启宇宙能源采集之旅！');
+            const url = encodeURIComponent(inviteUrl);
+            const twitterUrl = `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
+            window.open(twitterUrl, '_blank', 'width=600,height=400');
+        }
+
+        // 分享到Telegram
+        function shareToTelegram(inviteUrl) {
+            const text = encodeURIComponent('加入星际能源站，开启宇宙能源采集之旅！');
+            const url = encodeURIComponent(inviteUrl);
+            const telegramUrl = `https://t.me/share/url?url=${url}&text=${text}`;
+            window.open(telegramUrl, '_blank', 'width=600,height=400');
+        }
+
+        // 使用系统共享功能
+        function shareWithSystem(inviteUrl) {
+            if (navigator.share) {
+                navigator.share({
+                    title: '星际能源站',
+                    text: '加入星际能源站，开启宇宙能源采集之旅！',
+                    url: inviteUrl
+                }).then(() => showToast('分享成功'))
+                  .catch(error => showToast('分享取消'));
+            } else {
+                // 如果不支持Web Share API，复制邀请链接
+                navigator.clipboard.writeText(inviteUrl)
+                    .then(() => showToast('链接已复制到剪贴板！'))
+                    .catch(() => showToast('复制失败，请手动复制'));
+            }
+        }
 
         // 切换页面
         function switchPage(page) {
@@ -1496,7 +2057,7 @@
             
             // 如果切换到奖励页面，生成二维码
             if (page === 'rewards' && userAccount) {
-                generateQRCode();
+                generateQRCode(userAccount);
             }
             
             // 如果切换到仪表盘或全局页面，加载数据
@@ -1562,7 +2123,7 @@
         }
 
         // 显示 toast 通知
-        function showToast(message, type) {
+        function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
             toast.textContent = message;
             toast.className = 'toast ' + type + ' show';
