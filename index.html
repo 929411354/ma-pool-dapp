@@ -443,7 +443,7 @@
             border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
-            transition: background 0.3s;
+            transition: all 0.3s;
         }
         .share-btn:hover {
             background: #7a5bff;
@@ -583,7 +583,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 2000;
+            z-index: 1000;
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.3s ease;
@@ -595,9 +595,9 @@
             border-radius: 15px;
             text-align: center;
             font-size: 18px;
-            box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 30px rgba(138, 107, 255, 0.2);
         }
-        .loading-overlay {
+        .stellar-loading-overlay {
             position: fixed;
             top: 0;
             left: 0;
@@ -607,12 +607,12 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 2000;
+            z-index: 1000;
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.3s ease;
         }
-        .loading-spinner {
+        .stellar-loading-spinner {
             width: 60px;
             height: 60px;
             border: 5px solid rgba(255, 255, 255, 0.3);
@@ -620,114 +620,24 @@
             border-top: 5px solid #667eea;
             animation: spin 1s linear infinite;
         }
-        .share-panel {
-            background: rgba(0, 0, 0, 0.7);
-            border-radius: 15px;
-            padding: 15px;
-            margin-top: 20px;
-            display: none;
-        }
-        .share-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        .share-title {
-            font-size: 18px;
-            font-weight: bold;
-            color: #5d9bff;
-        }
-        .share-close {
-            background: none;
-            border: none;
-            color: #ff6b6b;
-            font-size: 20px;
-            cursor: pointer;
-        }
-        .share-options {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        .share-option {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 10px;
-            transition: background 0.3s;
-        }
-        .share-option:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-        .share-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 20px;
-            margin-bottom: 5px;
-        }
-        .share-icon.twitter {
-            background: #1DA1F2;
-            color: white;
-        }
-        .share-icon.telegram {
-            background: #0088cc;
-            color: white;
-        }
-        .share-icon.share {
-            background: #8a6bff;
-            color: white;
-        }
-        .share-label {
-            font-size: 12px;
-            text-align: center;
-        }
-        .share-url {
-            display: flex;
-            margin-top: 10px;
-        }
-        .share-input {
-            flex: 1;
-            padding: 10px;
-            border-radius: 8px 0 0 8px;
-            border: none;
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            font-size: 14px;
-        }
-        .share-copy {
-            background: #5d9bff;
-            color: white;
-            border: none;
-            padding: 0 15px;
-            border-radius: 0 8px 8px 0;
-            cursor: pointer;
-        }
-        .poster-container {
-            position: fixed;
-            top: -9999px;
-            left: -9999px;
+        .stellar-poster-container {
+            position: relative;
+            z-index: 1;
             width: 375px;
             height: 667px;
-            background: linear-gradient(135deg, #091947 0%, #0a0529 100%);
+            background: linear-gradient(to bottom, #2a1957, #0d0b2b);
             border-radius: 15px;
             overflow: hidden;
-            z-index: -1;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
         }
-        .space-decoration {
+        .stellar-space-decoration {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             pointer-events: none;
+            z-index: -1;
         }
         .star {
             position: absolute;
@@ -745,24 +655,24 @@
             0%, 100% { opacity: 0.3; }
             50% { opacity: 1; }
         }
-        .header-section {
+        .stellar-header-section {
             position: relative;
             z-index: 2;
             text-align: center;
             padding: 30px 20px 10px;
         }
-        .logo-text {
+        .stellar-logo-text {
             font-size: 28px;
             font-weight: bold;
             color: #5d9bff;
             text-shadow: 0 0 10px rgba(93, 155, 255, 0.5);
         }
-        .subtitle {
+        .stellar-subtitle {
             font-size: 16px;
             color: #ffcf5c;
             margin-top: 5px;
         }
-        .character-section {
+        .stellar-character-section {
             position: relative;
             z-index: 2;
             display: flex;
@@ -771,7 +681,7 @@
             height: 200px;
             margin: 20px 0;
         }
-        .spaceship {
+        .stellar-spaceship {
             width: 60px;
             height: 60px;
             background: linear-gradient(to bottom, #ff6b6b, #ff9b5d);
@@ -782,7 +692,7 @@
             align-items: center;
             box-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
         }
-        .spaceship::before {
+        .stellar-spaceship::before {
             content: "";
             position: absolute;
             width: 20px;
@@ -790,18 +700,19 @@
             background: rgba(255, 255, 255, 0.3);
             border-radius: 50%;
             top: 15px;
+            left: 5px;
         }
-        .miner {
+        .stellar-miner {
             margin-left: 20px;
         }
-        .miner-body {
+        .stellar-miner-body {
             width: 40px;
             height: 60px;
             background: linear-gradient(to bottom, #4ecdc4, #2a1957);
             border-radius: 20px 20px 0 0;
             position: relative;
         }
-        .miner-helmet {
+        .stellar-miner-helmet {
             width: 30px;
             height: 30px;
             background: #4ecdc4;
@@ -810,7 +721,7 @@
             top: -15px;
             left: 5px;
         }
-        .miner-glass {
+        .stellar-miner-glass {
             width: 20px;
             height: 15px;
             background: rgba(255, 255, 255, 0.3);
@@ -819,20 +730,20 @@
             top: 8px;
             left: 5px;
         }
-        .miner-ore {
+        .stellar-miner-ore {
             position: absolute;
             top: -10px;
             right: -10px;
             color: #ffd700;
             font-size: 24px;
         }
-        .info-section {
+        .stellar-info-section {
             position: relative;
             z-index: 2;
             display: flex;
             padding: 0 20px;
         }
-        .qrcode-container {
+        .stellar-qrcode-container {
             width: 90px;
             height: 90px;
             background: white;
@@ -841,21 +752,21 @@
             margin-right: 15px;
             box-shadow: 0 0 20px rgba(138, 107, 255, 0.3);
         }
-        .text-container {
+        .stellar-text-container {
             flex: 1;
         }
-        .character-name {
+        .stellar-character-name {
             font-size: 18px;
             font-weight: bold;
             color: #5d9bff;
             margin-bottom: 5px;
         }
-        .call-to-action {
+        .stellar-call-to-action {
             font-size: 14px;
             color: #ffcf5c;
             line-height: 1.4;
         }
-        .action-buttons {
+        .stellar-action-buttons {
             display: flex;
             justify-content: center;
             gap: 15px;
@@ -863,7 +774,7 @@
             z-index: 10;
             position: relative;
         }
-        .action-btn {
+        .stellar-action-btn {
             background: linear-gradient(to right, #8a6bff, #5d9bff);
             color: white;
             border: none;
@@ -877,12 +788,102 @@
             align-items: center;
             gap: 8px;
         }
-        .action-btn:hover {
+        .stellar-action-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(138, 107, 255, 0.4);
         }
-        .action-btn.secondary {
+        .stellar-action-btn.secondary {
             background: rgba(255, 255, 255, 0.1);
+        }
+        .stellar-share-panel {
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            padding: 15px;
+            margin-top: 20px;
+            display: none;
+        }
+        .stellar-share-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .stellar-share-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #5d9bff;
+        }
+        .stellar-share-close {
+            background: none;
+            border: none;
+            color: #ff6b6b;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        .stellar-share-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .stellar-share-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 10px;
+            transition: background 0.3s;
+        }
+        .stellar-share-option:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .stellar-share-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+        .stellar-share-icon.twitter {
+            background: #1DA1F2;
+            color: white;
+        }
+        .stellar-share-icon.telegram {
+            background: #0088cc;
+            color: white;
+        }
+        .stellar-share-icon.share {
+            background: #8a6bff;
+            color: white;
+        }
+        .stellar-share-label {
+            font-size: 12px;
+            text-align: center;
+        }
+        .stellar-share-url {
+            display: flex;
+            margin-top: 10px;
+        }
+        .stellar-share-input {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px 0 0 8px;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 14px;
+        }
+        .stellar-share-copy {
+            background: #5d9bff;
+            color: white;
+            border: none;
+            padding: 0 15px;
+            border-radius: 0 8px 8px 0;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -1179,70 +1180,70 @@
             </div>
         </div>
     </div>
-    <div class="loading-overlay" id="loadingOverlay">
-        <div class="loading-spinner"></div>
+    <div class="stellar-loading-overlay" id="loadingOverlay">
+        <div class="stellar-loading-spinner"></div>
     </div>
-    <div class="poster-container" id="poster">
-        <div class="space-decoration" id="spaceDecoration"></div>
-        <div class="header-section">
-            <div class="logo-text">星际能源站</div>
-            <div class="subtitle">玩赚宇宙能源时代</div>
+    <div class="stellar-poster-container" id="poster">
+        <div class="stellar-space-decoration" id="spaceDecoration"></div>
+        <div class="stellar-header-section">
+            <div class="stellar-logo-text">星际能源站</div>
+            <div class="stellar-subtitle">玩赚宇宙能源时代</div>
         </div>
-        <div class="character-section">
-            <div class="spaceship">
+        <div class="stellar-character-section">
+            <div class="stellar-spaceship">
                 <i class="fas fa-rocket"></i>
             </div>
-            <div class="miner">
-                <div class="miner-body">
-                    <div class="miner-helmet">
-                        <div class="miner-glass"></div>
+            <div class="stellar-miner">
+                <div class="stellar-miner-body">
+                    <div class="stellar-miner-helmet">
+                        <div class="stellar-miner-glass"></div>
                     </div>
                 </div>
-                <div class="miner-ore">
+                <div class="stellar-miner-ore">
                     <i class="fas fa-gem"></i>
                 </div>
             </div>
         </div>
-        <div class="info-section">
-            <div class="qrcode-container">
+        <div class="stellar-info-section">
+            <div class="stellar-qrcode-container">
                 <div id="posterQrcode"></div>
             </div>
-            <div class="text-container">
-                <div class="character-name">星际探索者 鲁卡</div>
-                <div class="call-to-action">快来扫码加入吧!<br>探索宇宙能源，积累数字资产</div>
+            <div class="stellar-text-container">
+                <div class="stellar-character-name">星际探索者 鲁卡</div>
+                <div class="stellar-call-to-action">快来扫码加入吧!<br>探索宇宙能源，积累数字资产</div>
             </div>
         </div>
     </div>
-    <div class="share-panel" id="sharePanel">
-        <div class="share-header">
-            <div class="share-title">分享邀请链接</div>
-            <button class="share-close" id="shareCloseBtn">
+    <div class="stellar-share-panel" id="sharePanel">
+        <div class="stellar-share-header">
+            <div class="stellar-share-title">分享邀请链接</div>
+            <button class="stellar-share-close" id="shareCloseBtn">
                 <i class="fas fa-times"></i>
             </button>
         </div>
-        <div class="share-options">
-            <div class="share-option" id="shareTwitter">
-                <div class="share-icon twitter">
+        <div class="stellar-share-options">
+            <div class="stellar-share-option" id="shareTwitter">
+                <div class="stellar-share-icon twitter">
                     <i class="fab fa-twitter"></i>
                 </div>
-                <div class="share-label">Twitter/X</div>
+                <div class="stellar-share-label">Twitter/X</div>
             </div>
-            <div class="share-option" id="shareTelegram">
-                <div class="share-icon telegram">
+            <div class="stellar-share-option" id="shareTelegram">
+                <div class="stellar-share-icon telegram">
                     <i class="fab fa-telegram"></i>
                 </div>
-                <div class="share-label">Telegram</div>
+                <div class="stellar-share-label">Telegram</div>
             </div>
-            <div class="share-option" id="shareShare">
-                <div class="share-icon share">
+            <div class="stellar-share-option" id="shareShare">
+                <div class="stellar-share-icon share">
                     <i class="fas fa-share-alt"></i>
                 </div>
-                <div class="share-label">共享</div>
+                <div class="stellar-share-label">共享</div>
             </div>
         </div>
-        <div class="share-url">
-            <input type="text" class="share-input" id="shareInput" readonly>
-            <button class="share-copy" id="shareCopyBtn">
+        <div class="stellar-share-url">
+            <input type="text" class="stellar-share-input" id="shareInput" readonly>
+            <button class="stellar-share-copy" id="shareCopyBtn">
                 <i class="fas fa-copy"></i>
             </button>
         </div>
