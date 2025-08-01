@@ -900,6 +900,23 @@
             -ms-user-select: none;
             user-select: none;
         }
+        /* QR Code Error State */
+        .qrcode-error {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 90px;
+            height: 90px;
+            background: #f44336;
+            border-radius: 15px;
+            padding: 5px;
+            margin-right: 15px;
+            box-shadow: 0 0 20px rgba(138, 107, 255, 0.3);
+        }
+        .qrcode-error i {
+            color: white;
+            font-size: 24px;
+        }
     </style>
 </head>
 <body>
@@ -1220,7 +1237,7 @@
             </div>
         </div>
         <div class="info-section">
-            <div class="qrcode-container">
+            <div class="qrcode-container" id="qrcodeContainer">
                 <div id="posterQrcode"></div>
             </div>
             <div class="text-container">
@@ -1349,6 +1366,7 @@
         let isOwner = false;
         let currentLanguage = 'zh'; // 'zh' or 'en'
         let qrCodeInstance;
+        let qrcodeGenerated = false;
         // Language dictionaries
         const translations = {
             zh: {
@@ -1401,7 +1419,9 @@
                 powerMultiplier: "算力 ×",
                 powerRatioText: "总算力占比:",
                 shareText: "分享",
-                copyText: "复制"
+                copyText: "复制",
+                qrcodeError: "二维码生成失败，请重试",
+                qrcodeLoading: "生成二维码中..."
             },
             en: {
                 connectWalletText: "Connect Wallet",
@@ -1453,7 +1473,9 @@
                 powerMultiplier: "Power ×",
                 powerRatioText: "Power Ratio:",
                 shareText: "Share",
-                copyText: "Copy"
+                copyText: "Copy",
+                qrcodeError: "QR Code generation failed, please retry",
+                qrcodeLoading: "Generating QR Code..."
             }
         };
         // 初始化 Web3 并连接钱包
@@ -1540,6 +1562,10 @@
                     document.getElementById('machinesCard').style.display = 'block';
                     // 加载仪表盘数据
                     await loadDashboardData();
+                    // 如果当前在奖励页面，生成二维码
+                    if (document.getElementById('rewardsPage').classList.contains('active')) {
+                        generateQRCode(userAccount);
+                    }
                 }
             } catch (error) {
                 console.error('连接错误:', error);
@@ -1622,6 +1648,10 @@
                 document.getElementById('dailyProduction').textContent = formatNumber(web3.utils.fromWei(globalDashboard.dailyProduction, 'ether'));
                 document.getElementById('currentBlock').textContent = globalDashboard.currentBlock;
                 document.getElementById('baseReward').textContent = formatNumber(web3.utils.fromWei(globalDashboard.baseReward, 'ether'));
+                // 如果当前在奖励页面，重新生成二维码
+                if (document.getElementById('rewardsPage').classList.contains('active')) {
+                    generateQRCode(userAccount);
+                }
             } catch (error) {
                 console.error('加载数据失败:', error);
                 showToast(currentLanguage === 'zh' ? `加载数据失败: ${error.message}` : `Failed to load data: ${error.message}`, 'error');
@@ -1784,7 +1814,6 @@
             const shareCloseBtn = document.getElementById('shareCloseBtn');
             const mobileSaveCloseBtn = document.getElementById('mobileSaveCloseBtn');
             const mobileSaveInstructions = document.getElementById('mobileSaveInstructions');
-            
             if (downloadBtn) {
                 downloadBtn.addEventListener('click', function() {
                     if (userAccount) {
@@ -1794,7 +1823,6 @@
                     }
                 });
             }
-            
             if (shareBtn) {
                 shareBtn.addEventListener('click', function() {
                     if (userAccount) {
@@ -1804,13 +1832,11 @@
                     }
                 });
             }
-            
             if (shareCloseBtn) {
                 shareCloseBtn.addEventListener('click', function() {
                     document.getElementById('sharePanel').style.display = 'none';
                 });
             }
-            
             // 分享链接复制
             document.getElementById('shareCopyBtn').addEventListener('click', function() {
                 const shareInput = document.getElementById('shareInput');
@@ -1818,7 +1844,6 @@
                 document.execCommand('copy');
                 showToast('链接已复制到剪贴板！');
             });
-            
             // 分享到Twitter
             document.getElementById('shareTwitter').addEventListener('click', function() {
                 if (userAccount) {
@@ -1827,7 +1852,6 @@
                     showToast('请先连接钱包');
                 }
             });
-            
             // 分享到Telegram
             document.getElementById('shareTelegram').addEventListener('click', function() {
                 if (userAccount) {
@@ -1836,7 +1860,6 @@
                     showToast('请先连接钱包');
                 }
             });
-            
             // 使用系统共享
             document.getElementById('shareShare').addEventListener('click', function() {
                 if (userAccount) {
@@ -1845,7 +1868,6 @@
                     showToast('请先连接钱包');
                 }
             });
-            
             // 关闭移动设备保存说明
             mobileSaveCloseBtn.addEventListener('click', function() {
                 mobileSaveInstructions.style.opacity = '0';
@@ -1883,25 +1905,46 @@
         }
         // 生成二维码
         function generateQRCode(walletAddress) {
-            if (!walletAddress) return;
-            // 使用钱包地址生成邀请链接
-            const inviteUrl = `https://uid606.top/?invite=${encodeURIComponent(walletAddress)}`;
+            const qrcodeContainer = document.getElementById('qrcodeContainer');
+            const posterQrcode = document.getElementById('posterQrcode');
+            const lang = translations[currentLanguage];
+            
             // 清除旧的二维码
-            const qrcodeContainer = document.getElementById('posterQrcode');
-            qrcodeContainer.innerHTML = '';
-            // 生成新二维码
-            new QRCode(document.getElementById('posterQrcode'), {
-                text: inviteUrl,
-                width: 90,
-                height: 90,
-                colorDark: '#5d9bff',
-                colorLight: 'white',
-                correctLevel: QRCode.CorrectLevel.H
-            });
-            // 设置分享链接
-            const shareInput = document.getElementById('shareInput');
-            if (shareInput) {
-                shareInput.value = inviteUrl;
+            posterQrcode.innerHTML = '';
+            
+            if (!walletAddress) {
+                // 显示错误状态
+                qrcodeContainer.innerHTML = `<div class="qrcode-error"><i class="fas fa-exclamation-triangle"></i></div>`;
+                showToast(lang.qrcodeError, 'error');
+                return;
+            }
+            
+            try {
+                // 使用钱包地址生成邀请链接
+                const inviteUrl = `https://uid606.top/?invite=${encodeURIComponent(walletAddress)}`;
+                
+                // 生成新二维码
+                qrCodeInstance = new QRCode(posterQrcode, {
+                    text: inviteUrl,
+                    width: 90,
+                    height: 90,
+                    colorDark: '#5d9bff',
+                    colorLight: 'white',
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+                
+                // 设置分享链接
+                const shareInput = document.getElementById('shareInput');
+                if (shareInput) {
+                    shareInput.value = inviteUrl;
+                }
+                
+                qrcodeGenerated = true;
+            } catch (error) {
+                console.error('生成二维码失败:', error);
+                qrcodeContainer.innerHTML = `<div class="qrcode-error"><i class="fas fa-exclamation-triangle"></i></div>`;
+                showToast(lang.qrcodeError, 'error');
+                qrcodeGenerated = false;
             }
         }
         // 保存海报
@@ -1910,6 +1953,7 @@
             const container = document.getElementById('poster');
             const mobileInstructions = document.getElementById('mobileSaveInstructions');
             const mobileImageContainer = document.getElementById('mobileSaveImageContainer');
+            const lang = translations[currentLanguage];
             
             // 显示加载指示器
             overlay.style.opacity = '1';
@@ -1917,66 +1961,72 @@
             
             // 延迟生成海报，给浏览器时间渲染UI变化
             setTimeout(() => {
+                // 确保有用户账户
+                if (!userAccount) {
+                    overlay.style.opacity = '0';
+                    overlay.style.pointerEvents = 'none';
+                    showToast('请先连接钱包');
+                    return;
+                }
+                
                 // 生成海报二维码
                 generateQRCode(userAccount);
                 
-                // 使用html2canvas生成海报
-                html2canvas(container, {
-                    scale: 2,
-                    backgroundColor: null,
-                    useCORS: true,
-                    allowTaint: true,
-                    logging: false,
-                    imageTimeout: 15000,
-                    foreignObjectRendering: false
-                }).then(canvas => {
-                    // 检查是否是移动设备
-                    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-                    
-                    if (isMobile) {
-                        // 移动设备特殊处理 - 显示长按保存说明
-                        // 创建图片元素
-                        const img = document.createElement('img');
-                        img.src = canvas.toDataURL('image/png');
-                        img.style.width = '90%';
-                        img.style.maxWidth = '300px';
-                        img.style.borderRadius = '10px';
-                        img.style.boxShadow = '0 0 20px rgba(255, 255, 255, 0.2)';
-                        
-                        // 清空容器并添加图片
-                        mobileImageContainer.innerHTML = '';
-                        mobileImageContainer.appendChild(img);
-                        
-                        // 显示移动设备保存说明
-                        mobileInstructions.style.opacity = '1';
-                        mobileInstructions.style.pointerEvents = 'all';
-                    } else {
-                        // 非移动设备正常下载
-                        const link = document.createElement('a');
-                        link.download = '星际能源站-推广海报.png';
-                        link.href = canvas.toDataURL('image/png');
-                        
-                        // 触发点击事件
-                        const clickEvent = new MouseEvent('click', {
-                            'view': window,
-                            'bubbles': true,
-                            'cancelable': false
-                        });
-                        link.dispatchEvent(clickEvent);
-                    }
-                    
-                    // 恢复界面
-                    setTimeout(() => {
+                // 等待二维码生成完成
+                setTimeout(() => {
+                    // 使用html2canvas生成海报
+                    html2canvas(container, {
+                        scale: 2,
+                        backgroundColor: null,
+                        useCORS: true,
+                        allowTaint: true,
+                        logging: false,
+                        imageTimeout: 15000,
+                        foreignObjectRendering: false
+                    }).then(canvas => {
+                        // 检查是否是移动设备
+                        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+                        if (isMobile) {
+                            // 移动设备特殊处理 - 显示长按保存说明
+                            // 创建图片元素
+                            const img = document.createElement('img');
+                            img.src = canvas.toDataURL('image/png');
+                            img.style.width = '90%';
+                            img.style.maxWidth = '300px';
+                            img.style.borderRadius = '10px';
+                            img.style.boxShadow = '0 0 20px rgba(255, 255, 255, 0.2)';
+                            // 清空容器并添加图片
+                            mobileImageContainer.innerHTML = '';
+                            mobileImageContainer.appendChild(img);
+                            // 显示移动设备保存说明
+                            mobileInstructions.style.opacity = '1';
+                            mobileInstructions.style.pointerEvents = 'all';
+                        } else {
+                            // 非移动设备正常下载
+                            const link = document.createElement('a');
+                            link.download = '星际能源站-推广海报.png';
+                            link.href = canvas.toDataURL('image/png');
+                            // 触发点击事件
+                            const clickEvent = new MouseEvent('click', {
+                                'view': window,
+                                'bubbles': true,
+                                'cancelable': false
+                            });
+                            link.dispatchEvent(clickEvent);
+                        }
+                        // 恢复界面
+                        setTimeout(() => {
+                            overlay.style.opacity = '0';
+                            overlay.style.pointerEvents = 'none';
+                            showToast('海报已生成，长按图片保存到相册');
+                        }, 500);
+                    }).catch(error => {
+                        console.error('生成海报失败:', error);
                         overlay.style.opacity = '0';
                         overlay.style.pointerEvents = 'none';
-                        showToast('海报已生成，长按图片保存到相册');
-                    }, 500);
-                }).catch(error => {
-                    console.error('生成海报失败:', error);
-                    overlay.style.opacity = '0';
-                    overlay.style.pointerEvents = 'none';
-                    showToast('海报保存失败，请重试');
-                });
+                        showToast('海报保存失败，请重试');
+                    });
+                }, 500); // 等待二维码生成
             }, 300);
         }
         // 分享到Twitter/X
@@ -2076,6 +2126,10 @@
             // 如果在仪表盘页面，重新加载数据以更新机器名称和文本
             if (document.getElementById('dashboardPage').classList.contains('active')) {
                 loadDashboardData();
+            }
+            // 如果在奖励页面，重新生成二维码文本
+            if (document.getElementById('rewardsPage').classList.contains('active') && userAccount) {
+                generateQRCode(userAccount);
             }
         }
         // 显示/隐藏加载状态
