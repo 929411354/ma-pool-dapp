@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -926,10 +926,10 @@
     <div class="toast" id="toast"></div>
     <!-- Wallet Info and Language Toggle Container -->
     <div class="wallet-info-container">
-        <div class="wallet-info red" id="walletAddress" onclick="connectWallet()">连接钱包</div>
+        <div class="wallet-info red" id="walletAddress" onclick="connectWallet()">Connect Wallet</div>
         <button class="lang-toggle" onclick="toggleLanguage()" id="langBtn">
             <i class="fas fa-globe"></i>
-            <span id="langText">中文</span>
+            <span id="langText">English</span>
         </button>
     </div>
     <!-- Dashboard Page (Main Page) -->
@@ -949,36 +949,36 @@
             <div class="card" id="dashboardCard">
                 <div class="card-title">
                     <i class="fas fa-chart-line"></i>
-                    <span id="dashboardTitle">个人仪表盘</span>
+                    <span id="dashboardTitle">Personal Dashboard</span>
                 </div>
                 <div class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-value" id="tokenBalance">0</div>
-                        <div class="stat-label" id="balanceLabel">α余额</div>
+                        <div class="stat-label" id="balanceLabel">α Balance</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-value" id="totalEarnings">0</div>
-                        <div class="stat-label" id="earningsLabel">累计收益</div>
+                        <div class="stat-label" id="earningsLabel">Total Earnings</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-value" id="dailyReward">0</div>
-                        <div class="stat-label" id="dailyLabel">今日收益</div>
+                        <div class="stat-label" id="dailyLabel">Daily Reward</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-value" id="unclaimedReward">0</div>
-                        <div class="stat-label" id="unclaimedLabel">未领取</div>
+                        <div class="stat-label" id="unclaimedLabel">Unclaimed</div>
                     </div>
                 </div>
                 <button class="btn btn-accent btn-full" onclick="claimRewards()" id="claimBtn">
                     <i class="fas fa-gift"></i>
-                    <span id="claimText">领取收益</span>
+                    <span id="claimText">Claim Rewards</span>
                 </button>
             </div>
             <!-- Machines -->
             <div class="card" id="machinesCard">
                 <div class="card-title">
                     <i class="fas fa-microchip"></i>
-                    <span id="devicesTitle">设备状态</span>
+                    <span id="devicesTitle">Device Status</span>
                 </div>
                 <div class="machine-list" id="machineList">
                     <!-- Machines will be populated here -->
@@ -1004,10 +1004,10 @@
                 </div>
             </div>
             <div class="tabs">
-                <div class="tab active" onclick="switchTab('initial')" id="initialTab">初始设备</div>
-                <div class="tab" onclick="switchTab('power')" id="powerTab">进阶设备</div>
+                <div class="tab active" onclick="switchTab('initial')" id="initialTab">Initial Device</div>
+                <div class="tab" onclick="switchTab('power')" id="powerTab">Power Device</div>
                 <!-- 测试设备标签页 -->
-                <div class="tab" onclick="switchTab('test')" id="testTab" style="display: none;">测试设备</div>
+                <div class="tab" onclick="switchTab('test')" id="testTab" style="display: none;">Test Device</div>
             </div>
             <!-- Initial Machine -->
             <div class="tab-content active" id="initialContent">
@@ -1015,12 +1015,12 @@
                     <div class="machine-icon">
                         <i class="fas fa-moon"></i>
                     </div>
-                    <h3 id="moonlightName">月光转换器</h3>
+                    <h3 id="moonlightName">Moonlight Converter</h3>
                     <div class="machine-price">0.01 BNB</div>
-                    <p id="limitText">每人限购1台</p>
+                    <p id="limitText">Limit 1 per person</p>
                     <button class="btn btn-primary btn-full" onclick="buyInitialMachine()" id="buyInitialBtn">
                         <i class="fas fa-shopping-cart"></i>
-                        <span id="buyInitialText">购买设备</span>
+                        <span id="buyInitialText">Buy Device</span>
                     </button>
                 </div>
             </div>
@@ -1030,48 +1030,48 @@
                     <div class="machine-icon">
                         <i class="fas fa-star"></i>
                     </div>
-                    <h3 id="stardustName">星尘收集器L1</h3>
+                    <h3 id="stardustName">Stardust Collector L1</h3>
                     <div class="machine-price" id="price1">100 α</div>
-                    <p id="multiplier1">算力 × 1.76</p>
+                    <p id="multiplier1">Power × 1.76</p>
                     <div class="input-group">
                         <input type="number" id="count1" value="1" min="1" max="100">
-                        <button class="btn btn-secondary" onclick="buyPowerMachine(0)">购买</button>
+                        <button class="btn btn-secondary" onclick="buyPowerMachine(0)">Buy</button>
                     </div>
                 </div>
                 <div class="card machine-card">
                     <div class="machine-icon">
                         <i class="fas fa-wind"></i>
                     </div>
-                    <h3 id="quantumName">量子蒲公英L2</h3>
+                    <h3 id="quantumName">Quantum Dandelion L2</h3>
                     <div class="machine-price" id="price2">200 α</div>
-                    <p id="multiplier2">算力 × 3.30</p>
+                    <p id="multiplier2">Power × 3.30</p>
                     <div class="input-group">
                         <input type="number" id="count2" value="1" min="1" max="100">
-                        <button class="btn btn-secondary" onclick="buyPowerMachine(1)">购买</button>
+                        <button class="btn btn-secondary" onclick="buyPowerMachine(1)">Buy</button>
                     </div>
                 </div>
                 <div class="card machine-card">
                     <div class="machine-icon">
                         <i class="fas fa-sun"></i>
                     </div>
-                    <h3 id="auroraName">极光编织机L3</h3>
+                    <h3 id="auroraName">Aurora Weaver L3</h3>
                     <div class="machine-price" id="price3">300 α</div>
-                    <p id="multiplier3">算力 × 4.84</p>
+                    <p id="multiplier3">Power × 4.84</p>
                     <div class="input-group">
                         <input type="number" id="count3" value="1" min="1" max="100">
-                        <button class="btn btn-secondary" onclick="buyPowerMachine(2)">购买</button>
+                        <button class="btn btn-secondary" onclick="buyPowerMachine(2)">Buy</button>
                     </div>
                 </div>
                 <div class="card machine-card">
                     <div class="machine-icon">
                         <i class="fas fa-infinity"></i>
                     </div>
-                    <h3 id="galaxyName">银河过滤器L4</h3>
+                    <h3 id="galaxyName">Galaxy Filter L4</h3>
                     <div class="machine-price" id="price4">500 α</div>
-                    <p id="multiplier4">算力 × 7.15</p>
+                    <p id="multiplier4">Power × 7.15</p>
                     <div class="input-group">
                         <input type="number" id="count4" value="1" min="1" max="100">
-                        <button class="btn btn-secondary" onclick="buyPowerMachine(3)">购买</button>
+                        <button class="btn btn-secondary" onclick="buyPowerMachine(3)">Buy</button>
                     </div>
                 </div>
             </div>
@@ -1081,17 +1081,17 @@
                     <div class="machine-icon">
                         <i class="fas fa-ghost"></i>
                     </div>
-                    <h3 id="phantomName">幻影调试器</h3>
+                    <h3 id="phantomName">Phantom Debugger</h3>
                     <div class="machine-price">0.0001 BNB</div>
                     <!-- 测试设备按钮 -->
                     <button class="btn btn-primary btn-full" id="testMachineBtn" onclick="buyTestMachine()">
                         <i class="fas fa-shopping-cart"></i>
-                        <span id="buyTestText">购买设备</span>
+                        <span id="buyTestText">Buy Device</span>
                     </button>
                     <!-- 无权限提示 -->
                     <div id="noPermissionMessage" style="display: none; text-align: center; margin-top: 15px;">
-                        <p>您没有权限购买测试设备。</p>
-                        <p>此功能仅对管理员或合约所有者开放。</p>
+                        <p>You don't have permission to buy test devices.</p>
+                        <p>This feature is only available to administrators or contract owners.</p>
                     </div>
                 </div>
             </div>
@@ -1113,35 +1113,34 @@
             <div class="card">
                 <div class="card-title">
                     <i class="fas fa-user-friends"></i>
-                    <span id="referralTitle">推荐体系</span>
+                    <span id="referralTitle">Referral System</span>
                 </div>
                 <div class="referral-section">
-                    <h3><i class="fas fa-user-plus"></i> 邀请人地址</h3>
-                    <p>如果您是通过邀请链接加入，系统已自动填写邀请人地址</p>
+                    <h3><i class="fas fa-user-plus"></i> <span id="referrerLabel">Referrer Address</span></h3>
+                    <p id="enterReferrerText">If you joined through an invitation link, the referrer address has been automatically filled</p>
                     <div class="referral-input">
-                        <input type="text" id="referrerInput" placeholder="输入推荐人钱包地址">
-                        <button class="btn-secondary" id="setReferrerBtn" onclick="setReferrer()">设置</button>
+                        <input type="text" id="referrerInput" placeholder="Enter referrer address">
+                        <button class="btn-secondary" id="setReferrerBtn" onclick="setReferrer()"><span id="setBtnText">Set</span></button>
                     </div>
                     <div class="referral-auto" id="referralAuto">
-                        <i class="fas fa-check-circle"></i> 已自动填写邀请人地址
+                        <i class="fas fa-check-circle"></i> <span id="autoFillText">Referrer address automatically filled</span>
                     </div>
                     <div class="referral-success" id="referralSuccess">
-                        <i class="fas fa-check-circle"></i> 邀请人地址已保存
+                        <i class="fas fa-check-circle"></i> <span id="saveSuccessText">Referrer address saved successfully</span>
                     </div>
                 </div>
             </div>
-            
             <!-- 推广海报功能 -->
             <div class="card">
                 <div class="card-title">
                     <i class="fas fa-bullhorn"></i>
-                    <span id="posterTitle">推广海报</span>
+                    <span id="posterTitle">Promotion Poster</span>
                 </div>
                 <div class="poster-container" id="poster">
                     <div class="space-decoration" id="spaceDecoration"></div>
                     <div class="header-section">
-                        <div class="logo-text-poster">星际能源站</div>
-                        <div class="subtitle">玩赚宇宙能源时代</div>
+                        <div class="logo-text-poster" id="interstellarTitle">Interstellar Energy Station</div>
+                        <div class="subtitle" id="cosmicSubtitle">Play to Earn in the Cosmic Energy Era</div>
                     </div>
                     <div class="character-section">
                         <div class="spaceship">
@@ -1163,22 +1162,22 @@
                             <div id="posterQrcode"></div>
                         </div>
                         <div class="text-container">
-                            <div class="character-name" id="referralName">星际探索者 鲁卡</div>
-                            <div class="call-to-action">快来扫码加入吧!<br>探索宇宙能源，积累数字资产</div>
+                            <div class="character-name" id="referralName">Interstellar Explorer Luca</div>
+                            <div class="call-to-action" id="callToActionText">Scan QR code to join!<br>Explore cosmic energy, accumulate digital assets</div>
                         </div>
                     </div>
                 </div>
                 <div class="action-buttons">
                     <button class="action-btn" id="downloadBtn">
-                        <i class="fas fa-download"></i> 保存海报
+                        <i class="fas fa-download"></i> <span id="savePosterText">Save Poster</span>
                     </button>
                     <button class="action-btn secondary" id="shareBtn">
-                        <i class="fas fa-share-alt"></i> 分享邀请
+                        <i class="fas fa-share-alt"></i> <span id="shareInviteText">Share Invite</span>
                     </button>
                 </div>
                 <div class="share-panel" id="sharePanel">
                     <div class="share-header">
-                        <div class="share-title">分享邀请链接</div>
+                        <div class="share-title" id="shareTitle">Share Invitation Link</div>
                         <button class="share-close" id="shareCloseBtn">
                             <i class="fas fa-times"></i>
                         </button>
@@ -1188,19 +1187,19 @@
                             <div class="share-icon twitter">
                                 <i class="fab fa-twitter"></i>
                             </div>
-                            <div class="share-label">Twitter/X</div>
+                            <div class="share-label" id="twitterLabel">Twitter/X</div>
                         </div>
                         <div class="share-option" id="shareTelegram">
                             <div class="share-icon telegram">
                                 <i class="fab fa-telegram"></i>
                             </div>
-                            <div class="share-label">Telegram</div>
+                            <div class="share-label" id="telegramLabel">Telegram</div>
                         </div>
                         <div class="share-option" id="shareShare">
                             <div class="share-icon share">
                                 <i class="fas fa-share-alt"></i>
                             </div>
-                            <div class="share-label">共享</div>
+                            <div class="share-label" id="systemShareLabel">Share</div>
                         </div>
                     </div>
                     <div class="share-url">
@@ -1229,41 +1228,41 @@
             <div class="card">
                 <div class="card-title">
                     <i class="fas fa-chart-bar"></i>
-                    <span id="globalTitle">全局数据</span>
+                    <span id="globalTitle">Global Stats</span>
                 </div>
                 <div class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-value" id="totalMachines">0</div>
-                        <div class="stat-label" id="machinesLabel">总设备数</div>
+                        <div class="stat-label" id="machinesLabel">Total Devices</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-value" id="networkPower">0</div>
-                        <div class="stat-label" id="powerLabel">全网算力</div>
+                        <div class="stat-label" id="powerLabel">Network Power</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-value" id="rewardPool">0</div>
-                        <div class="stat-label" id="poolLabel">奖励池</div>
+                        <div class="stat-label" id="poolLabel">Reward Pool</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-value" id="dailyProduction">0</div>
-                        <div class="stat-label" id="productionLabel">今日产出</div>
+                        <div class="stat-label" id="productionLabel">Daily Production</div>
                     </div>
                 </div>
             </div>
             <div class="card">
                 <div class="card-title">
                     <i class="fas fa-info-circle"></i>
-                    <span id="systemInfoTitle">系统信息</span>
+                    <span id="systemInfoTitle">System Info</span>
                 </div>
                 <div class="machine-item">
                     <div class="machine-info">
-                        <h4 id="blockHeightText">区块高度</h4>
+                        <h4 id="blockHeightText">Block Height</h4>
                     </div>
                     <div class="machine-stats" id="currentBlock">0</div>
                 </div>
                 <div class="machine-item">
                     <div class="machine-info">
-                        <h4 id="baseRewardText">基础奖励系数</h4>
+                        <h4 id="baseRewardText">Base Reward Factor</h4>
                     </div>
                     <div class="machine-stats" id="baseReward">0</div>
                 </div>
@@ -1274,26 +1273,25 @@
     <div class="bottom-nav">
         <div class="nav-item active" onclick="switchPage('dashboard')">
             <i class="fas fa-home"></i>
-            <span id="homeNav">首页</span>
+            <span id="homeNav">Home</span>
         </div>
         <div class="nav-item" onclick="switchPage('shop')">
             <i class="fas fa-shopping-cart"></i>
-            <span id="shopNav">商店</span>
+            <span id="shopNav">Shop</span>
         </div>
         <div class="nav-item" onclick="switchPage('rewards')">
             <i class="fas fa-gift"></i>
-            <span id="rewardsNav">邀请</span>
+            <span id="rewardsNav">Invite</span>
         </div>
         <div class="nav-item" onclick="switchPage('global')">
             <i class="fas fa-globe"></i>
-            <span id="globalNav">全局</span>
+            <span id="globalNav">Global</span>
         </div>
     </div>
-    
     <!-- Overlays -->
     <div class="download-overlay" id="downloadOverlay">
         <div class="download-message">
-            海报生成中，请稍候...
+            <span id="generatingText">Generating poster, please wait...</span>
             <div style="margin-top: 10px;">
                 <i class="fas fa-spinner fa-spin"></i>
             </div>
@@ -1303,15 +1301,145 @@
         <div class="loading-spinner"></div>
     </div>
     <div class="mobile-save-instructions" id="mobileSaveInstructions">
-        <h3>保存海报到相册</h3>
-        <p>请按照以下步骤保存海报：</p>
-        <p>1. 长按下面的图片</p>
-        <p>2. 选择"保存图片"选项</p>
+        <h3 id="savePosterHeader">Save Poster to Gallery</h3>
+        <p id="saveStep1">Please follow these steps to save the poster:</p>
+        <p id="saveStep2">1. Long press the image below</p>
+        <p id="saveStep3">2. Select "Save Image" option</p>
         <div id="mobileSaveImageContainer"></div>
-        <button class="mobile-save-close" id="mobileSaveCloseBtn">关闭</button>
+        <button class="mobile-save-close" id="mobileSaveCloseBtn"><span id="closeBtnText">Close</span></button>
     </div>
-
     <script>
+        // Set default language to English
+        let currentLanguage = 'en';
+        // Language dictionaries
+        const translations = {
+            zh: {
+                connectWalletText: "连接钱包",
+                dashboardTitle: "个人仪表盘",
+                balanceLabel: "α余额",
+                earningsLabel: "累计收益",
+                dailyLabel: "今日收益",
+                unclaimedLabel: "未领取",
+                claimText: "领取收益",
+                devicesTitle: "设备状态",
+                limitText: "每人限购1台",
+                buyInitialText: "购买设备",
+                buyTestText: "购买设备",
+                homeNav: "首页",
+                shopNav: "商店",
+                rewardsNav: "邀请",
+                globalNav: "全局",
+                moonlightName: "月光转换器",
+                stardustName: "星尘收集器L1",
+                quantumName: "量子蒲公英L2",
+                auroraName: "极光编织机L3",
+                galaxyName: "银河过滤器L4",
+                phantomName: "幻影调试器",
+                initialTab: "初始设备",
+                powerTab: "进阶设备",
+                testTab: "测试设备",
+                referralTitle: "推荐体系",
+                posterTitle: "推广海报",
+                referrerLabel: "推荐人地址",
+                enterReferrerText: "如果通过邀请链接加入，推荐人地址已自动填写",
+                setBtnText: "设置",
+                autoFillText: "已自动填写推荐人地址",
+                saveSuccessText: "推荐人地址保存成功",
+                interstellarTitle: "星际能源站",
+                cosmicSubtitle: "宇宙能源时代边玩边赚",
+                callToActionText: "扫描二维码加入！<br>探索宇宙能源，积累数字资产",
+                savePosterText: "保存海报",
+                shareInviteText: "分享邀请",
+                shareTitle: "分享邀请链接",
+                twitterLabel: "Twitter/X",
+                telegramLabel: "Telegram",
+                systemShareLabel: "分享",
+                generatingText: "正在生成海报，请稍候...",
+                savePosterHeader: "保存海报到相册",
+                saveStep1: "请按以下步骤保存海报：",
+                saveStep2: "1. 长按下方图片",
+                saveStep3: "2. 选择\"保存图片\"选项",
+                closeBtnText: "关闭",
+                price1: "100 α",
+                price2: "200 α",
+                price3: "300 α",
+                price4: "500 α",
+                multiplier1: "算力 × 1.76",
+                multiplier2: "算力 × 3.30",
+                multiplier3: "算力 × 4.84",
+                multiplier4: "算力 × 7.15",
+                langText: "中文",
+                unitMachine: "台",
+                powerMultiplier: "算力 ×",
+                powerRatioText: "总算力占比:",
+                shareText: "分享",
+                copyText: "复制",
+                characterName: "星际探索者 卢卡"
+            },
+            en: {
+                connectWalletText: "Connect Wallet",
+                dashboardTitle: "Personal Dashboard",
+                balanceLabel: "α Balance",
+                earningsLabel: "Total Earnings",
+                dailyLabel: "Daily Reward",
+                unclaimedLabel: "Unclaimed",
+                claimText: "Claim Rewards",
+                devicesTitle: "Device Status",
+                limitText: "Limit 1 per person",
+                buyInitialText: "Buy Device",
+                buyTestText: "Buy Device",
+                homeNav: "Home",
+                shopNav: "Shop",
+                rewardsNav: "Invite",
+                globalNav: "Global",
+                moonlightName: "Moonlight Converter",
+                stardustName: "Stardust Collector L1",
+                quantumName: "Quantum Dandelion L2",
+                auroraName: "Aurora Weaver L3",
+                galaxyName: "Galaxy Filter L4",
+                phantomName: "Phantom Debugger",
+                initialTab: "Initial Device",
+                powerTab: "Power Device",
+                testTab: "Test Device",
+                referralTitle: "Referral System",
+                posterTitle: "Promotion Poster",
+                referrerLabel: "Referrer Address",
+                enterReferrerText: "If you joined through an invitation link, the referrer address has been automatically filled",
+                setBtnText: "Set",
+                autoFillText: "Referrer address automatically filled",
+                saveSuccessText: "Referrer address saved successfully",
+                interstellarTitle: "Interstellar Energy Station",
+                cosmicSubtitle: "Play to Earn in the Cosmic Energy Era",
+                callToActionText: "Scan QR code to join!<br>Explore cosmic energy, accumulate digital assets",
+                savePosterText: "Save Poster",
+                shareInviteText: "Share Invite",
+                shareTitle: "Share Invitation Link",
+                twitterLabel: "Twitter/X",
+                telegramLabel: "Telegram",
+                systemShareLabel: "Share",
+                generatingText: "Generating poster, please wait...",
+                savePosterHeader: "Save Poster to Gallery",
+                saveStep1: "Please follow these steps to save the poster:",
+                saveStep2: "1. Long press the image below",
+                saveStep3: "2. Select \"Save Image\" option",
+                closeBtnText: "Close",
+                price1: "100 α",
+                price2: "200 α",
+                price3: "300 α",
+                price4: "500 α",
+                multiplier1: "Power × 1.76",
+                multiplier2: "Power × 3.30",
+                multiplier3: "Power × 4.84",
+                multiplier4: "Power × 7.15",
+                langText: "English",
+                unitMachine: "units",
+                powerMultiplier: "Power ×",
+                powerRatioText: "Power Ratio:",
+                shareText: "Share",
+                copyText: "Copy",
+                characterName: "Interstellar Explorer Luca"
+            }
+        };
         // 修复钱包连接问题：在页面加载时初始化 Web3
         document.addEventListener('DOMContentLoaded', function() {
             // 初始化 Web3 并检查是否已连接钱包
@@ -1328,7 +1456,6 @@
                 initPoster();
             });
         });
-        
         // 1. 首先定义自动填写函数
         function autoFillReferralAddress() {
             try {
@@ -1365,19 +1492,15 @@
                 console.error('自动填写失败:', error);
             }
         }
-        
         // 推广海报初始化
         function initPoster() {
             const poster = document.getElementById('poster');
             if (!poster) return;
-            
             // 创建宇宙装饰
             createSpaceDecoration();
-            
             // 设置默认的推荐人名称
-            const userName = localStorage.getItem('userName') || '星际探索者 ' + Math.floor(Math.random() * 1000);
-            document.getElementById('referralName').textContent = userName;
-            
+            const userName = localStorage.getItem('userName') || (currentLanguage === 'zh' ? '星际探索者 ' + Math.floor(Math.random() * 1000) : 'Interstellar Explorer ' + Math.floor(Math.random() * 1000));
+            updatePosterCharacterName(userName);
             // 设置点击事件
             document.getElementById('downloadBtn').addEventListener('click', downloadPoster);
             document.getElementById('shareBtn').addEventListener('click', function() {
@@ -1389,9 +1512,8 @@
             document.getElementById('shareCopyBtn').addEventListener('click', function() {
                 const shareInput = document.getElementById('shareInput');
                 navigator.clipboard.writeText(shareInput.value);
-                showToast('链接已复制到剪贴板！', 'success');
+                showToast('Link copied to clipboard!', 'success');
             });
-            
             // 分享选项
             document.getElementById('shareTwitter').addEventListener('click', function() {
                 shareToTwitter();
@@ -1402,25 +1524,21 @@
             document.getElementById('shareShare').addEventListener('click', function() {
                 shareWithSystem();
             });
-            
             // 移动设备保存说明关闭按钮
             document.getElementById('mobileSaveCloseBtn').addEventListener('click', function() {
                 document.getElementById('mobileSaveInstructions').style.opacity = '0';
                 document.getElementById('mobileSaveInstructions').style.pointerEvents = 'none';
             });
-            
             // 如果有连接钱包，生成二维码
             if (userAccount) {
                 generateQRCode(userAccount);
             }
         }
-        
         // 创建宇宙装饰
         function createSpaceDecoration() {
             const spaceContainer = document.getElementById('spaceDecoration');
             if (!spaceContainer) return;
             spaceContainer.innerHTML = ''; // 清空现有内容
-            
             const starCount = 100;
             for (let i = 0; i < starCount; i++) {
                 const star = document.createElement('div');
@@ -1444,12 +1562,10 @@
             planet.classList.add('planet');
             spaceContainer.appendChild(planet);
         }
-        
         // 生成二维码
         function generateQRCode(walletAddress) {
             const qrElement = document.getElementById('posterQrcode');
             if (!qrElement) return;
-            
             qrElement.innerHTML = '';
             // 使用钱包地址生成邀请链接
             const inviteUrl = `https://uid606.top/?invite=${encodeURIComponent(walletAddress)}`;
@@ -1465,7 +1581,6 @@
             // 设置分享链接
             document.getElementById('shareInput').value = inviteUrl;
         }
-        
         // 保存海报
         function downloadPoster() {
             const overlay = document.getElementById('downloadOverlay');
@@ -1505,7 +1620,7 @@
                     } else {
                         // 非移动设备正常下载
                         const link = document.createElement('a');
-                        link.download = '星际能源站-推广海报.png';
+                        link.download = 'Interstellar-Energy-Station-Promotion-Poster.png';
                         link.href = canvas.toDataURL('image/png');
                         // 触发点击事件
                         const clickEvent = new MouseEvent('click', {
@@ -1524,65 +1639,58 @@
                     console.error('生成海报失败:', error);
                     overlay.style.opacity = '0';
                     overlay.style.pointerEvents = 'none';
-                    showToast('海报生成失败', 'error');
+                    showToast('Poster generation failed', 'error');
                 });
             }, 300);
         }
-        
         // 分享到Twitter/X
         function shareToTwitter() {
             if (!userAccount) {
                 connectWallet();
                 return;
             }
-            
             const inviteUrl = document.getElementById('shareInput').value;
-            const text = encodeURIComponent('加入星际能源站，开启宇宙能源采集之旅！');
+            const text = encodeURIComponent('Join Interstellar Energy Station, start your cosmic energy collection journey!');
             const url = encodeURIComponent(inviteUrl);
             const twitterUrl = `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
             window.open(twitterUrl, '_blank', 'width=600,height=400');
         }
-        
         // 分享到Telegram
         function shareToTelegram() {
             if (!userAccount) {
                 connectWallet();
                 return;
             }
-            
             const inviteUrl = document.getElementById('shareInput').value;
-            const text = encodeURIComponent('加入星际能源站，开启宇宙能源采集之旅！');
+            const text = encodeURIComponent('Join Interstellar Energy Station, start your cosmic energy collection journey!');
             const url = encodeURIComponent(inviteUrl);
             const telegramUrl = `https://t.me/share/url?url=${url}&text=${text}`;
             window.open(telegramUrl, '_blank', 'width=600,height=400');
         }
-        
         // 使用共享功能
         function shareWithSystem() {
             if (!userAccount) {
                 connectWallet();
                 return;
             }
-            
             const inviteUrl = document.getElementById('shareInput').value;
             if (navigator.share) {
                 navigator.share({
-                    title: '星际能源站',
-                    text: '加入星际能源站，开启宇宙能源采集之旅！',
+                    title: 'Interstellar Energy Station',
+                    text: 'Join Interstellar Energy Station, start your cosmic energy collection journey!',
                     url: inviteUrl
                 });
             } else {
                 // 如果不支持Web Share API，复制邀请链接
                 navigator.clipboard.writeText(inviteUrl);
-                showToast('链接已复制到剪贴板！', 'success');
+                showToast('Link copied to clipboard!', 'success');
             }
         }
-        
         // Contract Configuration
         const CONTRACT_ADDRESS = '0x9dcced4ef738856d2c289d4116cd219c698b22ba';
         const TOKEN_ADDRESS = '0x877f23dcFBa91cadd7d35565Da452c9673C27A33';
         const CONTRACT_ABI = [{"inputs":[{"internalType":"address","name":"_rewardToken","type":"address"},{"internalType":"address","name":"_treasury","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"newAdmin","type":"address"}],"name":"AdminAdded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"oldAdmin","type":"address"}],"name":"AdminRemoved","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"receiver","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"BNBWithdrawn","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"price","type":"uint256"}],"name":"InitialMachinePurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"tierId","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"count","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"totalPrice","type":"uint256"}],"name":"PowerMachinePurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"referrer","type":"address"},{"indexed":true,"internalType":"address","name":"referee","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"ReferralRewardPaid","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"claimer","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"RewardsClaimed","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"price","type":"uint256"}],"name":"TestMachinePurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"adder","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"TokensAdded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"receiver","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"TokensWithdrawn","type":"event"},{"inputs":[],"name":"BLOCKS_PER_DAY","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"INITIAL_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_BUY_COUNT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"REFERRAL_PERCENT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TEST_MACHINE_PRICE_BNB","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TREASURY","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"addAdmin","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"addRewardTokens","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"addToBlocklist","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"admin","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"baseRewardPerBlockPerPower","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"blocklist","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"buyInitialMachine","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"tierId","type":"uint256"},{"internalType":"uint256","name":"count","type":"uint256"}],"name":"buyPowerMachine","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"buyTestMachine","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"claimRewards","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"usr","type":"address"}],"name":"dailyRewardOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getGlobalDashboard","outputs":[{"internalType":"uint256","name":"baseReward","type":"uint256"},{"internalType":"uint256","name":"totalMines","type":"uint256"},{"internalType":"uint256","name":"currentBlock","type":"uint256"},{"internalType":"uint256","name":"poolBalance","type":"uint256"},{"internalType":"uint256","name":"networkPower","type":"uint256"},{"internalType":"uint256","name":"dailyProduction","type":"uint256"},{"internalType":"uint256","name":"totalRefRewards","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getUserDashboard","outputs":[{"internalType":"uint256","name":"normal","type":"uint256"},{"internalType":"uint256","name":"test","type":"uint256"},{"internalType":"uint256[4]","name":"power","type":"uint256[4]"},{"internalType":"uint256","name":"dailyReward","type":"uint256"},{"internalType":"uint256","name":"unclaimed","type":"uint256"},{"internalType":"uint256","name":"totalRefReward","type":"uint256"},{"internalType":"uint256","name":"totalPower","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"machineTiers","outputs":[{"internalType":"uint256","name":"priceToken","type":"uint256"},{"internalType":"uint256","name":"powerMultiplier","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"pause","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"referralRecords","outputs":[{"internalType":"address","name":"referrer","type":"address"},{"internalType":"address","name":"referee","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"uint256","name":"timestamp","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"removeAdmin","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"a","type":"address"}],"name":"removeFromBlocklist","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"rewardPool","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"contract": "IERC20", "name": "", "type": "address"}], "name": "rewardToken", "outputs": [{"contract": "IERC20", "name": "", "type": "address"}], "stateMutability": "view", "type": "function"}, {"inputs":[{"internalType":"address","name":"referrer","type":"address"}],"name":"setReferrer","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"startBlock","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalMachines","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalNetworkPower","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalReferralRewards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalTokensMinted","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalUsers","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"unpause","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"userInfo","outputs":[{"internalType":"uint256","name":"normalMachineCount","type":"uint256"},{"internalType":"uint256","name":"testMachineCount","type":"uint256"},{"internalType":"uint256","name":"rewardStartBlock","type":"uint256"},{"internalType":"address","name":"referrer","type":"address"},{"internalType":"uint256","name":"referralRewards","type":"uint256"},{"internalType":"bool","name":"hasBoughtInitial","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"withdrawBNB","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdrawTokens","outputs":[],"stateMutability":"nonpayable","type":"function"}];
-        const TOKEN_ABI = [{"inputs":[{"internalType":"string","name":"name_","type":"string"},{"internalType":"string","name":"symbol_","type":"string"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"spender","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"subtractedValue","type":"uint256"}],"name":"decreaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"addedValue","type":"uint256"}],"name":"increaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"}];
+        const TOKEN_ABI = [{"inputs":[{"internalType":"string","name":"name_","type":"string"},{"internalType":"string","name":"symbol_","type":"string"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"spender","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"subtractedValue","type":"uint256"}],"name":"decreaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"addedValue","type":"uint256"}],"name":"increaseAllowable","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"}];
         // Global variables
         let web3;
         let contract;
@@ -1590,116 +1698,6 @@
         let userAccount;
         let isAdmin = false;
         let isOwner = false;
-        let currentLanguage = 'zh'; // 'zh' or 'en'
-        // Language dictionaries
-        const translations = {
-            zh: {
-                connectWalletText: "连接钱包",
-                dashboardTitle: "个人仪表盘",
-                balanceLabel: "α余额",
-                earningsLabel: "累计收益",
-                dailyLabel: "今日收益",
-                unclaimedLabel: "未领取",
-                claimText: "领取收益",
-                devicesTitle: "设备状态",
-                limitText: "每人限购1台",
-                buyInitialText: "购买设备",
-                buyTestText: "购买设备",
-                homeNav: "首页",
-                shopNav: "商店",
-                rewardsNav: "邀请",
-                globalNav: "全局",
-                moonlightName: "月光转换器",
-                stardustName: "星尘收集器L1",
-                quantumName: "量子蒲公英L2",
-                auroraName: "极光编织机L3",
-                galaxyName: "银河过滤器L4",
-                phantomName: "幻影调试器",
-                initialTab: "初始设备",
-                powerTab: "进阶设备",
-                testTab: "测试设备",
-                referralTitle: "推荐体系",
-                posterTitle: "推广海报",
-                referrerPlaceholder: "输入推荐人地址",
-                setReferrerBtn: "设置",
-                myReferralText: "我的推荐码：",
-                globalTitle: "全局数据",
-                machinesLabel: "总设备数",
-                powerLabel: "全网算力",
-                poolLabel: "奖励池",
-                productionLabel: "今日产出",
-                systemInfoTitle: "系统信息",
-                blockHeightText: "区块高度",
-                baseRewardText: "基础奖励系数",
-                price1: "100 α",
-                price2: "200 α",
-                price3: "300 α",
-                price4: "500 α",
-                multiplier1: "算力 × 1.76",
-                multiplier2: "算力 × 3.30",
-                multiplier3: "算力 × 4.84",
-                multiplier4: "算力 × 7.15",
-                langText: "中文",
-                unitMachine: "台",
-                powerMultiplier: "算力 ×",
-                powerRatioText: "总算力占比:",
-                shareText: "分享",
-                copyText: "复制"
-            },
-            en: {
-                connectWalletText: "Connect Wallet",
-                dashboardTitle: "Personal Dashboard",
-                balanceLabel: "α Balance",
-                earningsLabel: "Total Earnings",
-                dailyLabel: "Daily Reward",
-                unclaimedLabel: "Unclaimed",
-                claimText: "Claim Rewards",
-                devicesTitle: "Device Status",
-                limitText: "Limit 1 per person",
-                buyInitialText: "Buy Device",
-                buyTestText: "Buy Device",
-                homeNav: "Home",
-                shopNav: "Shop",
-                rewardsNav: "Invite",
-                globalNav: "Global",
-                moonlightName: "Moonlight Converter",
-                stardustName: "Stardust Collector L1",
-                quantumName: "Quantum Dandelion L2",
-                auroraName: "Aurora Weaver L3",
-                galaxyName: "Galaxy Filter L4",
-                phantomName: "Phantom Debugger",
-                initialTab: "Initial Device",
-                powerTab: "Power Device",
-                testTab: "Test Device",
-                referralTitle: "Referral System",
-                posterTitle: "Promotion Poster",
-                referrerPlaceholder: "Enter referrer address",
-                setReferrerBtn: "Set",
-                myReferralText: "My Referral Code:",
-                globalTitle: "Global Stats",
-                machinesLabel: "Total Devices",
-                powerLabel: "Network Power",
-                poolLabel: "Reward Pool",
-                productionLabel: "Daily Production",
-                systemInfoTitle: "System Info",
-                blockHeightText: "Block Height",
-                baseRewardText: "Base Reward Factor",
-                price1: "100 α",
-                price2: "200 α",
-                price3: "300 α",
-                price4: "500 α",
-                multiplier1: "Power × 1.76",
-                multiplier2: "Power × 3.30",
-                multiplier3: "Power × 4.84",
-                multiplier4: "Power × 7.15",
-                langText: "English",
-                unitMachine: "units",
-                powerMultiplier: "Power ×",
-                powerRatioText: "Power Ratio:",
-                shareText: "Share",
-                copyText: "Copy"
-            }
-        };
         // 初始化 Web3 并连接钱包
         async function initWeb3() {
             if (window.ethereum) {
@@ -1717,12 +1715,12 @@
                         return true;
                     }
                 } catch (error) {
-                    console.error("用户拒绝账户访问", error);
-                    showToast('连接钱包失败', 'error');
+                    console.error("User denied account access", error);
+                    showToast('Failed to connect wallet', 'error');
                     return false;
                 }
             } else {
-                showToast('请安装 MetaMask!', 'error');
+                showToast('Please install MetaMask!', 'error');
                 return false;
             }
             return false;
@@ -1870,7 +1868,7 @@
                 document.getElementById('baseReward').textContent = formatNumber(web3.utils.fromWei(globalDashboard.baseReward, 'ether'));
             } catch (error) {
                 console.error('加载数据失败:', error);
-                showToast(currentLanguage === 'zh' ? `加载数据失败: ${error.message}` : `Failed to load  ${error.message}`, 'error');
+                showToast(currentLanguage === 'zh' ? `加载数据失败: ${error.message}` : `Failed to load data: ${error.message}`, 'error');
             } finally {
                 showLoading(false);
             }
@@ -2085,6 +2083,18 @@
             // 如果在仪表盘页面，重新加载数据以更新机器名称和文本
             if (document.getElementById('dashboardPage').classList.contains('active')) {
                 loadDashboardData();
+            }
+            // 特别处理角色名称
+            updatePosterCharacterName();
+        }
+        // 更新海报角色名称
+        function updatePosterCharacterName(name = null) {
+            const characterNameElement = document.getElementById('referralName');
+            if (name) {
+                characterNameElement.textContent = name;
+            } else {
+                const userName = localStorage.getItem('userName') || (currentLanguage === 'zh' ? translations.zh.characterName : translations.en.characterName);
+                characterNameElement.textContent = userName;
             }
         }
         // 显示/隐藏加载状态
